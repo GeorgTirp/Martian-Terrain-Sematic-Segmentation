@@ -9,14 +9,13 @@ Muon is an optimizer that orthogonalizes updates (via Newton-Schulz iteration)
 and has been shown to speed up training for various deep networks. :contentReference[oaicite:7]{index=7}
 """
 
+# optimizers.py
 from __future__ import annotations
 
 import torch
 
 try:
-    # As per official repo usage example. :contentReference[oaicite:8]{index=8}
-    from muon import Muon  # type: ignore
-
+    from muon import Muon  # KellerJordan Muon
     _HAS_MUON = True
 except Exception:
     Muon = None  # type: ignore
@@ -33,16 +32,15 @@ def create_optimizer(
     Create an optimizer for the given model.
 
     - If Muon is available and use_muon=True: use Muon on all parameters.
-      (For serious experiments you might follow the recommended pattern:
-       Muon for 2D weights + AdamW for biases, norms, etc., but we keep this
-       simple here.)
     - Else: use AdamW on all parameters.
     """
-    params = model.parameters()
+    # IMPORTANT: Muon expects a *list* of torch.nn.Parameter, not a generator.
+    params_list = [p for p in model.parameters()]
 
     if use_muon and _HAS_MUON:
         print("[optimizers] Using Muon optimizer.")
-        return Muon(params, lr=lr)  # type: ignore[arg-type]
+        # KellerJordan's Muon signature: Muon(params, lr=0.02, weight_decay=0, momentum=0.95)
+        return Muon(params_list, lr=lr, weight_decay=weight_decay)  # type: ignore[arg-type]
     else:
         if use_muon and not _HAS_MUON:
             print(
@@ -52,4 +50,4 @@ def create_optimizer(
             )
         else:
             print("[optimizers] Using AdamW optimizer.")
-        return torch.optim.AdamW(params, lr=lr, weight_decay=weight_decay)
+        return torch.optim.AdamW(params_list, lr=lr, weight_decay=weight_decay)

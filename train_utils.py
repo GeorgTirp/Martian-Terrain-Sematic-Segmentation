@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from data import AI4MARS_IGNORE_INDEX
+from dataloader import AI4MARS_IGNORE_INDEX
 
 
 def _compute_batch_metrics(

@@ -17,7 +17,7 @@ from typing import List, Tuple
 import torch
 import torch.nn.functional as F
 from torch import nn
-
+from matplotlib import pyplot as plt
 
 def grad_cam(
     model: nn.Module,
@@ -188,3 +188,146 @@ def neural_pca(
         pcs.append(pc_map)
 
     return pcs, top_eigvals
+
+import random
+
+def normalize_map(t: torch.Tensor):
+    t = t.clone().detach()
+    t_min, t_max = t.min(), t.max()
+    if (t_max - t_min) > 1e-6:
+        t = (t - t_min) / (t_max - t_min)
+    else:
+        t = torch.zeros_like(t)
+    return t
+
+
+def explain_per_class_examples(
+    model,
+    dataset,
+    device,
+    num_examples_per_class: int = 2,
+    ig_steps: int = 32,
+):
+    """
+    For each terrain class (soil, bedrock, sand, big_rock),
+    show up to `num_examples_per_class` random examples with:
+
+      - Grad-CAM
+      - Integrated Gradients
+      - Neural PCA
+
+    Args:
+        model: trained segmentation model.
+        dataset: typically `test_loader.dataset`.
+        device: torch.device.
+        num_examples_per_class: how many examples per class to visualize.
+        ig_steps: number of steps for Integrated Gradients.
+    """
+    model.eval()
+    cam_layer = model.get_cam_layer()
+    num_classes = len(AI4MARS_CLASS_NAMES)
+
+    # --- 1. Scan dataset once to find indices per class ---
+    class_to_indices = {c: [] for c in range(num_classes)}
+    print("Scanning dataset once to find examples per class...")
+    for idx in range(len(dataset)):
+        _, mask = dataset[idx]  # mask is a torch.Tensor [H,W] on CPU
+        mask_np = mask.numpy()
+
+        for c in range(num_classes):
+            if (mask_np == c).any():
+                class_to_indices[c].append(idx)
+
+        # Small early-exit optimization (optional)
+        if all(len(class_to_indices[c]) >= num_examples_per_class for c in range(num_classes)):
+            break
+
+    # --- 2. For each class, sample some indices and visualize ---
+    for c in range(num_classes):
+        class_name = AI4MARS_CLASS_NAMES[c]
+        indices = class_to_indices[c]
+
+        if len(indices) == 0:
+            print(f"\nClass '{class_name}' (id={c}): no examples found in dataset.")
+            continue
+
+        chosen = random.sample(indices, k=min(num_examples_per_class, len(indices)))
+        print(
+            f"\n=== Class '{class_name}' (id={c}) | "
+            f"{len(indices)} total examples, showing {len(chosen)} ==="
+        )
+
+        for ex_id, idx in enumerate(chosen):
+            print(f"- Example {ex_id+1}/{len(chosen)} (dataset idx: {idx})")
+
+            input_img, target_mask = dataset[idx]
+            input_img = input_img.unsqueeze(0).to(device)  # [1,C,H,W]
+            target_mask = target_mask.to(device)           # [H,W]
+
+            # ----- Grad-CAM -----
+            cam_map = grad_cam(
+                model=model,
+                input_tensor=input_img,
+                target_class=c,
+                target_layer=cam_layer,
+            )  # [1,1,H,W]
+
+            # ----- Integrated Gradients -----
+            ig_attr = integrated_gradients(
+                model=model,
+                input_tensor=input_img,
+                target_class=c,
+                baseline=torch.zeros_like(input_img),
+                steps=ig_steps,
+            )  # [1,C,H,W]
+
+            # ----- Neural PCA on the same CAM layer features -----
+            activations = {}
+
+            def hook_activations(module, inp, out):
+                activations["feat"] = out.detach().cpu()
+
+            handle = cam_layer.register_forward_hook(hook_activations)
+            with torch.no_grad():
+                _ = model(input_img)
+            handle.remove()
+
+            feat_map = activations["feat"]  # [1,F,h,w]
+            pcs, eigvals = neural_pca(feat_map, n_components=3)  # list of [H,W]
+
+            # ----- Visualization -----
+            img_np = input_img[0, 0].detach().cpu().numpy()
+
+            cam_np = cam_map[0, 0].detach().cpu().numpy()
+            ig_np = normalize_map(ig_attr[0, 0]).cpu().numpy()
+            pc_maps = [normalize_map(pc).cpu().numpy() for pc in pcs]
+
+            fig, axes = plt.subplots(2, 3, figsize=(12, 6))
+
+            # Original image
+            axes[0, 0].imshow(img_np, cmap="gray")
+            axes[0, 0].set_title("Input")
+            axes[0, 0].axis("off")
+
+            # Grad-CAM overlay
+            axes[0, 1].imshow(img_np, cmap="gray")
+            axes[0, 1].imshow(cam_np, cmap="jet", alpha=0.5)
+            axes[0, 1].set_title(f"Grad-CAM ({class_name})")
+            axes[0, 1].axis("off")
+
+            # Integrated Gradients overlay
+            axes[0, 2].imshow(img_np, cmap="gray")
+            axes[0, 2].imshow(ig_np, cmap="inferno", alpha=0.5)
+            axes[0, 2].set_title(f"Integrated Gradients ({class_name})")
+            axes[0, 2].axis("off")
+
+            # Neural PCA components
+            for i in range(3):
+                ax = axes[1, i]
+                pcm = pc_maps[i]
+                ax.imshow(pcm, cmap="coolwarm")
+                ax.set_title(f"Neural PCA PC{i+1}\n(eig={eigvals[i].item():.2f})")
+                ax.axis("off")
+
+            plt.tight_layout()
+            plt.show()

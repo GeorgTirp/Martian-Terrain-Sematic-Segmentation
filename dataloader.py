@@ -14,8 +14,11 @@ We use the Hugging Face dataset `hassanjbara/AI4MARS`, which provides:
 :contentReference[oaicite:4]{index=4}
 """
 
+# data.py
+
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
 from typing import Tuple, List
 
@@ -27,21 +30,17 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from torchvision.transforms import InterpolationMode
 
-from datasets import load_dataset  # pip install datasets
-
+from datasets import load_dataset
 
 AI4MARS_CLASS_NAMES: List[str] = ["soil", "bedrock", "sand", "big_rock"]
-AI4MARS_IGNORE_INDEX: int = 255  # null/no-label pixels
+AI4MARS_IGNORE_INDEX: int = 255
 
 
 class AI4MarsHFDataset(Dataset):
     """
     PyTorch wrapper around a Hugging Face split of AI4Mars.
 
-    Args:
-        hf_split: a `datasets.Dataset` object (already split into train/val/test).
-        image_size: resize (H,W) for both image and mask.
-        to_rgb: if True, replicate grayscale channel to 3 channels.
+    Handles occasional corrupt / missing entries robustly by skipping them.
     """
 
     def __init__(
@@ -59,7 +58,8 @@ class AI4MarsHFDataset(Dataset):
             self.image_transform = transforms.Compose(
                 [
                     transforms.Resize(
-                        (image_size, image_size), interpolation=InterpolationMode.BILINEAR
+                        (image_size, image_size),
+                        interpolation=InterpolationMode.BILINEAR,
                     ),
                     transforms.Grayscale(num_output_channels=3),
                     transforms.ToTensor(),
@@ -69,7 +69,8 @@ class AI4MarsHFDataset(Dataset):
             self.image_transform = transforms.Compose(
                 [
                     transforms.Resize(
-                        (image_size, image_size), interpolation=InterpolationMode.BILINEAR
+                        (image_size, image_size),
+                        interpolation=InterpolationMode.BILINEAR,
                     ),
                     transforms.Grayscale(num_output_channels=1),
                     transforms.ToTensor(),
@@ -84,24 +85,34 @@ class AI4MarsHFDataset(Dataset):
     def __len__(self) -> int:
         return len(self.ds)
 
-    def __getitem__(self, idx: int):
+    def _get_raw_sample(self, idx: int):
+        """Internal: get a sample, skipping over missing images/masks."""
         sample = self.ds[idx]
-        img = sample["image"]  # PIL.Image
-        mask = sample["label_mask"]  # PIL.Image with encoded class indices as intensity
+        img = sample.get("image", None)
+        mask = sample.get("label_mask", None)
 
-        # Some variants may store masks as RGB with repeated channels;
-        # we convert to 'L' (single channel) to be safe.
-        if not isinstance(img, Image.Image):
-            img = Image.fromarray(np.array(img))
-        if not isinstance(mask, Image.Image):
-            mask = Image.fromarray(np.array(mask))
+        # If something is None, skip to the next index (wrap-around).
+        if img is None or mask is None:
+            new_idx = (idx + 1) % len(self.ds)
+            return self._get_raw_sample(new_idx)
 
-        img_t = self.image_transform(img)  # [C,H,W], float 0–1
+        return img, mask
+
+    def __getitem__(self, idx: int):
+        img, mask = self._get_raw_sample(idx)
+
+        # HF Image feature should give us PIL.Image already,
+        # but if it's numpy, convert safely.
+        if isinstance(img, np.ndarray):
+            img = Image.fromarray(img.astype(np.uint8))
+        if isinstance(mask, np.ndarray):
+            mask = Image.fromarray(mask.astype(np.uint8))
+
+        img_t = self.image_transform(img)  # [C,H,W]
 
         mask_resized = self.mask_resize(mask)
         mask_np = np.array(mask_resized, dtype=np.uint8)
 
-        # If masks are RGB, take one channel
         if mask_np.ndim == 3:
             mask_np = mask_np[..., 0]
 
@@ -109,6 +120,9 @@ class AI4MarsHFDataset(Dataset):
 
         return img_t, mask_t
 
+
+
+from datasets import load_dataset, load_from_disk  # add load_from_disk if you want on-disk caching
 
 @dataclass
 class DataLoaders:
@@ -124,19 +138,37 @@ def create_ai4mars_dataloaders(
     val_fraction: float = 0.1,
     to_rgb: bool = False,
     seed: int = 42,
+    cache_dir: str | None = None,
+    max_train_samples: int | None = None,
+    max_val_samples: int | None = None,
+    max_test_samples: int | None = None,
+    use_local_disk_copy: bool = False,
+    local_disk_path: str = "./data/ai4mars_hf",
 ) -> DataLoaders:
     """
     Create train/val/test dataloaders for AI4Mars via Hugging Face.
 
-    This function:
-      1. Downloads `hassanjbara/AI4MARS` (or loads from cache).
-      2. Ensures we have train/val/test splits by splitting if necessary.
-      3. Wraps each split with `AI4MarsHFDataset`.
+    New knobs:
+    - cache_dir: where Hugging Face stores its cache.
+    - max_*_samples: limit number of samples per split (useful for quick dev runs).
+    - use_local_disk_copy + local_disk_path:
+        * On first prep run you can save the HF dataset to disk.
+        * Later you can load from that folder instead of redownloading/processing.
     """
 
-    raw = load_dataset("hassanjbara/AI4MARS")  # :contentReference[oaicite:5]{index=5}
+    if use_local_disk_copy and os.path.exists(local_disk_path):
+        raw = load_from_disk(local_disk_path)
+    else:
+        raw = load_dataset(
+            "hassanjbara/AI4MARS",
+            cache_dir=cache_dir,
+        )
+        # Optional: save to disk once, then next runs can set use_local_disk_copy=True
+        if use_local_disk_copy:
+            os.makedirs(os.path.dirname(local_disk_path), exist_ok=True)
+            raw.save_to_disk(local_disk_path)
 
-    # Try to infer train and test splits; if not present, create them.
+    # --- same split logic as before ---
     if "train" in raw:
         full_train = raw["train"]
         if "test" in raw:
@@ -145,15 +177,21 @@ def create_ai4mars_dataloaders(
             split = full_train.train_test_split(test_size=0.1, seed=seed)
             full_train, test_hf = split["train"], split["test"]
     else:
-        # Single split dataset; create train/test from it.
         key = list(raw.keys())[0]
         full_train = raw[key]
         split = full_train.train_test_split(test_size=0.2, seed=seed)
         full_train, test_hf = split["train"], split["test"]
 
-    # Now create train/val from full_train
     split2 = full_train.train_test_split(test_size=val_fraction, seed=seed + 1)
     train_hf, val_hf = split2["train"], split2["test"]
+
+    # --- NEW: optionally limit split sizes for fast dev runs ---
+    if max_train_samples is not None:
+        train_hf = train_hf.select(range(min(max_train_samples, len(train_hf))))
+    if max_val_samples is not None:
+        val_hf = val_hf.select(range(min(max_val_samples, len(val_hf))))
+    if max_test_samples is not None:
+        test_hf = test_hf.select(range(min(max_test_samples, len(test_hf))))
 
     train_ds = AI4MarsHFDataset(train_hf, image_size=image_size, to_rgb=to_rgb)
     val_ds = AI4MarsHFDataset(val_hf, image_size=image_size, to_rgb=to_rgb)
@@ -182,3 +220,4 @@ def create_ai4mars_dataloaders(
     )
 
     return DataLoaders(train=train_loader, val=val_loader, test=test_loader)
+
