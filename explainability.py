@@ -19,6 +19,8 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from matplotlib import pyplot as plt
+from PIL import Image
+
 
 def grad_cam(
     model: nn.Module,
@@ -328,13 +330,40 @@ def show_top_neural_pca_images_for_class(
     class_id: int,
     component_idx: int = 0,
     top_k: int = 6,
+    easter_egg: bool = True,
+    alien_image_path: str | None = "A_grayscale_photograph_captures_an_astronaut_on_th.png",
 ):
     """
     Show the top-k REAL images that maximally activate NPCA component `component_idx`
     for class `class_id` (like "Max. activating train images - N-PCA Comp. l" in the slides).
+
+    If `easter_egg=True` and `class_id == 4`, show a special alien NPCA image
+    (astronaut with "Hire me, please!" flag) instead of using neural_pca_results.
     """
-    
-    AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock"]
+
+    # Include an extra label for the easter egg class id=4
+    AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock", "alien"]
+
+    # --- Easter-egg path: fake 'alien' NPCA ---
+    if easter_egg and class_id == 4:
+        print("\nClass 'alien' (id=4), NPCA component 1, showing 1 / 1 images.")
+
+        if alien_image_path is None:
+            print("No alien_image_path provided; nothing to display.")
+            return
+
+        img = Image.open(alien_image_path)
+
+        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+        ax.imshow(img, cmap="gray")
+        ax.set_title("rank 1\nα=?\nidx=alien-1")
+        ax.axis("off")
+
+        plt.tight_layout()
+        plt.show()
+        return
+
+    # --- Normal NPCA path for real terrain classes ---
     if class_id not in neural_pca_results:
         print(f"No neural PCA info stored for class {class_id}.")
         return
