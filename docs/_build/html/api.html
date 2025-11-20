@@ -35,6 +35,7 @@
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
@@ -373,39 +374,65 @@ and provides optional scanning to remove a small number of corrupted samples.</p
 <li><p>Optionally scans the split once to drop corrupted or undecodable samples
 and caches the list of valid indices for future runs.</p></li>
 </ul>
-<dl class="simple">
-<dt>hf_split :</dt><dd><p>A single split of the Hugging Face dataset (e.g. <cite>raw[“train”]</cite>).</p>
-</dd>
-<dt>image_size<span class="classifier">int, default=256</span></dt><dd><p>Target spatial size (height and width) for images and masks.</p>
-</dd>
-<dt>to_rgb<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert images to 3-channel RGB tensors.
-If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale tensors.</p>
-</dd>
-<dt>scan_spurious<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, scan the split to find valid (decodable) samples, build
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hf_split</strong> – A single split of the Hugging Face dataset (e.g. <cite>raw[“train”]</cite>).</p></li>
+<li><p><strong>image_size</strong> (<em>int</em><em>, </em><em>default=256</em>) – Target spatial size (height and width) for images and masks.</p></li>
+<li><p><strong>to_rgb</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert images to 3-channel RGB tensors.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale tensors.</p></li>
+<li><p><strong>scan_spurious</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, scan the split to find valid (decodable) samples, build
 <code class="docutils literal notranslate"><span class="pre">valid_indices</span></code>, and save them to disk in <code class="docutils literal notranslate"><span class="pre">cache_dir</span></code>. This is
 useful for the <strong>first</strong> run on a new dataset cache.
 If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the dataset attempts to load precomputed valid indices
-from disk and skips the expensive scan.</p>
-</dd>
-<dt>cache_dir<span class="classifier">str, default=”./ai4mars_valid_indices”</span></dt><dd><p>Directory where per-split valid index files are stored
-(e.g. <code class="docutils literal notranslate"><span class="pre">valid_indices_train.npy</span></code>).</p>
-</dd>
-<dt>split_name<span class="classifier">str, default=”train”</span></dt><dd><p>Name of the split (<code class="docutils literal notranslate"><span class="pre">&quot;train&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;test&quot;</span></code>) used to build
-the cache file name.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>ds :</dt><dd><p>The underlying Hugging Face dataset split.</p>
-</dd>
-<dt>valid_indices<span class="classifier">list[int]</span></dt><dd><p>Indices of valid (non-corrupted) samples in <code class="docutils literal notranslate"><span class="pre">ds</span></code>.</p>
-</dd>
-<dt>image_transform :</dt><dd><p>Composed torchvision transform applied to images.</p>
-</dd>
-<dt>mask_resize :</dt><dd><p>torchvision transform used to resize label masks.</p>
-</dd>
-<dt>cache_path<span class="classifier">str</span></dt><dd><p>Path to the <code class="docutils literal notranslate"><span class="pre">.npy</span></code> file storing <code class="docutils literal notranslate"><span class="pre">valid_indices</span></code> for this split.</p>
+from disk and skips the expensive scan.</p></li>
+<li><p><strong>cache_dir</strong> (<em>str</em><em>, </em><em>default=&quot;./ai4mars_valid_indices&quot;</em>) – Directory where per-split valid index files are stored
+(e.g. <code class="docutils literal notranslate"><span class="pre">valid_indices_train.npy</span></code>).</p></li>
+<li><p><strong>split_name</strong> (<em>str</em><em>, </em><em>default=&quot;train&quot;</em>) – Name of the split (<code class="docutils literal notranslate"><span class="pre">&quot;train&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;test&quot;</span></code>) used to build
+the cache file name.</p></li>
+</ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset.ds">
+<span class="sig-name descname"><span class="pre">ds</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset.ds" title="Permalink to this definition">#</a></dt>
+<dd><p>The underlying Hugging Face dataset split.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset.valid_indices">
+<span class="sig-name descname"><span class="pre">valid_indices</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset.valid_indices" title="Permalink to this definition">#</a></dt>
+<dd><p>Indices of valid (non-corrupted) samples in <code class="docutils literal notranslate"><span class="pre">ds</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset.image_transform">
+<span class="sig-name descname"><span class="pre">image_transform</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset.image_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Composed torchvision transform applied to images.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset.mask_resize">
+<span class="sig-name descname"><span class="pre">mask_resize</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset.mask_resize" title="Permalink to this definition">#</a></dt>
+<dd><p>torchvision transform used to resize label masks.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset.cache_path">
+<span class="sig-name descname"><span class="pre">cache_path</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset.cache_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Path to the <code class="docutils literal notranslate"><span class="pre">.npy</span></code> file storing <code class="docutils literal notranslate"><span class="pre">valid_indices</span></code> for this split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -413,27 +440,52 @@ the cache file name.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.dataloader.</span></span><span class="sig-name descname"><span class="pre">DataLoaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Container for the three data splits used in training and evaluation.</p>
-<dl class="simple">
-<dt>train<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the training split.</p>
-</dd>
-<dt>val<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the validation split.</p>
-</dd>
-<dt>test<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the test split.</p>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.test">
-<span class="sig-name descname"><span class="pre">test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.test" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.train">
-<span class="sig-name descname"><span class="pre">train</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.train" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">train</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.train" title="Permalink to this definition">#</a></dt>
+<dd><p>Dataloader for the training split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.utils.data.DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.val">
-<span class="sig-name descname"><span class="pre">val</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.val" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">val</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.val" title="Permalink to this definition">#</a></dt>
+<dd><p>Dataloader for the validation split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.utils.data.DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.test">
+<span class="sig-name descname"><span class="pre">test</span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.test" title="Permalink to this definition">#</a></dt>
+<dd><p>Dataloader for the test split.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.utils.data.DataLoader</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#id0" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">train</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#id1" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">val</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#id2" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -452,52 +504,46 @@ the cache file name.</p>
 cache valid (non-corrupted) samples.</p></li>
 <li><p>Returns PyTorch dataloaders for each split.</p></li>
 </ul>
-<dl class="simple">
-<dt>batch_size<span class="classifier">int, default=4</span></dt><dd><p>Batch size used for all three dataloaders.</p>
-</dd>
-<dt>image_size<span class="classifier">int, default=256</span></dt><dd><p>Spatial resolution to which images and masks are resized (square).</p>
-</dd>
-<dt>num_workers<span class="classifier">int, default=4</span></dt><dd><p>Number of worker processes for data loading.</p>
-</dd>
-<dt>val_fraction<span class="classifier">float, default=0.1</span></dt><dd><p>Fraction of the (non-test) data to reserve for validation.</p>
-</dd>
-<dt>to_rgb<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert grayscale Navcam images to 3-channel RGB.
-If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale.</p>
-</dd>
-<dt>seed<span class="classifier">int, default=42</span></dt><dd><p>Random seed used for splitting into train/val/test.</p>
-</dd>
-<dt>cache_dir<span class="classifier">str or None, default=None</span></dt><dd><p>Directory used by Hugging Face to cache the raw dataset.
-If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default HF cache location is used.</p>
-</dd>
-<dt>max_train_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the training split to at most this many samples.
-Useful for quick debugging runs.</p>
-</dd>
-<dt>max_val_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the validation split to at most this many samples.</p>
-</dd>
-<dt>max_test_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the test split to at most this many samples.</p>
-</dd>
-<dt>use_local_disk_copy<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, save the downloaded HF dataset to <code class="docutils literal notranslate"><span class="pre">local_disk_path</span></code> and
-load from there on subsequent runs (avoids re-downloading and reprocessing).</p>
-</dd>
-<dt>local_disk_path<span class="classifier">str, default=”./data/ai4mars_hf”</span></dt><dd><p>Path to store or load the local disk copy of the raw HF dataset.</p>
-</dd>
-<dt>scan_spurious<span class="classifier">bool, default=False</span></dt><dd><p>Controls how spurious/corrupted samples are handled:</p>
-<ul class="simple">
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>default=4</em>) – Batch size used for all three dataloaders.</p></li>
+<li><p><strong>image_size</strong> (<em>int</em><em>, </em><em>default=256</em>) – Spatial resolution to which images and masks are resized (square).</p></li>
+<li><p><strong>num_workers</strong> (<em>int</em><em>, </em><em>default=4</em>) – Number of worker processes for data loading.</p></li>
+<li><p><strong>val_fraction</strong> (<em>float</em><em>, </em><em>default=0.1</em>) – Fraction of the (non-test) data to reserve for validation.</p></li>
+<li><p><strong>to_rgb</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert grayscale Navcam images to 3-channel RGB.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale.</p></li>
+<li><p><strong>seed</strong> (<em>int</em><em>, </em><em>default=42</em>) – Random seed used for splitting into train/val/test.</p></li>
+<li><p><strong>cache_dir</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – Directory used by Hugging Face to cache the raw dataset.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default HF cache location is used.</p></li>
+<li><p><strong>max_train_samples</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the training split to at most this many samples.
+Useful for quick debugging runs.</p></li>
+<li><p><strong>max_val_samples</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the validation split to at most this many samples.</p></li>
+<li><p><strong>max_test_samples</strong> (<em>int</em><em> or </em><em>None</em><em>, </em><em>default=None</em>) – If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the test split to at most this many samples.</p></li>
+<li><p><strong>use_local_disk_copy</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, save the downloaded HF dataset to <code class="docutils literal notranslate"><span class="pre">local_disk_path</span></code> and
+load from there on subsequent runs (avoids re-downloading and reprocessing).</p></li>
+<li><p><strong>local_disk_path</strong> (<em>str</em><em>, </em><em>default=&quot;./data/ai4mars_hf&quot;</em>) – Path to store or load the local disk copy of the raw HF dataset.</p></li>
+<li><p><strong>scan_spurious</strong> (<em>bool</em><em>, </em><em>default=False</em>) – <p>Controls how spurious/corrupted samples are handled:</p>
+<ul>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, each split is scanned on this run, and a list of valid
 indices is built and saved into <code class="docutils literal notranslate"><span class="pre">valid_indices_cache_dir</span></code>.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, we assume the scanning was already done, and valid
 indices are loaded from disk (if present), avoiding the expensive scan.</p></li>
 </ul>
-</dd>
-<dt>valid_indices_cache_dir<span class="classifier">str, default=”./ai4mars_valid_indices”</span></dt><dd><p>Directory where per-split valid index files (<code class="docutils literal notranslate"><span class="pre">.npy</span></code>) are stored and
+</p></li>
+<li><p><strong>valid_indices_cache_dir</strong> (<em>str</em><em>, </em><em>default=&quot;./ai4mars_valid_indices&quot;</em>) – Directory where per-split valid index files (<code class="docutils literal notranslate"><span class="pre">.npy</span></code>) are stored and
 loaded. Files are named like <code class="docutils literal notranslate"><span class="pre">valid_indices_train.npy</span></code>,
-<code class="docutils literal notranslate"><span class="pre">valid_indices_val.npy</span></code>, and <code class="docutils literal notranslate"><span class="pre">valid_indices_test.npy</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">valid_indices_val.npy</span></code>, and <code class="docutils literal notranslate"><span class="pre">valid_indices_test.npy</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dataclass bundle with <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">val</span></code>, and <code class="docutils literal notranslate"><span class="pre">test</span></code> PyTorch dataloaders.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#martian_terrain_segmentation.dataloader.DataLoaders" title="martian_terrain_segmentation.dataloader.DataLoaders">DataLoaders</a></p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>DataLoaders</dt><dd><p>A dataclass bundle with <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">val</span></code>, and <code class="docutils literal notranslate"><span class="pre">test</span></code> PyTorch dataloaders.</p>
-</dd>
-</dl>
+<p class="rubric">Examples</p>
 <p>Basic usage:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">loaders</span> <span class="o">=</span> <span class="n">create_ai4mars_dataloaders</span><span class="p">(</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
@@ -544,25 +590,30 @@ the gate computes:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}\psi = \sigma(\mathrm{Conv}( \mathrm{ReLU}(W_g g + W_x x)))\\\tilde{x} = \psi \odot x\end{aligned}\end{align} \]</div>
 <p>so that skip features can be suppressed when irrelevant.</p>
-<dl class="simple">
-<dt>F_g<span class="classifier">int</span></dt><dd><p>Channels of the decoder gating signal.</p>
-</dd>
-<dt>F_l<span class="classifier">int</span></dt><dd><p>Channels of the encoder skip feature map.</p>
-</dd>
-<dt>F_int<span class="classifier">int</span></dt><dd><p>Reduced intermediate dimensionality for gating.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>F_g</strong> (<em>int</em>) – Channels of the decoder gating signal.</p></li>
+<li><p><strong>F_l</strong> (<em>int</em>) – Channels of the encoder skip feature map.</p></li>
+<li><p><strong>F_int</strong> (<em>int</em>) – Reduced intermediate dimensionality for gating.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionGate.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionGate.forward" title="Permalink to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>g<span class="classifier">torch.Tensor</span></dt><dd><p>Decoder gating signal <code class="docutils literal notranslate"><span class="pre">[B,F_g,H_g,W_g]</span></code>.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>g</strong> (<em>torch.Tensor</em>) – Decoder gating signal <code class="docutils literal notranslate"><span class="pre">[B,F_g,H_g,W_g]</span></code>.</p></li>
+<li><p><strong>x</strong> (<em>torch.Tensor</em>) – Encoder skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p></li>
+</ul>
 </dd>
-<dt>x<span class="classifier">torch.Tensor</span></dt><dd><p>Encoder skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Attention-reweighted skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Attention-reweighted skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -578,14 +629,14 @@ the gate computes:</p>
 - 5 encoder + 5 decoder levels (deeper)
 - Attention gates on all skip connections
 - Wider feature maps (larger <code class="docutils literal notranslate"><span class="pre">base_channels</span></code>)</p>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Image channels.</p>
-</dd>
-<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes.</p>
-</dd>
-<dt>base_channels<span class="classifier">int</span></dt><dd><p>Width multiplier for encoder.</p>
-</dd>
-<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Bilinear vs transposed conv upsampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Image channels.</p></li>
+<li><p><strong>num_classes</strong> (<em>int</em>) – Number of segmentation classes.</p></li>
+<li><p><strong>base_channels</strong> (<em>int</em>) – Width multiplier for encoder.</p></li>
+<li><p><strong>bilinear</strong> (<em>bool</em>) – Bilinear vs transposed conv upsampling.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -610,10 +661,12 @@ the gate computes:</p>
 <div class="math notranslate nohighlight">
 \[x \mapsto \mathrm{ReLU}(\mathrm{BN}(\mathrm{Conv}(x)))\]</div>
 <p>applied twice.</p>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Number of input channels.</p>
-</dd>
-<dt>out_channels<span class="classifier">int</span></dt><dd><p>Number of feature channels in the output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Number of input channels.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Number of feature channels in the output.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -633,10 +686,12 @@ the gate computes:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">MaxPool2d(2)</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">DoubleConv(in_channels,</span> <span class="pre">out_channels)</span></code></p></li>
 </ul>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Channels of input feature map.</p>
-</dd>
-<dt>out_channels<span class="classifier">int</span></dt><dd><p>Channels after convolution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Channels of input feature map.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Channels after convolution.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -660,10 +715,12 @@ registered hooks while the latter silently ignores them.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">OutConv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.OutConv" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Final 1×1 convolution producing class logits.</p>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Channels of input feature map.</p>
-</dd>
-<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Channels of input feature map.</p></li>
+<li><p><strong>num_classes</strong> (<em>int</em>) – Number of segmentation classes.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -680,14 +737,14 @@ registered hooks while the latter silently ignores them.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Lightweight U-Net used as the <strong>student</strong> in distillation.</p>
 <p>Architecture: 4 down → 4 up with skip connections.</p>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Input channels (<code class="docutils literal notranslate"><span class="pre">1</span></code> for grayscale Navcam).</p>
-</dd>
-<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes (AI4Mars uses <code class="docutils literal notranslate"><span class="pre">4</span></code>).</p>
-</dd>
-<dt>base_channels<span class="classifier">int</span></dt><dd><p>Width of first convolution layer. Determines model size.</p>
-</dd>
-<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear upsampling (recommended).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Input channels (<code class="docutils literal notranslate"><span class="pre">1</span></code> for grayscale Navcam).</p></li>
+<li><p><strong>num_classes</strong> (<em>int</em>) – Number of segmentation classes (AI4Mars uses <code class="docutils literal notranslate"><span class="pre">4</span></code>).</p></li>
+<li><p><strong>base_channels</strong> (<em>int</em>) – Width of first convolution layer. Determines model size.</p></li>
+<li><p><strong>bilinear</strong> (<em>bool</em>) – Whether to use bilinear upsampling (recommended).</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -714,25 +771,30 @@ registered hooks while the latter silently ignores them.</p>
 - bilinear upsampling, or
 - transposed convolution.</p>
 <p>Followed by <code class="docutils literal notranslate"><span class="pre">DoubleConv</span></code>.</p>
-<dl class="simple">
-<dt>in_channels<span class="classifier">int</span></dt><dd><p>Total number of channels after concatenation of skip + upsampled features.</p>
-</dd>
-<dt>out_channels<span class="classifier">int</span></dt><dd><p>Output feature channels.</p>
-</dd>
-<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear interpolation (preferred for lightweight model).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>in_channels</strong> (<em>int</em>) – Total number of channels after concatenation of skip + upsampled features.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Output feature channels.</p></li>
+<li><p><strong>bilinear</strong> (<em>bool</em>) – Whether to use bilinear interpolation (preferred for lightweight model).</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="martian_terrain_segmentation.models.Up.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.Up.forward" title="Permalink to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>x_up<span class="classifier">torch.Tensor</span></dt><dd><p>Decoder feature map (coarse).</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_up</strong> (<em>torch.Tensor</em>) – Decoder feature map (coarse).</p></li>
+<li><p><strong>x_skip</strong> (<em>torch.Tensor</em>) – Encoder skip feature map (fine).</p></li>
+</ul>
 </dd>
-<dt>x_skip<span class="classifier">torch.Tensor</span></dt><dd><p>Encoder skip feature map (fine).</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Feature map after concatenation + convolution.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Feature map after concatenation + convolution.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -744,14 +806,14 @@ registered hooks while the latter silently ignores them.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">UpAttn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.UpAttn" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
 <p>Upsampling block with <strong>attention-gated skip connections</strong>.</p>
-<dl class="simple">
-<dt>skip_channels<span class="classifier">int</span></dt><dd><p>Channels of encoder skip features.</p>
-</dd>
-<dt>up_channels<span class="classifier">int</span></dt><dd><p>Channels of decoder feature map.</p>
-</dd>
-<dt>out_channels<span class="classifier">int</span></dt><dd><p>Channels after concatenation + DoubleConv.</p>
-</dd>
-<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear interpolation instead of transposed conv.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_channels</strong> (<em>int</em>) – Channels of encoder skip features.</p></li>
+<li><p><strong>up_channels</strong> (<em>int</em>) – Channels of decoder feature map.</p></li>
+<li><p><strong>out_channels</strong> (<em>int</em>) – Channels after concatenation + DoubleConv.</p></li>
+<li><p><strong>bilinear</strong> (<em>bool</em>) – Whether to use bilinear interpolation instead of transposed conv.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -812,19 +874,21 @@ temperature <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
 </ul>
 <p>The KL term is computed per pixel, masked by <code class="docutils literal notranslate"><span class="pre">ignore_index</span></code>, and
 averaged over all valid pixels.</p>
-<dl class="simple">
-<dt>ignore_index<span class="classifier">int</span></dt><dd><p>Label value in the target mask that should be ignored when
-computing both the CE and KD terms (e.g. unlabeled/void pixels).</p>
-</dd>
-<dt>alpha<span class="classifier">float, default=0.5</span></dt><dd><p>Trade-off parameter between the supervised CE loss and the
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ignore_index</strong> (<em>int</em>) – Label value in the target mask that should be ignored when
+computing both the CE and KD terms (e.g. unlabeled/void pixels).</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Trade-off parameter between the supervised CE loss and the
 distillation (KL) loss. <code class="docutils literal notranslate"><span class="pre">alpha=1.0</span></code> means pure CE,
-<code class="docutils literal notranslate"><span class="pre">alpha=0.0</span></code> means pure distillation.</p>
-</dd>
-<dt>T<span class="classifier">float, default=2.0</span></dt><dd><p>Temperature used to soften the teacher and student logits in
+<code class="docutils literal notranslate"><span class="pre">alpha=0.0</span></code> means pure distillation.</p></li>
+<li><p><strong>T</strong> (<em>float</em><em>, </em><em>default=2.0</em>) – Temperature used to soften the teacher and student logits in
 the KD term. Larger values produce softer probability
-distributions and typically richer distillation signals.</p>
+distributions and typically richer distillation signals.</p></li>
+</ul>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kd_loss_fn</span> <span class="o">=</span> <span class="n">SegmentationKDLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
 
 <span class="c1"># student_logits, teacher_logits: [B, C, H, W]</span>
@@ -836,21 +900,25 @@ distributions and typically richer distillation signals.</p>
 <dt class="sig sig-object py" id="martian_terrain_segmentation.distillation.SegmentationKDLoss.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student_logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.distillation.SegmentationKDLoss.forward" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the combined CE + KD loss for segmentation.</p>
-<dl class="simple">
-<dt>student_logits<span class="classifier">torch.Tensor</span></dt><dd><p>Logits from the student network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
-</dd>
-<dt>teacher_logits<span class="classifier">torch.Tensor</span></dt><dd><p>Logits from the teacher network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>student_logits</strong> (<em>torch.Tensor</em>) – Logits from the student network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p></li>
+<li><p><strong>teacher_logits</strong> (<em>torch.Tensor</em>) – Logits from the teacher network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.
 These are treated as fixed targets (no gradient should flow
-into the teacher).</p>
+into the teacher).</p></li>
+<li><p><strong>targets</strong> (<em>torch.Tensor</em>) – Ground-truth segmentation mask of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code> with
+integer class indices in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">C-1]</span></code> or <code class="docutils literal notranslate"><span class="pre">ignore_index</span></code>.</p></li>
+</ul>
 </dd>
-<dt>targets<span class="classifier">torch.Tensor</span></dt><dd><p>Ground-truth segmentation mask of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code> with
-integer class indices in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">C-1]</span></code> or <code class="docutils literal notranslate"><span class="pre">ignore_index</span></code>.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scalar tensor containing the total distillation loss.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Scalar tensor containing the total distillation loss.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <p>The returned loss is:</p>
 <div class="math notranslate nohighlight">
 \[L = \alpha \cdot \mathrm{CE}(y, s)
@@ -890,30 +958,29 @@ model that exposes a CAM target layer and a final 1×1 classifier.</p>
 </li>
 </ul>
 <p>Then perform PCA over the set <span class="math notranslate nohighlight">\(\{\psi_k(x_i)\}\)</span> for each class.</p>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Trained segmentation network.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Trained segmentation network.</p></li>
+<li><p><strong>dataset</strong> – Dataset providing <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code> samples.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – Device for model inference.</p></li>
+<li><p><strong>class_ids</strong> (<em>sequence of int</em>) – Class indices to process.</p></li>
+<li><p><strong>max_samples_per_class</strong> (<em>int</em>) – Maximum number of samples to use per class.</p></li>
+<li><p><strong>n_components</strong> (<em>int</em>) – Number of PCA components to retain.</p></li>
+<li><p><strong>min_per_class</strong> (<em>int</em>) – Minimum samples required to run PCA.</p></li>
+</ul>
 </dd>
-<dt>dataset :</dt><dd><p>Dataset providing <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code> samples.</p>
-</dd>
-<dt>device<span class="classifier">torch.device</span></dt><dd><p>Device for model inference.</p>
-</dd>
-<dt>class_ids<span class="classifier">sequence of int</span></dt><dd><p>Class indices to process.</p>
-</dd>
-<dt>max_samples_per_class<span class="classifier">int</span></dt><dd><p>Maximum number of samples to use per class.</p>
-</dd>
-<dt>n_components<span class="classifier">int</span></dt><dd><p>Number of PCA components to retain.</p>
-</dd>
-<dt>min_per_class<span class="classifier">int</span></dt><dd><p>Minimum samples required to run PCA.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>dict</dt><dd><p>Mapping <code class="docutils literal notranslate"><span class="pre">class_id</span> <span class="pre">-&gt;</span> <span class="pre">PCA</span> <span class="pre">results</span></code> with keys:
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Mapping <code class="docutils literal notranslate"><span class="pre">class_id</span> <span class="pre">-&gt;</span> <span class="pre">PCA</span> <span class="pre">results</span></code> with keys:
 - <code class="docutils literal notranslate"><span class="pre">mean_psi</span></code> : <code class="docutils literal notranslate"><span class="pre">[D]</span></code>
 - <code class="docutils literal notranslate"><span class="pre">eigvecs</span></code> : <code class="docutils literal notranslate"><span class="pre">[L,D]</span></code>
 - <code class="docutils literal notranslate"><span class="pre">eigvals</span></code> : <code class="docutils literal notranslate"><span class="pre">[L]</span></code>
 - <code class="docutils literal notranslate"><span class="pre">alphas</span></code>  : <code class="docutils literal notranslate"><span class="pre">[N,L]</span></code> projection scores
 - <code class="docutils literal notranslate"><span class="pre">indices</span></code> : dataset indices used
 - <code class="docutils literal notranslate"><span class="pre">psi</span></code>     : raw psi vectors <code class="docutils literal notranslate"><span class="pre">[N,D]</span></code></p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -927,16 +994,15 @@ model that exposes a CAM target layer and a final 1×1 classifier.</p>
 <li><p>Grad-CAM</p></li>
 <li><p>Integrated Gradients</p></li>
 </ul>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Trained segmentation model.</p>
-</dd>
-<dt>dataset :</dt><dd><p>Dataset providing <code class="docutils literal notranslate"><span class="pre">(img,</span> <span class="pre">mask)</span></code>.</p>
-</dd>
-<dt>device<span class="classifier">torch.device</span></dt><dd><p>Compute device.</p>
-</dd>
-<dt>num_examples_per_class<span class="classifier">int</span></dt><dd><p>Number of examples per class.</p>
-</dd>
-<dt>ig_steps<span class="classifier">int</span></dt><dd><p>IG integration steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Trained segmentation model.</p></li>
+<li><p><strong>dataset</strong> – Dataset providing <code class="docutils literal notranslate"><span class="pre">(img,</span> <span class="pre">mask)</span></code>.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – Compute device.</p></li>
+<li><p><strong>num_examples_per_class</strong> (<em>int</em>) – Number of examples per class.</p></li>
+<li><p><strong>ig_steps</strong> (<em>int</em>) – IG integration steps.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -960,18 +1026,20 @@ into a target convolutional layer:</p>
 \frac{\partial y_k}{\partial A_f(i,j)}\)</span> are channel-wise weights</p></li>
 <li><p><span class="math notranslate nohighlight">\(y_k\)</span> is the class score (here averaged over spatial pixels)</p></li>
 </ul>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model outputting logits of shape <code class="docutils literal notranslate"><span class="pre">[B,C,H,W]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Segmentation model outputting logits of shape <code class="docutils literal notranslate"><span class="pre">[B,C,H,W]</span></code>.</p></li>
+<li><p><strong>input_tensor</strong> (<em>torch.Tensor</em>) – Single input image of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Gradients must be enabled.</p></li>
+<li><p><strong>target_class</strong> (<em>int</em>) – Class index <code class="docutils literal notranslate"><span class="pre">0..num_classes-1</span></code> for which to compute Grad-CAM.</p></li>
+<li><p><strong>target_layer</strong> (<em>nn.Module</em>) – Layer to hook for feature maps and gradients (e.g. <code class="docutils literal notranslate"><span class="pre">model.get_cam_layer()</span></code>).</p></li>
+</ul>
 </dd>
-<dt>input_tensor<span class="classifier">torch.Tensor</span></dt><dd><p>Single input image of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Gradients must be enabled.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Heatmap of shape <code class="docutils literal notranslate"><span class="pre">[1,1,H,W]</span></code> normalized to <code class="docutils literal notranslate"><span class="pre">[0,1]</span></code>.</p>
 </dd>
-<dt>target_class<span class="classifier">int</span></dt><dd><p>Class index <code class="docutils literal notranslate"><span class="pre">0..num_classes-1</span></code> for which to compute Grad-CAM.</p>
-</dd>
-<dt>target_layer<span class="classifier">nn.Module</span></dt><dd><p>Layer to hook for feature maps and gradients (e.g. <code class="docutils literal notranslate"><span class="pre">model.get_cam_layer()</span></code>).</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Heatmap of shape <code class="docutils literal notranslate"><span class="pre">[1,1,H,W]</span></code> normalized to <code class="docutils literal notranslate"><span class="pre">[0,1]</span></code>.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -990,20 +1058,21 @@ into a target convolutional layer:</p>
     {\partial x}
   \, d\alpha,\]</div>
 <p>where <span class="math notranslate nohighlight">\(x_0\)</span> is a baseline (typically zeros).</p>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Segmentation model.</p></li>
+<li><p><strong>input_tensor</strong> (<em>torch.Tensor</em>) – Input image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p></li>
+<li><p><strong>target_class</strong> (<em>int</em>) – Class index whose score to differentiate.</p></li>
+<li><p><strong>baseline</strong> (<em>torch.Tensor</em><em>, </em><em>optional</em>) – Baseline image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Default: zeros.</p></li>
+<li><p><strong>steps</strong> (<em>int</em>) – Number of steps for Riemann sum approximation.</p></li>
+</ul>
 </dd>
-<dt>input_tensor<span class="classifier">torch.Tensor</span></dt><dd><p>Input image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Attribution map of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p>
 </dd>
-<dt>target_class<span class="classifier">int</span></dt><dd><p>Class index whose score to differentiate.</p>
-</dd>
-<dt>baseline<span class="classifier">torch.Tensor, optional</span></dt><dd><p>Baseline image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Default: zeros.</p>
-</dd>
-<dt>steps<span class="classifier">int</span></dt><dd><p>Number of steps for Riemann sum approximation.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Attribution map of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1012,12 +1081,15 @@ into a target convolutional layer:</p>
 <dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.normalize_map">
 <span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">normalize_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.explainability.normalize_map" title="Permalink to this definition">#</a></dt>
 <dd><p>Normalize tensor linearly to the <code class="docutils literal notranslate"><span class="pre">[0,1]</span></code> range.</p>
-<dl class="simple">
-<dt>t<span class="classifier">torch.Tensor</span></dt><dd><p>Input tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>torch.Tensor</em>) – Input tensor.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Normalized tensor.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized tensor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1030,16 +1102,20 @@ component for a given class.</p>
 <p>For PCA component <span class="math notranslate nohighlight">\(v_\ell\)</span>, the ranking uses:</p>
 <div class="math notranslate nohighlight">
 \[\alpha_\ell^{(k)}(x_i)\]</div>
-<dl class="simple">
-<dt>neural_pca_results<span class="classifier">dict</span></dt><dd><p>Output of <a class="reference internal" href="#martian_terrain_segmentation.explainability.compute_class_neural_pca_features" title="martian_terrain_segmentation.explainability.compute_class_neural_pca_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_class_neural_pca_features()</span></code></a>.</p>
-</dd>
-<dt>dataset :</dt><dd><p>Dataset that returns <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code>.</p>
-</dd>
-<dt>class_id<span class="classifier">int</span></dt><dd><p>Class index to visualize.</p>
-</dd>
-<dt>component_idx<span class="classifier">int</span></dt><dd><p>PCA component index (0-based).</p>
-</dd>
-<dt>top_k<span class="classifier">int</span></dt><dd><p>Number of top activating images to display.</p>
+<p>There is also a small easter egg:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">class_id</span> <span class="pre">==</span> <span class="pre">-1</span></code>, a special “astronaut” NPCA image is shown instead
+of using the neural PCA results.</p></li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>neural_pca_results</strong> (<em>dict</em>) – Output of <a class="reference internal" href="#martian_terrain_segmentation.explainability.compute_class_neural_pca_features" title="martian_terrain_segmentation.explainability.compute_class_neural_pca_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_class_neural_pca_features()</span></code></a>.</p></li>
+<li><p><strong>dataset</strong> – Dataset that returns <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code>.</p></li>
+<li><p><strong>class_id</strong> (<em>int</em>) – Class index to visualize. Use <code class="docutils literal notranslate"><span class="pre">-1</span></code> for the astronaut easter egg.</p></li>
+<li><p><strong>component_idx</strong> (<em>int</em>) – PCA component index (0-based).</p></li>
+<li><p><strong>top_k</strong> (<em>int</em>) – Number of top activating images to display.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1047,12 +1123,12 @@ component for a given class.</p>
 <span class="target" id="module-martian_terrain_segmentation.optimizers"></span><p>Optimizer helpers for model training.</p>
 <p>This module provides:</p>
 <ol class="arabic simple">
-<li><p><strong>create_optimizer</strong>  
+<li><p><strong>create_optimizer</strong>
 Smart optimizer selection with priority:
 - Muon (if installed and explicitly enabled),
 - NAdam (PyTorch’s NAdamW-like implementation),
 - AdamW as a safe fallback.</p></li>
-<li><p><strong>create_cosine_scheduler_with_warmup</strong>  
+<li><p><strong>create_cosine_scheduler_with_warmup</strong>
 A cosine–annealing learning rate schedule with linear warmup,
 mathematically equivalent to the Hugging Face transformers scheduler.</p></li>
 </ol>
@@ -1075,21 +1151,24 @@ the schedule is:</p>
 <blockquote>
 <div><p>(<code class="docutils literal notranslate"><span class="pre">0.5</span></code> = standard: decay → 0 once)</p>
 </div></blockquote>
-<dl class="simple">
-<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Optimizer whose learning rate will be scheduled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer</em>) – Optimizer whose learning rate will be scheduled.</p></li>
+<li><p><strong>num_warmup_steps</strong> (<em>int</em>) – Number of linear warmup steps, typically 5–10% of total training steps.</p></li>
+<li><p><strong>num_training_steps</strong> (<em>int</em>) – Total number of steps (<code class="docutils literal notranslate"><span class="pre">epochs</span> <span class="pre">*</span> <span class="pre">steps_per_epoch</span></code>).</p></li>
+<li><p><strong>num_cycles</strong> (<em>float</em><em>, </em><em>optional</em>) – Number of cosine cycles.
+Default <code class="docutils literal notranslate"><span class="pre">0.5</span></code> = half-cycle (decay to 0 exactly once).</p></li>
+</ul>
 </dd>
-<dt>num_warmup_steps<span class="classifier">int</span></dt><dd><p>Number of linear warmup steps, typically 5–10% of total training steps.</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Scheduler that updates the LR dynamically during training.</p>
 </dd>
-<dt>num_training_steps<span class="classifier">int</span></dt><dd><p>Total number of steps (<code class="docutils literal notranslate"><span class="pre">epochs</span> <span class="pre">*</span> <span class="pre">steps_per_epoch</span></code>).</p>
-</dd>
-<dt>num_cycles<span class="classifier">float, optional</span></dt><dd><p>Number of cosine cycles.  
-Default <code class="docutils literal notranslate"><span class="pre">0.5</span></code> = half-cycle (decay to 0 exactly once).</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.optim.lr_scheduler.LambdaLR</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>torch.optim.lr_scheduler.LambdaLR</dt><dd><p>Scheduler that updates the LR dynamically during training.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>This implementation is mathematically equivalent to
 <code class="docutils literal notranslate"><span class="pre">transformers.get_cosine_schedule_with_warmup</span></code>.</p></li>
@@ -1102,27 +1181,30 @@ Default <code class="docutils literal notranslate"><span class="pre">0.5</span><
 <span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.optimizers.</span></span><span class="sig-name descname"><span class="pre">create_optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_muon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optimizer</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.optimizers.create_optimizer" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an optimizer for a given model with prioritized fallback logic.</p>
 <ol class="arabic simple">
-<li><p><strong>Muon</strong> (if installed and <code class="docutils literal notranslate"><span class="pre">use_muon=True</span></code>)  
+<li><p><strong>Muon</strong> (if installed and <code class="docutils literal notranslate"><span class="pre">use_muon=True</span></code>)
 Muon is a second-order optimizer approximating natural gradient steps.</p></li>
-<li><p><strong>NAdam</strong>  
+<li><p><strong>NAdam</strong>
 PyTorch’s NAdam implementation (NadamW-style), supporting weight decay.</p></li>
-<li><p><strong>AdamW</strong>  
+<li><p><strong>AdamW</strong>
 Stable, widely used, standard fallback.</p></li>
 </ol>
-<dl class="simple">
-<dt>model<span class="classifier">torch.nn.Module</span></dt><dd><p>Model whose trainable parameters will be optimized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – Model whose trainable parameters will be optimized.</p></li>
+<li><p><strong>lr</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate (default: <code class="docutils literal notranslate"><span class="pre">3e-4</span></code>).</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em><em>, </em><em>optional</em>) – Weight decay coefficient (default: <code class="docutils literal notranslate"><span class="pre">1e-2</span></code>).</p></li>
+<li><p><strong>use_muon</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the user prefers to use Muon if available.</p></li>
+</ul>
 </dd>
-<dt>lr<span class="classifier">float, optional</span></dt><dd><p>Learning rate (default: <code class="docutils literal notranslate"><span class="pre">3e-4</span></code>).</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Constructed optimizer instance.</p>
 </dd>
-<dt>weight_decay<span class="classifier">float, optional</span></dt><dd><p>Weight decay coefficient (default: <code class="docutils literal notranslate"><span class="pre">1e-2</span></code>).</p>
-</dd>
-<dt>use_muon<span class="classifier">bool, optional</span></dt><dd><p>Whether the user prefers to use Muon if available.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.optim.Optimizer</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt>torch.optim.Optimizer</dt><dd><p>Constructed optimizer instance.</p>
-</dd>
-</dl>
+<p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Only parameters with <code class="docutils literal notranslate"><span class="pre">requires_grad=True</span></code> are passed to the optimizer.</p></li>
 <li><p>If Muon is requested but not installed, AdamW is used and a warning printed.</p></li>
@@ -1165,25 +1247,27 @@ Stable, widely used, standard fallback.</p></li>
 <li><p>Does <strong>not</strong> update model, optimizer, or scheduler.</p></li>
 <li><p>Still reports mean loss, pixel accuracy, and mIoU.</p></li>
 </ul>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model to evaluate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Segmentation model to evaluate.</p></li>
+<li><p><strong>dataloader</strong> (<em>torch.utils.data.DataLoader</em>) – Validation or test data loader.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – Evaluation device.</p></li>
+<li><p><strong>num_classes</strong> (<em>int</em>) – Number of semantic classes.</p></li>
+<li><p><strong>use_tqdm</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, show a tqdm progress bar over batches.</p></li>
+</ul>
 </dd>
-<dt>dataloader<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Validation or test data loader.</p>
-</dd>
-<dt>device<span class="classifier">torch.device</span></dt><dd><p>Evaluation device.</p>
-</dd>
-<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of semantic classes.</p>
-</dd>
-<dt>use_tqdm<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, show a tqdm progress bar over batches.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Dict[str, float]</dt><dd><p>Dictionary with keys:</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary with keys:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;loss&quot;</span></code> : mean loss,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;pixel_acc&quot;</span></code> : mean pixel accuracy,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;miou&quot;</span></code> : mean IoU.</p></li>
 </ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1192,27 +1276,30 @@ Stable, widely used, standard fallback.</p></li>
 <dt class="sig sig-object py" id="martian_terrain_segmentation.train_utils.load_checkpoint">
 <span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.train_utils.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Optimizer</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">_LRScheduler</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#martian_terrain_segmentation.train_utils.load_checkpoint" title="Permalink to this definition">#</a></dt>
 <dd><p>Load a training checkpoint from disk and restore model/optimizer/scheduler.</p>
-<dl class="simple">
-<dt>path<span class="classifier">str</span></dt><dd><p>Path to the checkpoint file (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – Path to the checkpoint file (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p></li>
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Model into which <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code> will be loaded.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer</em><em>, </em><em>optional</em>) – Optimizer to restore from <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code> (if present).</p></li>
+<li><p><strong>scheduler</strong> (<em>torch.optim.lr_scheduler._LRScheduler</em><em>, </em><em>optional</em>) – Scheduler to restore from <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code> (if present).</p></li>
+<li><p><strong>map_location</strong> (<em>str</em><em> or </em><em>torch.device</em><em>, </em><em>optional</em>) – Device mapping for loaded tensors, passed directly to <code class="docutils literal notranslate"><span class="pre">torch.load</span></code>.</p></li>
+</ul>
 </dd>
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Model into which <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code> will be loaded.</p>
-</dd>
-<dt>optimizer<span class="classifier">torch.optim.Optimizer, optional</span></dt><dd><p>Optimizer to restore from <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code> (if present).</p>
-</dd>
-<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Scheduler to restore from <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code> (if present).</p>
-</dd>
-<dt>map_location<span class="classifier">str or torch.device, optional</span></dt><dd><p>Device mapping for loaded tensors, passed directly to <code class="docutils literal notranslate"><span class="pre">torch.load</span></code>.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Dict[str, Any]</dt><dd><p>Dictionary with any extra information stored in the checkpoint, with keys:</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary with any extra information stored in the checkpoint, with keys:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;epoch&quot;</span></code> : int or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;metrics&quot;</span></code> : dict or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;extra&quot;</span></code> : dict or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, Any]</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
 <ul class="simple">
 <li><p>Missing optimizer or scheduler states are silently ignored.</p></li>
 <li><p>This function does <strong>not</strong> perform any strict version checking.</p></li>
@@ -1232,23 +1319,22 @@ Stable, widely used, standard fallback.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;metrics&quot;</span></code> (if provided)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;extra&quot;</span></code> (any additional user metadata)</p></li>
 </ul>
-<dl class="simple">
-<dt>path<span class="classifier">str</span></dt><dd><p>File path to save to (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – File path to save to (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p></li>
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Model whose <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code>.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer</em><em>, </em><em>optional</em>) – Optimizer whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code>.</p></li>
+<li><p><strong>scheduler</strong> (<em>torch.optim.lr_scheduler._LRScheduler</em><em>, </em><em>optional</em>) – Scheduler whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code>.</p></li>
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Epoch index at the time of saving.</p></li>
+<li><p><strong>metrics</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Dictionary of scalar metrics (e.g. best validation mIoU).</p></li>
+<li><p><strong>extra</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – Arbitrary additional metadata to store.</p></li>
+</ul>
 </dd>
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Model whose <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code>.</p>
-</dd>
-<dt>optimizer<span class="classifier">torch.optim.Optimizer, optional</span></dt><dd><p>Optimizer whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code>.</p>
-</dd>
-<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Scheduler whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code>.</p>
-</dd>
-<dt>epoch<span class="classifier">int, optional</span></dt><dd><p>Epoch index at the time of saving.</p>
-</dd>
-<dt>metrics<span class="classifier">Dict[str, float], optional</span></dt><dd><p>Dictionary of scalar metrics (e.g. best validation mIoU).</p>
-</dd>
-<dt>extra<span class="classifier">Dict[str, Any], optional</span></dt><dd><p>Arbitrary additional metadata to store.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
-<p>None</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1261,39 +1347,35 @@ Stable, widely used, standard fallback.</p></li>
 <li><p>A per-step LR scheduler (e.g. cosine with warmup).</p></li>
 <li><p>Optional tqdm progress bars.</p></li>
 </ul>
-<dl class="simple">
-<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model producing logits of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>nn.Module</em>) – Segmentation model producing logits of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p></li>
+<li><p><strong>dataloader</strong> (<em>torch.utils.data.DataLoader</em>) – Training data loader yielding <code class="docutils literal notranslate"><span class="pre">(images,</span> <span class="pre">masks)</span></code> batches.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Optimizer</em>) – Optimizer instance (e.g. Muon, NAdam, AdamW).</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – Target device (e.g. <code class="docutils literal notranslate"><span class="pre">torch.device(&quot;cuda&quot;)</span></code>).</p></li>
+<li><p><strong>num_classes</strong> (<em>int</em>) – Number of semantic classes (for mIoU computation).</p></li>
+<li><p><strong>loss_fn</strong> (<em>nn.Module</em><em>, </em><em>optional</em>) – Loss function. Defaults to <code class="docutils literal notranslate"><span class="pre">nn.CrossEntropyLoss</span></code> with
+<code class="docutils literal notranslate"><span class="pre">ignore_index=AI4MARS_IGNORE_INDEX</span></code>.</p></li>
+<li><p><strong>use_amp</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, run the forward/backward pass in mixed precision.</p></li>
+<li><p><strong>use_tqdm</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, wrap the dataloader with a tqdm progress bar.</p></li>
+<li><p><strong>epoch</strong> (<em>int</em><em>, </em><em>optional</em>) – Current epoch index (1-based), used only for labeling tqdm.</p></li>
+<li><p><strong>num_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Total number of epochs, used only for labeling tqdm.</p></li>
+<li><p><strong>scheduler</strong> (<em>torch.optim.lr_scheduler._LRScheduler</em><em>, </em><em>optional</em>) – Optional per-step LR scheduler; <code class="docutils literal notranslate"><span class="pre">scheduler.step()</span></code> is called once
+per batch.</p></li>
+</ul>
 </dd>
-<dt>dataloader<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Training data loader yielding <code class="docutils literal notranslate"><span class="pre">(images,</span> <span class="pre">masks)</span></code> batches.</p>
-</dd>
-<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Optimizer instance (e.g. Muon, NAdam, AdamW).</p>
-</dd>
-<dt>device<span class="classifier">torch.device</span></dt><dd><p>Target device (e.g. <code class="docutils literal notranslate"><span class="pre">torch.device(&quot;cuda&quot;)</span></code>).</p>
-</dd>
-<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of semantic classes (for mIoU computation).</p>
-</dd>
-<dt>loss_fn<span class="classifier">nn.Module, optional</span></dt><dd><p>Loss function. Defaults to <code class="docutils literal notranslate"><span class="pre">nn.CrossEntropyLoss</span></code> with
-<code class="docutils literal notranslate"><span class="pre">ignore_index=AI4MARS_IGNORE_INDEX</span></code>.</p>
-</dd>
-<dt>use_amp<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, run the forward/backward pass in mixed precision.</p>
-</dd>
-<dt>use_tqdm<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, wrap the dataloader with a tqdm progress bar.</p>
-</dd>
-<dt>epoch<span class="classifier">int, optional</span></dt><dd><p>Current epoch index (1-based), used only for labeling tqdm.</p>
-</dd>
-<dt>num_epochs<span class="classifier">int, optional</span></dt><dd><p>Total number of epochs, used only for labeling tqdm.</p>
-</dd>
-<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Optional per-step LR scheduler; <code class="docutils literal notranslate"><span class="pre">scheduler.step()</span></code> is called once
-per batch.</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt>Dict[str, float]</dt><dd><p>Dictionary with average metrics over the epoch:</p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>Dictionary with average metrics over the epoch:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;loss&quot;</span></code> : mean training loss</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;pixel_acc&quot;</span></code> : mean pixel accuracy</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;miou&quot;</span></code> : mean IoU</p></li>
 </ul>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1329,14 +1411,17 @@ return per-pixel uncertainty maps of shape <code class="docutils literal notrans
 <p>If the model is very confident (e.g. <span class="math notranslate nohighlight">\(p_{\max} \approx 1\)</span>),
 then <span class="math notranslate nohighlight">\(u \approx 0\)</span>. If the model is unsure (probabilities are
 more uniform), <span class="math notranslate nohighlight">\(p_{\max}\)</span> is lower and <span class="math notranslate nohighlight">\(u\)</span> increases.</p>
-<dl class="simple">
-<dt>logits<span class="classifier">torch.Tensor</span></dt><dd><p>Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logits</strong> (<em>torch.Tensor</em>) – Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Uncertainty scores of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, typically in the
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Uncertainty scores of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, typically in the
 range <span class="math notranslate nohighlight">\([0, 1]\)</span>, where larger values indicate higher
 uncertainty.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1350,13 +1435,16 @@ uncertainty.</p>
 <div class="math notranslate nohighlight">
 \[H(p) = -\sum_{c=1}^C p_c \log p_c\]</div>
 <p>Higher values indicate more uncertainty (more “spread out” distribution).</p>
-<dl class="simple">
-<dt>logits<span class="classifier">torch.Tensor</span></dt><dd><p>Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logits</strong> (<em>torch.Tensor</em>) – Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
 </dd>
-</dl>
-<dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Entropy map of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, where larger values
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Entropy map of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, where larger values
 correspond to more uncertain predictions.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
