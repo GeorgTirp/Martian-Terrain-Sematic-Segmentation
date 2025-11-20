@@ -11,9 +11,7 @@ env/
 .ipynb_checkpoints/
 
 # Jupyter Book build
-docs/_build/
 .jupyter_cache/
-.jupyter_book/
 
 docs/data/
 # Outputs / artifacts
