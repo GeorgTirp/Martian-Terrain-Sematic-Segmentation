@@ -1,5 +1,37 @@
-/data
-/outputs
-/checkpoints
-/__pycache__
-*.pyc
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Jupyter Book build
+docs/_build/
+.jupyter_cache/
+.jupyter_book/
+
+docs/data/
+# Outputs / artifacts
+outputs/
+data/
+checkpoints/
+runs/
+logs/
+*.pt
+*.pth
+*.ckpt
+*.npz
+*.npy
+# Images
+*.jpg
+*.png
+
+# Editor/system noise
+.DS_Store
+.idea/
+.vscode/
