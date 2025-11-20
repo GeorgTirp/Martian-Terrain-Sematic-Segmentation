@@ -22,6 +22,7 @@ import torch.nn.functional as F
 from torch import nn
 from matplotlib import pyplot as plt
 from PIL import Image
+from pathlib import Path
 
 
 # ---------------------------------------------------------
@@ -403,6 +404,11 @@ def show_top_neural_pca_images_for_class(
     .. math::
         \alpha_\ell^{(k)}(x_i)
 
+    There is also a small easter egg:
+
+    - If ``class_id == -1``, a special "astronaut" NPCA image is shown instead
+      of using the neural PCA results.
+
     Parameters
     ----------
     neural_pca_results : dict
@@ -410,7 +416,7 @@ def show_top_neural_pca_images_for_class(
     dataset :
         Dataset that returns ``(image, mask)``.
     class_id : int
-        Class index to visualize.
+        Class index to visualize. Use ``-1`` for the astronaut easter egg.
     component_idx : int
         PCA component index (0-based).
     top_k : int
@@ -418,6 +424,33 @@ def show_top_neural_pca_images_for_class(
     """
     AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock"]
 
+    # -----------------------------------------------------
+    # Easter egg: fake "astronaut" NPCA with class_id == -1
+    # -----------------------------------------------------
+    if class_id == -1:
+        print("\nClass 'astronaut' (id=4), PCA component 1, showing 1 / 1 images.")
+
+        # Try to find the image relative to the repository root.
+        # This assumes this file lives in src/martian_terrain_segmentation/.
+        repo_root = Path(__file__).resolve().parents[2]
+        alien_image_path = repo_root / "georg_on_mars_cut.png"
+
+        if not alien_image_path.is_file():
+            print(f"[easter egg] Could not find image at: {alien_image_path}")
+            return
+
+        img = Image.open(alien_image_path)
+        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
+        ax.imshow(img)
+        ax.set_title("rank 1\nα=?\nidx=-1")
+        ax.axis("off")
+        plt.tight_layout()
+        plt.show()
+        return
+
+    # -----------------------------------------------------
+    # Normal NPCA path for real terrain classes (0..3)
+    # -----------------------------------------------------
     if class_id not in neural_pca_results:
         print(f"No neural PCA info for class {class_id}.")
         return
@@ -428,7 +461,7 @@ def show_top_neural_pca_images_for_class(
     class_name = AI4MARS_CLASS_NAMES[class_id]
 
     if component_idx >= alphas.shape[1]:
-        print("Component out of range.")
+        print(f"Component {component_idx} out of range, only {alphas.shape[1]} stored.")
         return
 
     comp_scores = alphas[:, component_idx]
@@ -446,23 +479,33 @@ def show_top_neural_pca_images_for_class(
     nrows = math.ceil(k / ncols)
     fig, axes = plt.subplots(nrows, ncols, figsize=(3 * ncols, 3 * nrows))
 
-    if nrows == 1:
+    if nrows == 1 and ncols == 1:
+        axes = [[axes]]
+    elif nrows == 1:
         axes = [axes]
 
     for rank in range(k):
         pos = int(top_pos[rank])
         ds_idx = indices[pos]
         img, _ = dataset[ds_idx]
-        img_np = img[0].cpu().numpy()
+        img_np = img[0].cpu().numpy()  # assuming grayscale
 
-        r, c = divmod(rank, ncols)
+        r = rank // ncols
+        c = rank % ncols
         ax = axes[r][c]
         ax.imshow(img_np, cmap="gray")
         ax.set_title(f"rank {rank+1}\nα={float(top_vals[rank]):.2f}\nidx={ds_idx}")
         ax.axis("off")
 
+    # Hide any unused axes
+    for r in range(nrows):
+        for c in range(ncols):
+            if r * ncols + c >= k:
+                axes[r][c].axis("off")
+
     plt.tight_layout()
     plt.show()
+
 
 
 # ---------------------------------------------------------

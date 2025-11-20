@@ -17,7 +17,7 @@ docs/_build/
 
 docs/data/
 # Outputs / artifacts
-outputs/
+
 data/
 checkpoints/
 runs/
@@ -28,8 +28,7 @@ logs/
 *.npz
 *.npy
 # Images
-*.jpg
-*.png
+
 
 # Editor/system noise
 .DS_Store
