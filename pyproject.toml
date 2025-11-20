@@ -3,15 +3,16 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "martian_terrain_segmentation"
+name = "martian-terrain-segmentation"      # distribution name (what pip sees)
 version = "0.1.0"
 description = "Utils to showcase Martian terrain semantic segmentation with explainability."
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
-    "torch",
-    "torchvision",
-    "pandas",
+  "torch",
+  "torchvision",
+  "matplotlib",
+  # add others you actually need
 ]
 
 [tool.setuptools]
