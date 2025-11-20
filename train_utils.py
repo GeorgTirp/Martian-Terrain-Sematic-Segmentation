@@ -1,6 +1,20 @@
 # train_utils.py
 """
-Training and evaluation helpers for semantic segmentation.
+Training and evaluation utilities for semantic segmentation on AI4Mars.
+
+This module provides:
+
+- `_compute_batch_metrics`:
+    Per-batch pixel accuracy and mean IoU computation.
+- `train_one_epoch`:
+    Single-epoch training loop with optional AMP, tqdm, and LR scheduler.
+- `evaluate`:
+    Validation/test loop mirroring the training metrics.
+- `save_checkpoint` & `load_checkpoint`:
+    Lightweight checkpoint helpers for model + optimizer + scheduler state.
+
+All helpers assume a standard semantic segmentation setup with logits of shape
+``[B, C, H, W]`` and integer masks of shape ``[B, H, W]``.
 """
 
 from __future__ import annotations
@@ -11,21 +25,61 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.optim.lr_scheduler import _LRScheduler
-from tqdm.auto import tqdm  # NEW: for nice progress bars
+from tqdm.auto import tqdm
 
 from dataloader import AI4MARS_IGNORE_INDEX
 
 
+# ---------------------------------------------------------------------------
+# Metrics
+# ---------------------------------------------------------------------------
 def _compute_batch_metrics(
     logits: torch.Tensor,
     targets: torch.Tensor,
     num_classes: int,
     ignore_index: int = AI4MARS_IGNORE_INDEX,
 ) -> Dict[str, float]:
-    """
-    Computes pixel accuracy and per-class IoUs for a single batch.
-    """
+    r"""
+    Compute pixel accuracy and mean Intersection-over-Union (mIoU) for a batch.
 
+    Given predictions :math:`\hat{y}` and ground-truth labels :math:`y`, we compute:
+
+    - **Pixel accuracy**:
+
+      .. math::
+
+          \text{PixAcc} = \frac{\#\{\hat{y} = y,\, y \ne \text{ignore}\}}
+                               {\#\{y \ne \text{ignore}\}}
+
+    - **Class-wise IoU** for each class :math:`c \in \{0,\dots,K-1\}`:
+
+      .. math::
+
+          \mathrm{IoU}_c =
+          \frac{|\{\hat{y}=c \land y=c\}|}
+               {|\{\hat{y}=c \lor y=c\}|}
+
+      and **mIoU** = average over classes that appear in the batch.
+
+    Parameters
+    ----------
+    logits : torch.Tensor
+        Raw model outputs of shape ``[B, C, H, W]``.
+    targets : torch.Tensor
+        Ground-truth masks of shape ``[B, H, W]`` with integer class indices.
+    num_classes : int
+        Number of valid semantic classes.
+    ignore_index : int, optional
+        Label value to be masked out from metric computation.
+
+    Returns
+    -------
+    Dict[str, float]
+        Dictionary with keys:
+
+        - ``"pixel_acc"`` : float
+        - ``"miou"`` : float
+    """
     with torch.no_grad():
         preds = logits.argmax(dim=1)  # [B,H,W]
 
@@ -53,32 +107,66 @@ def _compute_batch_metrics(
         return {"pixel_acc": float(pixel_acc), "miou": miou}
 
 
+# ---------------------------------------------------------------------------
+# Training loop
+# ---------------------------------------------------------------------------
 def train_one_epoch(
     model: nn.Module,
     dataloader: DataLoader,
     optimizer: torch.optim.Optimizer,
     device: torch.device,
     num_classes: int,
-    loss_fn: nn.Module | None = None,
+    loss_fn: Optional[nn.Module] = None,
     use_amp: bool = False,
     use_tqdm: bool = False,
-    epoch: int | None = None,
-    num_epochs: int | None = None,
+    epoch: Optional[int] = None,
+    num_epochs: Optional[int] = None,
     scheduler: Optional[_LRScheduler] = None,
 ) -> Dict[str, float]:
-    """
-    Train the model for one epoch.
+    r"""
+    Train a segmentation model for a single epoch.
 
-    Args:
-        model, dataloader, optimizer, device, num_classes: as before.
-        loss_fn: optional loss; defaults to CrossEntropy with ignore_index.
-        use_amp: mixed precision flag.
-        use_tqdm: if True, wraps the dataloader in a tqdm progress bar.
-        epoch: current epoch index (1-based, for display only).
-        num_epochs: total number of epochs (for display only).
+    The loop supports:
 
-    Returns:
-        dict with average loss, pixel accuracy, and mean IoU.
+    - Mixed precision via ``torch.cuda.amp`` (``use_amp=True``).
+    - A per-step LR scheduler (e.g. cosine with warmup).
+    - Optional tqdm progress bars.
+
+    Parameters
+    ----------
+    model : nn.Module
+        Segmentation model producing logits of shape ``[B, C, H, W]``.
+    dataloader : torch.utils.data.DataLoader
+        Training data loader yielding ``(images, masks)`` batches.
+    optimizer : torch.optim.Optimizer
+        Optimizer instance (e.g. Muon, NAdam, AdamW).
+    device : torch.device
+        Target device (e.g. ``torch.device("cuda")``).
+    num_classes : int
+        Number of semantic classes (for mIoU computation).
+    loss_fn : nn.Module, optional
+        Loss function. Defaults to ``nn.CrossEntropyLoss`` with
+        ``ignore_index=AI4MARS_IGNORE_INDEX``.
+    use_amp : bool, optional
+        If ``True``, run the forward/backward pass in mixed precision.
+    use_tqdm : bool, optional
+        If ``True``, wrap the dataloader with a tqdm progress bar.
+    epoch : int, optional
+        Current epoch index (1-based), used only for labeling tqdm.
+    num_epochs : int, optional
+        Total number of epochs, used only for labeling tqdm.
+    scheduler : torch.optim.lr_scheduler._LRScheduler, optional
+        Optional per-step LR scheduler; ``scheduler.step()`` is called once
+        per batch.
+
+    Returns
+    -------
+    Dict[str, float]
+        Dictionary with average metrics over the epoch:
+
+        - ``"loss"`` : mean training loss
+        - ``"pixel_acc"`` : mean pixel accuracy
+        - ``"miou"`` : mean IoU
     """
     model.train()
     if loss_fn is None:
@@ -91,7 +179,7 @@ def train_one_epoch(
     acc_sum = 0.0
     miou_sum = 0.0
 
-    # wrap dataloader with tqdm if requested
+    # Wrap dataloader with tqdm if requested
     if use_tqdm:
         if epoch is not None and num_epochs is not None:
             desc = f"Train Epoch {epoch}/{num_epochs}"
@@ -127,7 +215,6 @@ def train_one_epoch(
         acc_sum += metrics["pixel_acc"] * batch_size
         miou_sum += metrics["miou"] * batch_size
 
-        # optional live postfix on the progress bar
         if use_tqdm:
             avg_loss_so_far = running_loss / max(total_samples, 1)
             avg_miou_so_far = miou_sum / max(total_samples, 1)
@@ -143,6 +230,9 @@ def train_one_epoch(
     return {"loss": avg_loss, "pixel_acc": avg_acc, "miou": avg_miou}
 
 
+# ---------------------------------------------------------------------------
+# Evaluation loop
+# ---------------------------------------------------------------------------
 def evaluate(
     model: nn.Module,
     dataloader: DataLoader,
@@ -150,8 +240,36 @@ def evaluate(
     num_classes: int,
     use_tqdm: bool = False,
 ) -> Dict[str, float]:
-    """
-    Evaluate on a validation/test set.
+    r"""
+    Evaluate a segmentation model on a validation or test split.
+
+    This mirrors :func:`train_one_epoch` but:
+
+    - Disables gradient computation.
+    - Does **not** update model, optimizer, or scheduler.
+    - Still reports mean loss, pixel accuracy, and mIoU.
+
+    Parameters
+    ----------
+    model : nn.Module
+        Segmentation model to evaluate.
+    dataloader : torch.utils.data.DataLoader
+        Validation or test data loader.
+    device : torch.device
+        Evaluation device.
+    num_classes : int
+        Number of semantic classes.
+    use_tqdm : bool, optional
+        If ``True``, show a tqdm progress bar over batches.
+
+    Returns
+    -------
+    Dict[str, float]
+        Dictionary with keys:
+
+        - ``"loss"`` : mean loss,
+        - ``"pixel_acc"`` : mean pixel accuracy,
+        - ``"miou"`` : mean IoU.
     """
     model.eval()
 
@@ -199,6 +317,9 @@ def evaluate(
     return {"loss": avg_loss, "pixel_acc": avg_acc, "miou": avg_miou}
 
 
+# ---------------------------------------------------------------------------
+# Checkpointing
+# ---------------------------------------------------------------------------
 def save_checkpoint(
     path: str,
     model: nn.Module,
@@ -208,17 +329,38 @@ def save_checkpoint(
     metrics: Optional[Dict[str, float]] = None,
     extra: Optional[Dict[str, Any]] = None,
 ) -> None:
-    """
-    Save a training checkpoint.
+    r"""
+    Save a training checkpoint to disk.
 
-    Args:
-        path: file path to save to (e.g. "checkpoints/best_model.pt").
-        model: model to save (state_dict only).
-        optimizer: optional optimizer (state_dict).
-        scheduler: optional LR scheduler (state_dict).
-        epoch: optional current epoch number.
-        metrics: optional dict of metrics (e.g. best val loss/miou).
-        extra: optional extra metadata dict (anything you like).
+    The checkpoint is a ``dict`` that can contain:
+
+    - ``"model_state"`` (always present)
+    - ``"optimizer_state"`` (if ``optimizer`` is provided)
+    - ``"scheduler_state"`` (if ``scheduler`` is provided)
+    - ``"epoch"`` (if provided)
+    - ``"metrics"`` (if provided)
+    - ``"extra"`` (any additional user metadata)
+
+    Parameters
+    ----------
+    path : str
+        File path to save to (e.g. ``"checkpoints/best_model.pt"``).
+    model : nn.Module
+        Model whose ``state_dict`` will be stored as ``"model_state"``.
+    optimizer : torch.optim.Optimizer, optional
+        Optimizer whose state will be stored as ``"optimizer_state"``.
+    scheduler : torch.optim.lr_scheduler._LRScheduler, optional
+        Scheduler whose state will be stored as ``"scheduler_state"``.
+    epoch : int, optional
+        Epoch index at the time of saving.
+    metrics : Dict[str, float], optional
+        Dictionary of scalar metrics (e.g. best validation mIoU).
+    extra : Dict[str, Any], optional
+        Arbitrary additional metadata to store.
+
+    Returns
+    -------
+    None
     """
     state: Dict[str, Any] = {
         "model_state": model.state_dict(),
@@ -246,23 +388,35 @@ def load_checkpoint(
     scheduler: Optional[_LRScheduler] = None,
     map_location: str | torch.device = "cpu",
 ) -> Dict[str, Any]:
-    """
-    Load a training checkpoint.
+    r"""
+    Load a training checkpoint from disk and restore model/optimizer/scheduler.
 
-    Args:
-        path: path to the checkpoint file.
-        model: model to load weights into.
-        optimizer: optional optimizer to restore.
-        scheduler: optional scheduler to restore.
-        map_location: where to map loaded tensors.
+    Parameters
+    ----------
+    path : str
+        Path to the checkpoint file (e.g. ``"checkpoints/best_model.pt"``).
+    model : nn.Module
+        Model into which ``"model_state"`` will be loaded.
+    optimizer : torch.optim.Optimizer, optional
+        Optimizer to restore from ``"optimizer_state"`` (if present).
+    scheduler : torch.optim.lr_scheduler._LRScheduler, optional
+        Scheduler to restore from ``"scheduler_state"`` (if present).
+    map_location : str or torch.device, optional
+        Device mapping for loaded tensors, passed directly to ``torch.load``.
 
-    Returns:
-        A dict with any extra info stored in the checkpoint, e.g.:
-          {
-            "epoch": int | None,
-            "metrics": dict | None,
-            "extra": dict | None,
-          }
+    Returns
+    -------
+    Dict[str, Any]
+        Dictionary with any extra information stored in the checkpoint, with keys:
+
+        - ``"epoch"`` : int or ``None``
+        - ``"metrics"`` : dict or ``None``
+        - ``"extra"`` : dict or ``None``
+
+    Notes
+    -----
+    - Missing optimizer or scheduler states are silently ignored.
+    - This function does **not** perform any strict version checking.
     """
     checkpoint = torch.load(path, map_location=map_location)
 

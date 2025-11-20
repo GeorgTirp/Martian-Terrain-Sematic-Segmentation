@@ -4,17 +4,19 @@ AI4Mars dataloading utilities.
 
 We use the Hugging Face dataset `hassanjbara/AI4MARS`, which provides:
 
-- image: original rover image (PIL-like).
-- label_mask: semantic segmentation mask with terrain classes encoded as:
-    0 -> soil
-    1 -> bedrock
-    2 -> sand
-    3 -> big rock
-    255 -> null / no label
-:contentReference[oaicite:4]{index=4}
-"""
+- `image`: original rover image (Navcam, PIL-like).
+- `label_mask`: semantic segmentation mask with terrain classes encoded as:
 
-# data.py
+    * 0 -> soil  
+    * 1 -> bedrock  
+    * 2 -> sand  
+    * 3 -> big rock  
+    * 255 -> null / no label
+
+This module wraps the dataset into PyTorch `Dataset` and `DataLoader` objects,
+adds basic preprocessing (resize, grayscale/RGB conversion, tensor conversion),
+and provides optional scanning to remove a small number of corrupted samples.
+"""
 
 from __future__ import annotations
 
@@ -30,24 +32,58 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from torchvision.transforms import InterpolationMode
 
+from datasets import load_dataset, load_from_disk  # add load_from_disk if you want on-disk caching
+
 AI4MARS_CLASS_NAMES: List[str] = ["soil", "bedrock", "sand", "big_rock"]
 AI4MARS_IGNORE_INDEX: int = 255
 
 
 class AI4MarsHFDataset(Dataset):
     """
-    PyTorch wrapper around a Hugging Face split of AI4Mars.
+    PyTorch wrapper around a Hugging Face split of the AI4Mars dataset.
 
-    Behavior controlled by `scan_spurious`:
+    This class:
 
-    - scan_spurious = True:
-        * Scan the HF split once to find valid (decodable) samples.
-        * Build `valid_indices` (throwing out corrupted / None images or masks).
-        * Save `valid_indices` to disk (in `cache_dir`) so next runs can reuse it.
+    - Applies resizing and grayscale/RGB conversion to images.
+    - Resizes segmentation masks with nearest-neighbor interpolation.
+    - Maps unknown label values to an ignore index (`AI4MARS_IGNORE_INDEX`).
+    - Optionally scans the split once to drop corrupted or undecodable samples
+      and caches the list of valid indices for future runs.
 
-    - scan_spurious = False:
-        * Assume this cleanup has already been done.
-        * Load `valid_indices` from disk (no expensive scan).
+    Parameters
+    ----------
+    hf_split :
+        A single split of the Hugging Face dataset (e.g. `raw["train"]`).
+    image_size : int, default=256
+        Target spatial size (height and width) for images and masks.
+    to_rgb : bool, default=False
+        If ``True``, convert images to 3-channel RGB tensors.
+        If ``False``, keep them as 1-channel grayscale tensors.
+    scan_spurious : bool, default=False
+        If ``True``, scan the split to find valid (decodable) samples, build
+        ``valid_indices``, and save them to disk in ``cache_dir``. This is
+        useful for the **first** run on a new dataset cache.
+        If ``False``, the dataset attempts to load precomputed valid indices
+        from disk and skips the expensive scan.
+    cache_dir : str, default="./ai4mars_valid_indices"
+        Directory where per-split valid index files are stored
+        (e.g. ``valid_indices_train.npy``).
+    split_name : str, default="train"
+        Name of the split (``"train"``, ``"val"``, or ``"test"``) used to build
+        the cache file name.
+
+    Attributes
+    ----------
+    ds :
+        The underlying Hugging Face dataset split.
+    valid_indices : list[int]
+        Indices of valid (non-corrupted) samples in ``ds``.
+    image_transform :
+        Composed torchvision transform applied to images.
+    mask_resize :
+        torchvision transform used to resize label masks.
+    cache_path : str
+        Path to the ``.npy`` file storing ``valid_indices`` for this split.
     """
 
     def __init__(
@@ -142,9 +178,27 @@ class AI4MarsHFDataset(Dataset):
             )
 
     def __len__(self) -> int:
+        """Return the number of valid samples in this split."""
         return len(self.valid_indices)
 
     def __getitem__(self, idx: int):
+        """
+        Get a single (image, mask) pair.
+
+        Parameters
+        ----------
+        idx : int
+            Index in the filtered dataset (0 <= idx < len(self)).
+
+        Returns
+        -------
+        img_t : torch.Tensor
+            Image tensor of shape ``[C, H, W]``, where ``C`` is 1 (grayscale)
+            or 3 (RGB) depending on ``to_rgb``.
+        mask_t : torch.Tensor
+            Integer segmentation mask of shape ``[H, W]`` with label values
+            in ``{0, 1, 2, 3, AI4MARS_IGNORE_INDEX}``.
+        """
         real_idx = self.valid_indices[idx]
         sample = self.ds[real_idx]
 
@@ -176,11 +230,20 @@ class AI4MarsHFDataset(Dataset):
         return img_t, mask_t
 
 
-
-from datasets import load_dataset, load_from_disk  # add load_from_disk if you want on-disk caching
-
 @dataclass
 class DataLoaders:
+    """
+    Container for the three data splits used in training and evaluation.
+
+    Attributes
+    ----------
+    train : torch.utils.data.DataLoader
+        Dataloader for the training split.
+    val : torch.utils.data.DataLoader
+        Dataloader for the validation split.
+    test : torch.utils.data.DataLoader
+        Dataloader for the test split.
+    """
     train: DataLoader
     val: DataLoader
     test: DataLoader
@@ -193,33 +256,106 @@ def create_ai4mars_dataloaders(
     val_fraction: float = 0.1,
     to_rgb: bool = False,
     seed: int = 42,
-    cache_dir: str | None = None,            # HF cache (raw dataset)
+    cache_dir: str | None = None,            
     max_train_samples: int | None = None,
     max_val_samples: int | None = None,
     max_test_samples: int | None = None,
     use_local_disk_copy: bool = False,
     local_disk_path: str = "./data/ai4mars_hf",
-    # NEW: control spurious image handling
     scan_spurious: bool = False,
     valid_indices_cache_dir: str = "./ai4mars_valid_indices",
 ) -> DataLoaders:
     """
-    Create train/val/test dataloaders for AI4Mars via Hugging Face.
+    Create train/validation/test dataloaders for the AI4Mars dataset.
 
-    Args (existing):
-        cache_dir: where Hugging Face stores its cache.
-        max_*_samples: limit split sizes (useful for quick dev runs).
-        use_local_disk_copy / local_disk_path: save/load HF dataset to/from disk.
+    This function:
 
-    Args (new):
-        scan_spurious:
-            - If True: scan each split for corrupted / undecodable samples,
-              build valid_indices and save them to `valid_indices_cache_dir`.
-            - If False: assume this has already been done and just load
-              valid_indices from `valid_indices_cache_dir`.
-        valid_indices_cache_dir:
-            - Folder where per-split valid index files are stored, e.g.
-              `valid_indices_train.npy`, `valid_indices_val.npy`, `valid_indices_test.npy`.
+    - Downloads (or loads from disk) the Hugging Face dataset
+      ``"hassanjbara/AI4MARS"``.
+    - Splits it into train/val/test splits (using `val_fraction` and a fixed seed).
+    - Optionally subsamples each split for faster experiments.
+    - Wraps each split in an :class:`AI4MarsHFDataset`, which can scan for and
+      cache valid (non-corrupted) samples.
+    - Returns PyTorch dataloaders for each split.
+
+    Parameters
+    ----------
+    batch_size : int, default=4
+        Batch size used for all three dataloaders.
+    image_size : int, default=256
+        Spatial resolution to which images and masks are resized (square).
+    num_workers : int, default=4
+        Number of worker processes for data loading.
+    val_fraction : float, default=0.1
+        Fraction of the (non-test) data to reserve for validation.
+    to_rgb : bool, default=False
+        If ``True``, convert grayscale Navcam images to 3-channel RGB.
+        If ``False``, keep them as 1-channel grayscale.
+    seed : int, default=42
+        Random seed used for splitting into train/val/test.
+    cache_dir : str or None, default=None
+        Directory used by Hugging Face to cache the raw dataset.
+        If ``None``, the default HF cache location is used.
+    max_train_samples : int or None, default=None
+        If not ``None``, limit the training split to at most this many samples.
+        Useful for quick debugging runs.
+    max_val_samples : int or None, default=None
+        If not ``None``, limit the validation split to at most this many samples.
+    max_test_samples : int or None, default=None
+        If not ``None``, limit the test split to at most this many samples.
+    use_local_disk_copy : bool, default=False
+        If ``True``, save the downloaded HF dataset to ``local_disk_path`` and
+        load from there on subsequent runs (avoids re-downloading and reprocessing).
+    local_disk_path : str, default="./data/ai4mars_hf"
+        Path to store or load the local disk copy of the raw HF dataset.
+    scan_spurious : bool, default=False
+        Controls how spurious/corrupted samples are handled:
+
+        - If ``True``, each split is scanned on this run, and a list of valid
+          indices is built and saved into ``valid_indices_cache_dir``.
+        - If ``False``, we assume the scanning was already done, and valid
+          indices are loaded from disk (if present), avoiding the expensive scan.
+    valid_indices_cache_dir : str, default="./ai4mars_valid_indices"
+        Directory where per-split valid index files (``.npy``) are stored and
+        loaded. Files are named like ``valid_indices_train.npy``,
+        ``valid_indices_val.npy``, and ``valid_indices_test.npy``.
+
+    Returns
+    -------
+    DataLoaders
+        A dataclass bundle with ``train``, ``val``, and ``test`` PyTorch dataloaders.
+
+    Examples
+    --------
+    Basic usage:
+
+    .. code-block:: python
+
+        loaders = create_ai4mars_dataloaders(
+            batch_size=8,
+            image_size=256,
+            num_workers=4,
+            val_fraction=0.1,
+            to_rgb=False,
+            scan_spurious=True,  # first run: build valid index cache
+        )
+
+        train_loader = loaders.train
+        val_loader = loaders.val
+        test_loader = loaders.test
+
+    For later runs, you can skip scanning:
+
+    .. code-block:: python
+
+        loaders = create_ai4mars_dataloaders(
+            batch_size=8,
+            image_size=256,
+            num_workers=4,
+            val_fraction=0.1,
+            to_rgb=False,
+            scan_spurious=False,  # reuse cached valid indices
+        )
     """
 
     # --- Load HF dataset (raw) ---
@@ -309,4 +445,3 @@ def create_ai4mars_dataloaders(
     )
 
     return DataLoaders(train=train_loader, val=val_loader, test=test_loader)
-

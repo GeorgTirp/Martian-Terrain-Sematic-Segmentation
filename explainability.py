@@ -1,13 +1,15 @@
 # explainability.py
 """
-Explainability helpers for the Martian terrain segmentation model:
+Explainability utilities for Martian terrain segmentation models.
 
-- Grad-CAM-style heatmaps for a particular terrain class.
-- Integrated Gradients saliency maps for input pixels.
-- "Neural PCA": PCA over feature channels to visualize dominant spatial components.
+This module provides unified interfaces for:
+- **Grad-CAM** heatmaps over decoder features
+- **Integrated Gradients** saliency maps
+- **Neural PCA**: class-wise PCA in feature space, following the lecture slides
 
-These are written to work with the UNet defined in models.py, but are generic
-enough to adapt to other architectures.
+The tools are written to work with the U-Net architecture defined in
+``models.py`` but are generic enough to be used with any segmentation
+model that exposes a CAM target layer and a final 1×1 classifier.
 """
 
 from __future__ import annotations
@@ -22,23 +24,51 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 
+# ---------------------------------------------------------
+#  Grad-CAM
+# ---------------------------------------------------------
 def grad_cam(
     model: nn.Module,
     input_tensor: torch.Tensor,
     target_class: int,
     target_layer: nn.Module,
 ) -> torch.Tensor:
-    """
-    Compute a Grad-CAM heatmap for a segmentation model.
+    r"""
+    Compute a **Grad-CAM** heatmap for semantic segmentation.
 
-    Args:
-        model: segmentation model with logits output [B,C,H,W].
-        input_tensor: single input image tensor [1,C,H,W] with gradients enabled.
-        target_class: terrain class index (0..num_classes-1).
-        target_layer: layer to hook (e.g. model.get_cam_layer()).
+    Grad-CAM produces a spatial importance map based on gradients flowing
+    into a target convolutional layer:
 
-    Returns:
-        heatmap: [1,1,H,W] normalized to [0,1].
+    .. math::
+
+        \mathrm{CAM}(x) =
+            \mathrm{ReLU}
+            \Big(
+                \sum_f \alpha_f \cdot A_f(x)
+            \Big),
+
+    where:
+
+    - :math:`A_f` are the feature maps
+    - :math:`\alpha_f = \frac{1}{HW} \sum_{i,j}
+      \frac{\partial y_k}{\partial A_f(i,j)}` are channel-wise weights
+    - :math:`y_k` is the class score (here averaged over spatial pixels)
+
+    Parameters
+    ----------
+    model : nn.Module
+        Segmentation model outputting logits of shape ``[B,C,H,W]``.
+    input_tensor : torch.Tensor
+        Single input image of shape ``[1,C,H,W]``. Gradients must be enabled.
+    target_class : int
+        Class index ``0..num_classes-1`` for which to compute Grad-CAM.
+    target_layer : nn.Module
+        Layer to hook for feature maps and gradients (e.g. ``model.get_cam_layer()``).
+
+    Returns
+    -------
+    torch.Tensor
+        Heatmap of shape ``[1,1,H,W]`` normalized to ``[0,1]``.
     """
     model.eval()
 
@@ -56,27 +86,28 @@ def grad_cam(
 
     try:
         input_tensor = input_tensor.clone().detach().requires_grad_(True)
-        logits = model(input_tensor)  # [1,C,H,W]
+        logits = model(input_tensor)
 
-        # Use average over spatial dimensions for the target class
-        target_score = logits[:, target_class, :, :].mean()
+        target_score = logits[:, target_class].mean()
         model.zero_grad()
         target_score.backward()
 
-        feats = activations["value"]        # [1, F, h, w]
-        grads = gradients["value"]          # [1, F, h, w]
+        feats = activations["value"]   # [1,F,h,w]
+        grads = gradients["value"]     # [1,F,h,w]
 
-        weights = grads.mean(dim=(2, 3), keepdim=True)  # [1,F,1,1]
-        cam = (weights * feats).sum(dim=1, keepdim=True)  # [1,1,h,w]
+        weights = grads.mean(dim=(2, 3), keepdim=True)     # [1,F,1,1]
+        cam = (weights * feats).sum(dim=1, keepdim=True)   # [1,1,h,w]
         cam = F.relu(cam)
 
+        # Upsample to input size
         cam = F.interpolate(
             cam, size=input_tensor.shape[2:], mode="bilinear", align_corners=False
         )
 
-        cam_min, cam_max = cam.min(), cam.max()
-        if (cam_max - cam_min) > 1e-6:
-            cam = (cam - cam_min) / (cam_max - cam_min)
+        # Normalize
+        cmin, cmax = cam.min(), cam.max()
+        if (cmax - cmin) > 1e-6:
+            cam = (cam - cmin) / (cmax - cmin)
         else:
             cam = torch.zeros_like(cam)
 
@@ -86,6 +117,9 @@ def grad_cam(
         handle_bwd.remove()
 
 
+# ---------------------------------------------------------
+#  Integrated Gradients
+# ---------------------------------------------------------
 def integrated_gradients(
     model: nn.Module,
     input_tensor: torch.Tensor,
@@ -93,18 +127,40 @@ def integrated_gradients(
     baseline: torch.Tensor | None = None,
     steps: int = 50,
 ) -> torch.Tensor:
-    """
-    Integrated Gradients for segmentation.
+    r"""
+    Compute **Integrated Gradients** (IG) for segmentation.
 
-    Args:
-        model: segmentation model.
-        input_tensor: [1,C,H,W] (requires_grad will be set internally).
-        target_class: class index (0..num_classes-1).
-        baseline: [1,C,H,W] baseline (defaults to zeros).
-        steps: number of integration steps.
+    Integrated Gradients approximates the path integral:
 
-    Returns:
-        attribution map [1,C,H,W] (same shape as input).
+    .. math::
+
+        \mathrm{IG}(x)
+        = (x - x_0)
+          \times
+          \int_{0}^{1}
+            \frac{\partial f(x_0 + \alpha (x - x_0))}
+            {\partial x}
+          \, d\alpha,
+
+    where :math:`x_0` is a baseline (typically zeros).
+
+    Parameters
+    ----------
+    model : nn.Module
+        Segmentation model.
+    input_tensor : torch.Tensor
+        Input image ``[1,C,H,W]``.
+    target_class : int
+        Class index whose score to differentiate.
+    baseline : torch.Tensor, optional
+        Baseline image ``[1,C,H,W]``. Default: zeros.
+    steps : int
+        Number of steps for Riemann sum approximation.
+
+    Returns
+    -------
+    torch.Tensor
+        Attribution map of shape ``[1,C,H,W]``.
     """
     model.eval()
 
@@ -114,9 +170,8 @@ def integrated_gradients(
     input_tensor = input_tensor.detach()
     baseline = baseline.detach()
 
-    # interpolate between baseline and input
     scaled_inputs = [
-        baseline + (float(i) / steps) * (input_tensor - baseline)
+        baseline + (i / steps) * (input_tensor - baseline)
         for i in range(1, steps + 1)
     ]
 
@@ -125,45 +180,54 @@ def integrated_gradients(
     for x in scaled_inputs:
         x = x.clone().detach().requires_grad_(True)
         logits = model(x)
-        target_score = logits[:, target_class, :, :].mean()
+        target_score = logits[:, target_class].mean()
 
         model.zero_grad()
         target_score.backward()
 
-        assert x.grad is not None
         total_gradients += x.grad.detach()
 
-    avg_gradients = total_gradients / float(steps)
-
+    avg_gradients = total_gradients / steps
     attributions = (input_tensor - baseline) * avg_gradients
     return attributions.detach()
 
 
+# ---------------------------------------------------------
+#  Neural PCA Helper Functions
+# ---------------------------------------------------------
 def _get_classifier_weight_vector(model: nn.Module, class_id: int) -> torch.Tensor:
-    """
-    Get the classifier weight vector w_k for class k from the final 1x1 conv.
+    r"""
+    Extract the final 1×1-conv classifier weight vector :math:`w_k`.
 
-    Assumes model.outc is your OutConv wrapper:
-        class OutConv(nn.Module):
-            def __init__(...):
-                self.conv = nn.Conv2d(...)
-            def forward(self, x):
-                return self.conv(x)
+    For class :math:`k`:
+
+    .. math::
+        w_k = \text{Conv1x1.weight}[k]
+
+    Parameters
+    ----------
+    model : nn.Module
+        Segmentation model with an ``outc`` or final conv layer.
+    class_id : int
+        Target class index.
+
+    Returns
+    -------
+    torch.Tensor
+        Weight vector ``[F]``.
     """
     outc = getattr(model, "outc", None)
     if outc is None:
-        raise ValueError("Model has no attribute 'outc'; cannot extract classifier weights.")
+        raise ValueError("Model has no attribute `outc`.")
 
-    if hasattr(outc, "conv") and isinstance(outc.conv, nn.Conv2d):
-        weight = outc.conv.weight  # [num_classes, F, 1, 1]
+    if hasattr(outc, "conv"):
+        weight = outc.conv.weight
     elif isinstance(outc, nn.Conv2d):
         weight = outc.weight
     else:
-        raise ValueError("Could not find classifier conv weight for neural PCA.")
+        raise ValueError("Could not find classifier weight.")
 
-    # w_k is [F]
-    w_k = weight[class_id, :, 0, 0]
-    return w_k.detach().clone()
+    return weight[class_id, :, 0, 0].detach().clone()
 
 
 def _extract_phi_batch(
@@ -171,18 +235,27 @@ def _extract_phi_batch(
     x: torch.Tensor,
     cam_layer: nn.Module,
 ) -> torch.Tensor:
-    """
-    Extract φ(x) for a batch: global average pooled features from `cam_layer`.
+    r"""
+    Extract **φ(x)** — global average pooled features from the CAM layer.
 
-    Args:
-        x: [B,C,H,W]
+    .. math::
+        \phi(x) = \mathrm{GAP}(A(x)) \in \mathbb{R}^F
 
-    Returns:
-        phi: [B,F], where F is #channels of cam_layer.
+    Parameters
+    ----------
+    x : torch.Tensor
+        Input batch ``[B,C,H,W]``.
+    cam_layer : nn.Module
+        Layer to hook activations from.
+
+    Returns
+    -------
+    torch.Tensor
+        Feature vectors ``[B,F]``.
     """
     activations: Dict[str, torch.Tensor] = {}
 
-    def hook(module, inp, out):
+    def hook(_, __, out):
         activations["feat"] = out
 
     handle = cam_layer.register_forward_hook(hook)
@@ -190,11 +263,14 @@ def _extract_phi_batch(
         _ = model(x)
     handle.remove()
 
-    feat = activations["feat"]  # [B,F,H',W']
-    phi = feat.mean(dim=(2, 3))  # GAP over spatial dims -> [B,F]
+    feat = activations["feat"]          # [B,F,h,w]
+    phi = feat.mean(dim=(2, 3))         # GAP -> [B,F]
     return phi
 
 
+# ---------------------------------------------------------
+#  Neural PCA
+# ---------------------------------------------------------
 def compute_class_neural_pca_features(
     model: nn.Module,
     dataset,
@@ -204,231 +280,216 @@ def compute_class_neural_pca_features(
     n_components: int = 5,
     min_per_class: int = 10,
 ) -> Dict[int, Dict[str, object]]:
-    """
-    Compute class-wise neural PCA in feature space, like in the slides:
+    r"""
+    Compute **Neural PCA** for each class, following the lecture slides.
 
-      φ(x) ∈ R^D : penultimate features (here: GAP(cam_layer(x))).
-      w_k ∈ R^D  : classifier weights for class k.
-      ψ_k(x) = w_k ⊙ φ(x) ∈ R^D.
+    We compute:
 
-    We then compute PCA on {ψ_k(x_i)} over all images that contain class k
-    (up to `max_samples_per_class`), and get:
+    - Feature vectors :math:`\phi(x)`
+    - Classifier weights :math:`w_k`
+    - Class-specific embedding:
 
-      - mean_psi: ψ̄_k
-      - eigvecs: principal directions v_l ∈ R^D
-      - eigvals: corresponding eigenvalues
-      - alphas: α_l^(k)(x_i) for each used sample & component (for ranking images)
-      - indices: dataset indices used
-      - psi: raw ψ_k(x_i) vectors
+      .. math::
+          \psi_k(x) = w_k \odot \phi(x)
 
-    Args:
-        model: your segmentation model.
-        dataset: e.g. train_loader.dataset or test_loader.dataset.
-        device: torch.device.
-        class_ids: iterable of class indices (e.g. range(num_classes)).
-        max_samples_per_class: limit of samples used per class for PCA.
-        n_components: how many PCA components per class to keep.
-        min_per_class: skip classes with fewer usable samples.
+    Then perform PCA over the set :math:`\{\psi_k(x_i)\}` for each class.
 
-    Returns:
-        dict[class_id] -> {
-            "mean_psi": [D],
-            "eigvecs": [L,D],  # first L PCs
-            "eigvals": [L],
-            "alphas": [N,L],   # α_l^(k)(x_i) for each sample & component
-            "indices": list of dataset indices used,
-            "psi": [N,D],      # ψ_k(x_i) vectors
-        }
+    Parameters
+    ----------
+    model : nn.Module
+        Trained segmentation network.
+    dataset :
+        Dataset providing ``(image, mask)`` samples.
+    device : torch.device
+        Device for model inference.
+    class_ids : sequence of int
+        Class indices to process.
+    max_samples_per_class : int
+        Maximum number of samples to use per class.
+    n_components : int
+        Number of PCA components to retain.
+    min_per_class : int
+        Minimum samples required to run PCA.
+
+    Returns
+    -------
+    dict
+        Mapping ``class_id -> PCA results`` with keys:
+        - ``mean_psi`` : ``[D]``
+        - ``eigvecs`` : ``[L,D]``
+        - ``eigvals`` : ``[L]``
+        - ``alphas``  : ``[N,L]`` projection scores
+        - ``indices`` : dataset indices used
+        - ``psi``     : raw psi vectors ``[N,D]``
     """
     model.eval()
     cam_layer = model.get_cam_layer()
 
-    # --- 1) Pre-scan: find candidate indices per class from masks ---
     print("[neural PCA] Scanning dataset for class presence...")
     class_to_indices: Dict[int, List[int]] = {c: [] for c in class_ids}
+
     for idx in range(len(dataset)):
-        _, mask = dataset[idx]  # mask is [H,W] tensor on CPU
+        _, mask = dataset[idx]
         mask_np = mask.numpy()
         for c in class_ids:
             if (mask_np == c).any():
                 class_to_indices[c].append(idx)
 
-    results: Dict[int, Dict[str, object]] = {}
+    results = {}
 
-    # --- 2) For each class, build ψ_k(x) vectors and run PCA ---
     for c in class_ids:
         indices = class_to_indices[c]
         if len(indices) < min_per_class:
-            print(
-                f"[neural PCA] Class {c}: only {len(indices)} samples found "
-                f"(min_per_class={min_per_class}) – skipping."
-            )
+            print(f"[neural PCA] Class {c}: {len(indices)} samples < min_per_class.")
             continue
 
-        # Limit for efficiency
         if len(indices) > max_samples_per_class:
             indices = indices[:max_samples_per_class]
 
-        print(
-            f"[neural PCA] Class {c}: using {len(indices)} samples "
-            f"for PCA out of {len(class_to_indices[c])} candidates."
-        )
+        print(f"[neural PCA] Class {c}: using {len(indices)} samples.")
 
-        # Classifier weight vector w_k
-        w_k = _get_classifier_weight_vector(model, c).to(device)  # [D]
-        psi_list: List[torch.Tensor] = []
+        w_k = _get_classifier_weight_vector(model, c).to(device)
+        psi_list = []
 
-        # Collect ψ_k(x) for each image
         for idx in indices:
             img, _ = dataset[idx]
-            x = img.unsqueeze(0).to(device)  # [1,C,H,W]
+            x = img.unsqueeze(0).to(device)
+            phi = _extract_phi_batch(model, x, cam_layer)[0]
+            psi_list.append((w_k * phi).cpu())
 
-            phi = _extract_phi_batch(model, x, cam_layer)[0]  # [D]
-            psi = w_k * phi  # ψ_k(x) ∈ R^D
-            psi_list.append(psi.cpu())
+        X = torch.stack(psi_list)      # [N,D]
+        X_mean = X.mean(dim=0, keepdim=True)
+        X_centered = X - X_mean
 
-        X = torch.stack(psi_list, dim=0)  # [N,D]
-        N, D = X.shape
-
-        if N < min_per_class:
-            print(
-                f"[neural PCA] Class {c}: after filtering, only {N} ψ vectors – skipping."
-            )
-            continue
-
-        # --- PCA via SVD on centered data ---
-        X_mean = X.mean(dim=0, keepdim=True)      # [1,D] = ψ̄_k
-        X_centered = X - X_mean                   # [N,D]
-
-        # SVD: X_centered = U S Vh, rows of Vh are PCs
-        U, S, Vh = torch.linalg.svd(X_centered, full_matrices=False)  # U[N,N], S[N], Vh[N,D]
-
+        U, S, Vh = torch.linalg.svd(X_centered, full_matrices=False)
         L = min(n_components, Vh.shape[0])
-        V = Vh[:L]                                # [L,D] principal directions v_l
-        eigvals = (S[:L] ** 2) / max(1, N - 1)    # [L]
 
-        # --- α_l^(k)(x_i) = <1, v_l> * <ψ_k(x_i) - ψ̄_k, v_l> ---
-        diff = X - X_mean  # [N,D]
-        ones_dot_v = V.sum(dim=1)                # [L] = <1, v_l>
-        proj = diff @ V.T                        # [N,L] = <ψ - ψ̄, v_l>
-        alphas = proj * ones_dot_v               # [N,L]
+        eigvecs = Vh[:L]                       # [L,D]
+        eigvals = (S[:L] ** 2) / max(1, len(X) - 1)
+
+        diff = X - X_mean
+        proj = diff @ eigvecs.T               # [N,L]
+        ones_dot_v = eigvecs.sum(dim=1)       # [L]
+        alphas = proj * ones_dot_v
 
         results[c] = {
-            "mean_psi": X_mean[0],   # [D]
-            "eigvecs": V,            # [L,D]
-            "eigvals": eigvals,      # [L]
-            "alphas": alphas,        # [N,L]
-            "indices": indices,      # list of dataset indices
-            "psi": X,                # [N,D]
+            "mean_psi": X_mean[0],
+            "eigvecs": eigvecs,
+            "eigvals": eigvals,
+            "alphas": alphas,
+            "indices": indices,
+            "psi": X,
         }
 
     return results
 
+
+# ---------------------------------------------------------
+#  Neural PCA Visualization
+# ---------------------------------------------------------
 def show_top_neural_pca_images_for_class(
     neural_pca_results,
     dataset,
     class_id: int,
     component_idx: int = 0,
     top_k: int = 6,
-    easter_egg: bool = True,
-    alien_image_path: str | None = "A_grayscale_photograph_captures_an_astronaut_on_th.png",
 ):
+    r"""
+    Visualize the **top-k images** that maximally activate a neural PCA
+    component for a given class.
+
+    For PCA component :math:`v_\ell`, the ranking uses:
+
+    .. math::
+        \alpha_\ell^{(k)}(x_i)
+
+    Parameters
+    ----------
+    neural_pca_results : dict
+        Output of :func:`compute_class_neural_pca_features`.
+    dataset :
+        Dataset that returns ``(image, mask)``.
+    class_id : int
+        Class index to visualize.
+    component_idx : int
+        PCA component index (0-based).
+    top_k : int
+        Number of top activating images to display.
     """
-    Show the top-k REAL images that maximally activate NPCA component `component_idx`
-    for class `class_id` (like "Max. activating train images - N-PCA Comp. l" in the slides).
+    AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock"]
 
-    If `easter_egg=True` and `class_id == 4`, show a special alien NPCA image
-    (astronaut with "Hire me, please!" flag) instead of using neural_pca_results.
-    """
-
-    # Include an extra label for the easter egg class id=4
-    AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock", "alien"]
-
-    # --- Easter-egg path: fake 'alien' NPCA ---
-    if easter_egg and class_id == 4:
-        print("\nClass 'alien' (id=4), NPCA component 1, showing 1 / 1 images.")
-
-        if alien_image_path is None:
-            print("No alien_image_path provided; nothing to display.")
-            return
-
-        img = Image.open(alien_image_path)
-
-        fig, ax = plt.subplots(1, 1, figsize=(4, 4))
-        ax.imshow(img, cmap="gray")
-        ax.set_title("rank 1\nα=?\nidx=alien-1")
-        ax.axis("off")
-
-        plt.tight_layout()
-        plt.show()
-        return
-
-    # --- Normal NPCA path for real terrain classes ---
     if class_id not in neural_pca_results:
-        print(f"No neural PCA info stored for class {class_id}.")
+        print(f"No neural PCA info for class {class_id}.")
         return
 
     info = neural_pca_results[class_id]
-    alphas = info["alphas"]          # [N,L]
-    indices = info["indices"]        # list of dataset indices
+    alphas = info["alphas"]
+    indices = info["indices"]
     class_name = AI4MARS_CLASS_NAMES[class_id]
 
     if component_idx >= alphas.shape[1]:
-        print(
-            f"Component {component_idx} out of range, only {alphas.shape[1]} components stored."
-        )
+        print("Component out of range.")
         return
 
-    comp_scores = alphas[:, component_idx]  # [N]
+    comp_scores = alphas[:, component_idx]
     N = comp_scores.numel()
     k = min(top_k, N)
 
     top_vals, top_pos = torch.topk(comp_scores, k=k)
+
     print(
-        f"\nClass '{class_name}' (id={class_id}), NPCA component {component_idx+1}, "
-        f"showing top {k} / {N} images."
+        f"\nClass '{class_name}' (id={class_id}), PCA component {component_idx+1}, "
+        f"showing top {k}/{N} images."
     )
 
     ncols = min(k, 5)
     nrows = math.ceil(k / ncols)
     fig, axes = plt.subplots(nrows, ncols, figsize=(3 * ncols, 3 * nrows))
-    if nrows == 1 and ncols == 1:
-        axes = [[axes]]
-    elif nrows == 1:
+
+    if nrows == 1:
         axes = [axes]
 
     for rank in range(k):
         pos = int(top_pos[rank])
         ds_idx = indices[pos]
-        img, mask = dataset[ds_idx]  # img [C,H,W]
-        img_np = img[0].cpu().numpy()  # assuming grayscale
+        img, _ = dataset[ds_idx]
+        img_np = img[0].cpu().numpy()
 
-        r = rank // ncols
-        c = rank % ncols
+        r, c = divmod(rank, ncols)
         ax = axes[r][c]
         ax.imshow(img_np, cmap="gray")
         ax.set_title(f"rank {rank+1}\nα={float(top_vals[rank]):.2f}\nidx={ds_idx}")
         ax.axis("off")
 
-    # hide any unused axes
-    for r in range(nrows):
-        for c in range(ncols):
-            if r * ncols + c >= k:
-                axes[r][c].axis("off")
-
     plt.tight_layout()
     plt.show()
 
-def normalize_map(t: torch.Tensor):
-    t = t.clone().detach()
+
+# ---------------------------------------------------------
+# Utility
+# ---------------------------------------------------------
+def normalize_map(t: torch.Tensor) -> torch.Tensor:
+    """
+    Normalize tensor linearly to the ``[0,1]`` range.
+
+    Parameters
+    ----------
+    t : torch.Tensor
+        Input tensor.
+
+    Returns
+    -------
+    torch.Tensor
+        Normalized tensor.
+    """
+    t = t.detach()
     t_min, t_max = t.min(), t.max()
-    if (t_max - t_min) > 1e-6:
-        t = (t - t_min) / (t_max - t_min)
-    else:
-        t = torch.zeros_like(t)
-    return t
+    return (t - t_min) / (t_max - t_min + 1e-8) if (t_max - t_min) > 1e-6 else torch.zeros_like(t)
 
 
+# ---------------------------------------------------------
+# Full Example Visualization
+# ---------------------------------------------------------
 def explain_per_class_examples(
     model,
     dataset,
@@ -437,107 +498,75 @@ def explain_per_class_examples(
     ig_steps: int = 32,
 ):
     """
-    For each terrain class (soil, bedrock, sand, big_rock),
-    show up to `num_examples_per_class` random examples with:
+    Generate combined explainability visualizations for each class:
 
-      - Grad-CAM
-      - Integrated Gradients
-      - Neural PCA
+    - Input image  
+    - Grad-CAM  
+    - Integrated Gradients  
 
-    Args:
-        model: trained segmentation model.
-        dataset: typically `test_loader.dataset`.
-        device: torch.device.
-        num_examples_per_class: how many examples per class to visualize.
-        ig_steps: number of steps for Integrated Gradients.
+    Parameters
+    ----------
+    model : nn.Module
+        Trained segmentation model.
+    dataset :
+        Dataset providing ``(img, mask)``.
+    device : torch.device
+        Compute device.
+    num_examples_per_class : int
+        Number of examples per class.
+    ig_steps : int
+        IG integration steps.
     """
     AI4MARS_CLASS_NAMES = ["soil", "bedrock", "sand", "big_rock"]
     model.eval()
     cam_layer = model.get_cam_layer()
-    num_classes = len(AI4MARS_CLASS_NAMES)
 
-    # --- 1. Scan dataset once to find indices per class ---
-    class_to_indices = {c: [] for c in range(num_classes)}
+    class_to_indices = {c: [] for c in range(len(AI4MARS_CLASS_NAMES))}
     print("Scanning dataset once to find examples per class...")
-    for idx in range(len(dataset)):
-        _, mask = dataset[idx]  # mask is a torch.Tensor [H,W] on CPU
-        mask_np = mask.numpy()
 
-        for c in range(num_classes):
+    for idx in range(len(dataset)):
+        _, mask = dataset[idx]
+        mask_np = mask.numpy()
+        for c in class_to_indices:
             if (mask_np == c).any():
                 class_to_indices[c].append(idx)
 
-        # Small early-exit optimization (optional)
-        if all(len(class_to_indices[c]) >= num_examples_per_class for c in range(num_classes)):
+        if all(len(v) >= num_examples_per_class for v in class_to_indices.values()):
             break
 
-    # --- 2. For each class, sample some indices and visualize ---
-    for c in range(num_classes):
-        class_name = AI4MARS_CLASS_NAMES[c]
-        indices = class_to_indices[c]
+    for c, indices in class_to_indices.items():
+        name = AI4MARS_CLASS_NAMES[c]
 
         if len(indices) == 0:
-            print(f"\nClass '{class_name}' (id={c}): no examples found in dataset.")
+            print(f"No examples for class {name}.")
             continue
 
-        chosen = random.sample(indices, k=min(num_examples_per_class, len(indices)))
+        chosen = random.sample(indices, min(num_examples_per_class, len(indices)))
+
         print(
-            f"\n=== Class '{class_name}' (id={c}) | "
+            f"\n=== Class '{name}' (id={c}) | "
             f"{len(indices)} total examples, showing {len(chosen)} ==="
         )
 
-        for ex_id, idx in enumerate(chosen):
-            print(f"- Example {ex_id+1}/{len(chosen)} (dataset idx: {idx})")
+        for i, idx in enumerate(chosen):
+            print(f"- Example {i+1}: dataset idx {idx}")
 
-            input_img, target_mask = dataset[idx]
-            input_img = input_img.unsqueeze(0).to(device)  # [1,C,H,W]
-            target_mask = target_mask.to(device)           # [H,W]
+            img, _ = dataset[idx]
+            x = img.unsqueeze(0).to(device)
 
-            # ----- Grad-CAM -----
-            cam_map = grad_cam(
-                model=model,
-                input_tensor=input_img,
-                target_class=c,
-                target_layer=cam_layer,
-            )  # [1,1,H,W]
+            cam = grad_cam(model, x, c, cam_layer)
+            ig = integrated_gradients(model, x, c, baseline=torch.zeros_like(x), steps=ig_steps)
 
-            # ----- Integrated Gradients -----
-            ig_attr = integrated_gradients(
-                model=model,
-                input_tensor=input_img,
-                target_class=c,
-                baseline=torch.zeros_like(input_img),
-                steps=ig_steps,
-            )  # [1,C,H,W]
-
-
-            # ----- Visualization -----
-            img_np = input_img[0, 0].detach().cpu().numpy()
-
-            cam_np = cam_map[0, 0].detach().cpu().numpy()
-            ig_np = normalize_map(ig_attr[0, 0]).cpu().numpy()
-
+            img_np = x[0, 0].cpu().numpy()
+            cam_np = cam[0, 0].cpu().numpy()
+            ig_np = normalize_map(ig[0, 0]).cpu().numpy()
 
             fig, axes = plt.subplots(1, 3, figsize=(12, 6))
-
-            # Original image
-            axes[0].imshow(img_np, cmap="gray")
-            axes[0].set_title("Input")
-            axes[0].axis("off")
-
-            # Grad-CAM overlay
-            axes[1].imshow(img_np, cmap="gray")
-            axes[1].imshow(cam_np, cmap="jet", alpha=0.5)
-            axes[1].set_title(f"Grad-CAM ({class_name})")
-            axes[1].axis("off")
-
-            # Integrated Gradients overlay
-            axes[2].imshow(img_np, cmap="gray")
-            axes[2].imshow(ig_np, cmap="inferno", alpha=0.5)
-            axes[2].set_title(f"Integrated Gradients ({class_name})")
-            axes[2].axis("off")
-
-
+            axes[0].imshow(img_np, cmap="gray");  axes[0].set_title("Input"); axes[0].axis("off")
+            axes[1].imshow(img_np, cmap="gray"); axes[1].imshow(cam_np, cmap="jet", alpha=0.5)
+            axes[1].set_title(f"Grad-CAM ({name})"); axes[1].axis("off")
+            axes[2].imshow(img_np, cmap="gray"); axes[2].imshow(ig_np, cmap="inferno", alpha=0.5)
+            axes[2].set_title(f"Integrated Gradients ({name})"); axes[2].axis("off")
 
             plt.tight_layout()
             plt.show()
