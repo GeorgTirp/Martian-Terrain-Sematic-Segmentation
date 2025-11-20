@@ -1,0 +1,159 @@
+/* ===== Mars Background ===== */
+
+/* Apply Mars background in both light and dark modes.
+   Assumes mars.jpg is in the same folder as this file: docs/_static/mars.jpg */
+html[data-theme="light"],
+html[data-theme="dark"] {
+  background: url("mars2.jpg") center/cover fixed no-repeat !important;
+}
+
+/* Make the main page wrappers transparent so the background shows through */
+html[data-theme="light"] body,
+html[data-theme="dark"] body,
+html[data-theme="light"] .bd-page,
+html[data-theme="dark"] .bd-page {
+  background: transparent !important;
+}
+
+/* ===== Content & Sidebar Panels ===== */
+
+/* Main content panel: dark glassy overlay */
+.bd-main .bd-content {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+/* Primary sidebar (left) */
+.bd-sidebar-primary {
+  background: rgba(0, 0, 0, 0.75);
+}
+
+/* Secondary sidebar (right TOC) — hidden by default */
+.bd-sidebar-secondary {
+  display: none;
+}
+/* If you ever want it toggleable instead of fully hidden, you can use:
+.bd-sidebar-secondary {
+  opacity: 0;
+  pointer-events: none;
+}
+.bd-sidebar-secondary.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+*/
+
+/* Slight transparency for the header bar */
+.bd-header {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+}
+
+/* ===== Soft Aura Dark Code Styling ===== */
+
+/* Block code & preformatted text */
+.highlight,
+div.highlight pre,
+pre {
+  background-color: #151524;     /* soft dark indigo */
+  color: #f5f3ff;                /* light pastel text */
+  border-radius: 10px;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Inline code */
+code {
+  background-color: rgba(57, 51, 99, 0.9);
+  color: #f8f5ff;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+  font-size: 0.9em;
+}
+
+/* Keywords (def, class, import, etc.) */
+.highlight .k,
+.highlight .kn,
+.highlight .kp,
+.highlight .kd {
+  color: #ffb685;                /* warm orange-peach */
+}
+
+/* Builtins & literals */
+.highlight .nb,
+.highlight .bp,
+.highlight .kc,
+.highlight .kr {
+  color: #ffc48f;
+}
+
+/* Function & class names */
+.highlight .nf,
+.highlight .nc,
+.highlight .nn {
+  color: #9ad1ff;                /* soft blue */
+}
+
+/* Strings */
+.highlight .s,
+.highlight .sa,
+.highlight .sb,
+.highlight .sc,
+.highlight .sd,
+.highlight .s2,
+.highlight .se,
+.highlight .sh,
+.highlight .si,
+.highlight .sx,
+.highlight .sr {
+  color: #ffe68f;                /* soft yellow */
+}
+
+/* Numbers */
+.highlight .m,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .mo {
+  color: #ff9bb8;                /* pastel pink */
+}
+
+/* Comments */
+.highlight .c,
+.highlight .cm,
+.highlight .cp,
+.highlight .c1,
+.highlight .cs {
+  color: #7a7a9a;                /* muted lavender */
+  font-style: italic;
+}
+
+/* Decorators & attributes */
+.highlight .nd,
+.highlight .na {
+  color: #e0a7ff;
+}
+
+/* Operators & punctuation */
+.highlight .o,
+.highlight .p {
+  color: #e2e0ff;
+}
+
+/* ===== Misc readability tweaks ===== */
+
+/* Make links stand out against dark background */
+a {
+  color: #ffb685;
+}
+a:hover {
+  color: #ffd0a8;
+}
+
+/* Slightly soften table borders */
+table.docutils,
+table.docutils td,
+table.docutils th {
+  border-color: rgba(255, 255, 255, 0.15);
+}
