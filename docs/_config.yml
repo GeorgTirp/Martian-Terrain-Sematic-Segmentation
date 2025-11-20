@@ -5,19 +5,23 @@ root: .
 
 only_build_toc_files: true
 
-# Let Jupyter Book use Sphinx extensions (for autodoc)
 sphinx:
   extra_extensions:
     - sphinx.ext.autodoc
+    - sphinx.ext.napoleon
 
-# Optional but nice: interactive launch buttons
 launch_buttons:
-  binderhub_url: "https://mybinder.org"        # Binder
-  colab_url: "https://colab.research.google.com"  # Colab
-  thebe: true                                  # in-page runnable cells
+  binderhub_url: "https://mybinder.org"
+  colab_url: "https://colab.research.google.com"
+  thebe: true
 
 execute:
   execute_notebooks: auto
   exclude_tags:
     - no-exec
   timeout: 600
+
+html:
+  extra_css:
+    - custom.css
+  pygments_style: material
