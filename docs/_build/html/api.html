@@ -1,0 +1,1477 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>API Reference &#8212; Martian Terrain Semantic Segmentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation" href="martian_segmentation_explainability.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Martian Terrain Semantic Segmentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Martian Terrain Semantic Segmentation
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="martian_segmentation_explainability.html">🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</a></li>
+
+
+
+
+
+
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">API Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/api.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>API Reference</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-martian_terrain_segmentation.dataloader">Core Modules</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
+<section id="module-martian_terrain_segmentation.dataloader">
+<span id="core-modules"></span><h2>Core Modules<a class="headerlink" href="#module-martian_terrain_segmentation.dataloader" title="Permalink to this heading">#</a></h2>
+<p>AI4Mars dataloading utilities.</p>
+<p>We use the Hugging Face dataset <cite>hassanjbara/AI4MARS</cite>, which provides:</p>
+<ul>
+<li><p><cite>image</cite>: original rover image (Navcam, PIL-like).</p></li>
+<li><p><cite>label_mask</cite>: semantic segmentation mask with terrain classes encoded as:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>0 -&gt; soil</p></li>
+<li><p>1 -&gt; bedrock</p></li>
+<li><p>2 -&gt; sand</p></li>
+<li><p>3 -&gt; big rock</p></li>
+<li><p>255 -&gt; null / no label</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>This module wraps the dataset into PyTorch <cite>Dataset</cite> and <cite>DataLoader</cite> objects,
+adds basic preprocessing (resize, grayscale/RGB conversion, tensor conversion),
+and provides optional scanning to remove a small number of corrupted samples.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.AI4MarsHFDataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.dataloader.</span></span><span class="sig-name descname"><span class="pre">AI4MarsHFDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hf_split</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_spurious</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./ai4mars_valid_indices'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
+<p>PyTorch wrapper around a Hugging Face split of the AI4Mars dataset.</p>
+<p>This class:</p>
+<ul class="simple">
+<li><p>Applies resizing and grayscale/RGB conversion to images.</p></li>
+<li><p>Resizes segmentation masks with nearest-neighbor interpolation.</p></li>
+<li><p>Maps unknown label values to an ignore index (<cite>AI4MARS_IGNORE_INDEX</cite>).</p></li>
+<li><p>Optionally scans the split once to drop corrupted or undecodable samples
+and caches the list of valid indices for future runs.</p></li>
+</ul>
+<dl class="simple">
+<dt>hf_split :</dt><dd><p>A single split of the Hugging Face dataset (e.g. <cite>raw[“train”]</cite>).</p>
+</dd>
+<dt>image_size<span class="classifier">int, default=256</span></dt><dd><p>Target spatial size (height and width) for images and masks.</p>
+</dd>
+<dt>to_rgb<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert images to 3-channel RGB tensors.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale tensors.</p>
+</dd>
+<dt>scan_spurious<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, scan the split to find valid (decodable) samples, build
+<code class="docutils literal notranslate"><span class="pre">valid_indices</span></code>, and save them to disk in <code class="docutils literal notranslate"><span class="pre">cache_dir</span></code>. This is
+useful for the <strong>first</strong> run on a new dataset cache.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the dataset attempts to load precomputed valid indices
+from disk and skips the expensive scan.</p>
+</dd>
+<dt>cache_dir<span class="classifier">str, default=”./ai4mars_valid_indices”</span></dt><dd><p>Directory where per-split valid index files are stored
+(e.g. <code class="docutils literal notranslate"><span class="pre">valid_indices_train.npy</span></code>).</p>
+</dd>
+<dt>split_name<span class="classifier">str, default=”train”</span></dt><dd><p>Name of the split (<code class="docutils literal notranslate"><span class="pre">&quot;train&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;val&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;test&quot;</span></code>) used to build
+the cache file name.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>ds :</dt><dd><p>The underlying Hugging Face dataset split.</p>
+</dd>
+<dt>valid_indices<span class="classifier">list[int]</span></dt><dd><p>Indices of valid (non-corrupted) samples in <code class="docutils literal notranslate"><span class="pre">ds</span></code>.</p>
+</dd>
+<dt>image_transform :</dt><dd><p>Composed torchvision transform applied to images.</p>
+</dd>
+<dt>mask_resize :</dt><dd><p>torchvision transform used to resize label masks.</p>
+</dd>
+<dt>cache_path<span class="classifier">str</span></dt><dd><p>Path to the <code class="docutils literal notranslate"><span class="pre">.npy</span></code> file storing <code class="docutils literal notranslate"><span class="pre">valid_indices</span></code> for this split.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.dataloader.</span></span><span class="sig-name descname"><span class="pre">DataLoaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for the three data splits used in training and evaluation.</p>
+<dl class="simple">
+<dt>train<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the training split.</p>
+</dd>
+<dt>val<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the validation split.</p>
+</dd>
+<dt>test<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the test split.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.test">
+<span class="sig-name descname"><span class="pre">test</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.test" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.train">
+<span class="sig-name descname"><span class="pre">train</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.train" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.DataLoaders.val">
+<span class="sig-name descname"><span class="pre">val</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">DataLoader</span></em><a class="headerlink" href="#martian_terrain_segmentation.dataloader.DataLoaders.val" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.dataloader.create_ai4mars_dataloaders">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.dataloader.</span></span><span class="sig-name descname"><span class="pre">create_ai4mars_dataloaders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">42</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_train_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_test_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_local_disk_copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_disk_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./data/ai4mars_hf'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scan_spurious</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">valid_indices_cache_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'./ai4mars_valid_indices'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#martian_terrain_segmentation.dataloader.DataLoaders" title="martian_terrain_segmentation.dataloader.DataLoaders"><span class="pre">DataLoaders</span></a></span></span><a class="headerlink" href="#martian_terrain_segmentation.dataloader.create_ai4mars_dataloaders" title="Permalink to this definition">#</a></dt>
+<dd><p>Create train/validation/test dataloaders for the AI4Mars dataset.</p>
+<p>This function:</p>
+<ul class="simple">
+<li><p>Downloads (or loads from disk) the Hugging Face dataset
+<code class="docutils literal notranslate"><span class="pre">&quot;hassanjbara/AI4MARS&quot;</span></code>.</p></li>
+<li><p>Splits it into train/val/test splits (using <cite>val_fraction</cite> and a fixed seed).</p></li>
+<li><p>Optionally subsamples each split for faster experiments.</p></li>
+<li><p>Wraps each split in an <a class="reference internal" href="#martian_terrain_segmentation.dataloader.AI4MarsHFDataset" title="martian_terrain_segmentation.dataloader.AI4MarsHFDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">AI4MarsHFDataset</span></code></a>, which can scan for and
+cache valid (non-corrupted) samples.</p></li>
+<li><p>Returns PyTorch dataloaders for each split.</p></li>
+</ul>
+<dl class="simple">
+<dt>batch_size<span class="classifier">int, default=4</span></dt><dd><p>Batch size used for all three dataloaders.</p>
+</dd>
+<dt>image_size<span class="classifier">int, default=256</span></dt><dd><p>Spatial resolution to which images and masks are resized (square).</p>
+</dd>
+<dt>num_workers<span class="classifier">int, default=4</span></dt><dd><p>Number of worker processes for data loading.</p>
+</dd>
+<dt>val_fraction<span class="classifier">float, default=0.1</span></dt><dd><p>Fraction of the (non-test) data to reserve for validation.</p>
+</dd>
+<dt>to_rgb<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, convert grayscale Navcam images to 3-channel RGB.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, keep them as 1-channel grayscale.</p>
+</dd>
+<dt>seed<span class="classifier">int, default=42</span></dt><dd><p>Random seed used for splitting into train/val/test.</p>
+</dd>
+<dt>cache_dir<span class="classifier">str or None, default=None</span></dt><dd><p>Directory used by Hugging Face to cache the raw dataset.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default HF cache location is used.</p>
+</dd>
+<dt>max_train_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the training split to at most this many samples.
+Useful for quick debugging runs.</p>
+</dd>
+<dt>max_val_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the validation split to at most this many samples.</p>
+</dd>
+<dt>max_test_samples<span class="classifier">int or None, default=None</span></dt><dd><p>If not <code class="docutils literal notranslate"><span class="pre">None</span></code>, limit the test split to at most this many samples.</p>
+</dd>
+<dt>use_local_disk_copy<span class="classifier">bool, default=False</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, save the downloaded HF dataset to <code class="docutils literal notranslate"><span class="pre">local_disk_path</span></code> and
+load from there on subsequent runs (avoids re-downloading and reprocessing).</p>
+</dd>
+<dt>local_disk_path<span class="classifier">str, default=”./data/ai4mars_hf”</span></dt><dd><p>Path to store or load the local disk copy of the raw HF dataset.</p>
+</dd>
+<dt>scan_spurious<span class="classifier">bool, default=False</span></dt><dd><p>Controls how spurious/corrupted samples are handled:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, each split is scanned on this run, and a list of valid
+indices is built and saved into <code class="docutils literal notranslate"><span class="pre">valid_indices_cache_dir</span></code>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, we assume the scanning was already done, and valid
+indices are loaded from disk (if present), avoiding the expensive scan.</p></li>
+</ul>
+</dd>
+<dt>valid_indices_cache_dir<span class="classifier">str, default=”./ai4mars_valid_indices”</span></dt><dd><p>Directory where per-split valid index files (<code class="docutils literal notranslate"><span class="pre">.npy</span></code>) are stored and
+loaded. Files are named like <code class="docutils literal notranslate"><span class="pre">valid_indices_train.npy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">valid_indices_val.npy</span></code>, and <code class="docutils literal notranslate"><span class="pre">valid_indices_test.npy</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>DataLoaders</dt><dd><p>A dataclass bundle with <code class="docutils literal notranslate"><span class="pre">train</span></code>, <code class="docutils literal notranslate"><span class="pre">val</span></code>, and <code class="docutils literal notranslate"><span class="pre">test</span></code> PyTorch dataloaders.</p>
+</dd>
+</dl>
+<p>Basic usage:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">loaders</span> <span class="o">=</span> <span class="n">create_ai4mars_dataloaders</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">val_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">to_rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">scan_spurious</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># first run: build valid index cache</span>
+<span class="p">)</span>
+
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">train</span>
+<span class="n">val_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">val</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">test</span>
+</pre></div>
+</div>
+<p>For later runs, you can skip scanning:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">loaders</span> <span class="o">=</span> <span class="n">create_ai4mars_dataloaders</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">val_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">to_rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">scan_spurious</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># reuse cached valid indices</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.models"></span><p>Student &amp; Teacher U-Net–style semantic segmentation models for Martian terrain (AI4Mars).</p>
+<p>Model families provided:
+- <strong>UNet</strong>: lightweight student model used for distillation.
+- <strong>AttentionUNet</strong>: deeper teacher architecture with attention-gated skip connections.</p>
+<p>AI4Mars dataset:
+- Rover images from Curiosity, Opportunity, and Spirit.
+- Terrain classes: <code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">=</span> <span class="pre">soil</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">=</span> <span class="pre">bedrock</span></code>, <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">=</span> <span class="pre">sand</span></code>, <code class="docutils literal notranslate"><span class="pre">3</span> <span class="pre">=</span> <span class="pre">big</span> <span class="pre">rock</span></code>.
+- <code class="docutils literal notranslate"><span class="pre">255</span></code> = no-label / ignored.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionGate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">AttentionGate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">F_g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F_l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">F_int</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionGate" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p><strong>Attention gate (AG)</strong> for U-Net skip connections, from <em>Attention U-Net</em>.</p>
+<p>Given encoder skip features <span class="math notranslate nohighlight">\(x\)</span> and decoder gating features <span class="math notranslate nohighlight">\(g\)</span>,
+the gate computes:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\psi = \sigma(\mathrm{Conv}( \mathrm{ReLU}(W_g g + W_x x)))\\\tilde{x} = \psi \odot x\end{aligned}\end{align} \]</div>
+<p>so that skip features can be suppressed when irrelevant.</p>
+<dl class="simple">
+<dt>F_g<span class="classifier">int</span></dt><dd><p>Channels of the decoder gating signal.</p>
+</dd>
+<dt>F_l<span class="classifier">int</span></dt><dd><p>Channels of the encoder skip feature map.</p>
+</dd>
+<dt>F_int<span class="classifier">int</span></dt><dd><p>Reduced intermediate dimensionality for gating.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionGate.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">g</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionGate.forward" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>g<span class="classifier">torch.Tensor</span></dt><dd><p>Decoder gating signal <code class="docutils literal notranslate"><span class="pre">[B,F_g,H_g,W_g]</span></code>.</p>
+</dd>
+<dt>x<span class="classifier">torch.Tensor</span></dt><dd><p>Encoder skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Attention-reweighted skip features <code class="docutils literal notranslate"><span class="pre">[B,F_l,H_x,W_x]</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionUNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">AttentionUNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionUNet" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p><strong>Teacher model</strong>: deeper Attention U-Net.</p>
+<p>Differences from student U-Net:
+- 5 encoder + 5 decoder levels (deeper)
+- Attention gates on all skip connections
+- Wider feature maps (larger <code class="docutils literal notranslate"><span class="pre">base_channels</span></code>)</p>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Image channels.</p>
+</dd>
+<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes.</p>
+</dd>
+<dt>base_channels<span class="classifier">int</span></dt><dd><p>Width multiplier for encoder.</p>
+</dd>
+<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Bilinear vs transposed conv upsampling.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionUNet.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionUNet.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Forward pass of the Attention U-Net.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.AttentionUNet.get_cam_layer">
+<span class="sig-name descname"><span class="pre">get_cam_layer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Module</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.AttentionUNet.get_cam_layer" title="Permalink to this definition">#</a></dt>
+<dd><p>Return last decoder block for Grad-CAM.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.DoubleConv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">DoubleConv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.DoubleConv" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Two consecutive convolution–BatchNorm–ReLU blocks:</p>
+<div class="math notranslate nohighlight">
+\[x \mapsto \mathrm{ReLU}(\mathrm{BN}(\mathrm{Conv}(x)))\]</div>
+<p>applied twice.</p>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Number of input channels.</p>
+</dd>
+<dt>out_channels<span class="classifier">int</span></dt><dd><p>Number of feature channels in the output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.DoubleConv.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.DoubleConv.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Apply the 2×(Conv–BN–ReLU) block.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.Down">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">Down</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.Down" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Downscaling (encoder) block consisting of:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MaxPool2d(2)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">DoubleConv(in_channels,</span> <span class="pre">out_channels)</span></code></p></li>
+</ul>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Channels of input feature map.</p>
+</dd>
+<dt>out_channels<span class="classifier">int</span></dt><dd><p>Channels after convolution.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.Down.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.Down.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Define the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.OutConv">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">OutConv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.OutConv" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Final 1×1 convolution producing class logits.</p>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Channels of input feature map.</p>
+</dd>
+<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.OutConv.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.OutConv.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Return raw class logits of shape <code class="docutils literal notranslate"><span class="pre">[B,num_classes,H,W]</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.UNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">UNet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.UNet" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Lightweight U-Net used as the <strong>student</strong> in distillation.</p>
+<p>Architecture: 4 down → 4 up with skip connections.</p>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Input channels (<code class="docutils literal notranslate"><span class="pre">1</span></code> for grayscale Navcam).</p>
+</dd>
+<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of segmentation classes (AI4Mars uses <code class="docutils literal notranslate"><span class="pre">4</span></code>).</p>
+</dd>
+<dt>base_channels<span class="classifier">int</span></dt><dd><p>Width of first convolution layer. Determines model size.</p>
+</dd>
+<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear upsampling (recommended).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.UNet.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.UNet.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Forward pass of the U-Net.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.UNet.get_cam_layer">
+<span class="sig-name descname"><span class="pre">get_cam_layer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Module</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.UNet.get_cam_layer" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the decoder layer used as the CAM target.</p>
+<p>This is consumed by explainability utilities such as Grad-CAM.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.Up">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">Up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.Up" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Upsampling (decoder) block for standard U-Net.</p>
+<p>Includes either:
+- bilinear upsampling, or
+- transposed convolution.</p>
+<p>Followed by <code class="docutils literal notranslate"><span class="pre">DoubleConv</span></code>.</p>
+<dl class="simple">
+<dt>in_channels<span class="classifier">int</span></dt><dd><p>Total number of channels after concatenation of skip + upsampled features.</p>
+</dd>
+<dt>out_channels<span class="classifier">int</span></dt><dd><p>Output feature channels.</p>
+</dd>
+<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear interpolation (preferred for lightweight model).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.Up.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.Up.forward" title="Permalink to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>x_up<span class="classifier">torch.Tensor</span></dt><dd><p>Decoder feature map (coarse).</p>
+</dd>
+<dt>x_skip<span class="classifier">torch.Tensor</span></dt><dd><p>Encoder skip feature map (fine).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Feature map after concatenation + convolution.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.UpAttn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">UpAttn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">up_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.models.UpAttn" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Upsampling block with <strong>attention-gated skip connections</strong>.</p>
+<dl class="simple">
+<dt>skip_channels<span class="classifier">int</span></dt><dd><p>Channels of encoder skip features.</p>
+</dd>
+<dt>up_channels<span class="classifier">int</span></dt><dd><p>Channels of decoder feature map.</p>
+</dd>
+<dt>out_channels<span class="classifier">int</span></dt><dd><p>Channels after concatenation + DoubleConv.</p>
+</dd>
+<dt>bilinear<span class="classifier">bool</span></dt><dd><p>Whether to use bilinear interpolation instead of transposed conv.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.UpAttn.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.UpAttn.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Apply attention gate → concat with upsampled features → DoubleConv.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.create_teacher_unet">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">create_teacher_unet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#martian_terrain_segmentation.models.AttentionUNet" title="martian_terrain_segmentation.models.AttentionUNet"><span class="pre">AttentionUNet</span></a></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.create_teacher_unet" title="Permalink to this definition">#</a></dt>
+<dd><p>Factory for the deeper teacher model.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.models.create_unet">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.models.</span></span><span class="sig-name descname"><span class="pre">create_unet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_channels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bilinear</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#martian_terrain_segmentation.models.UNet" title="martian_terrain_segmentation.models.UNet"><span class="pre">UNet</span></a></span></span><a class="headerlink" href="#martian_terrain_segmentation.models.create_unet" title="Permalink to this definition">#</a></dt>
+<dd><p>Factory for the lightweight student U-Net.</p>
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.distillation"></span><p>Knowledge distillation utilities for semantic segmentation.</p>
+<p>This module currently provides:</p>
+<ul>
+<li><p><a class="reference internal" href="#martian_terrain_segmentation.distillation.SegmentationKDLoss" title="martian_terrain_segmentation.distillation.SegmentationKDLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">SegmentationKDLoss</span></code></a>: a pixel-wise distillation loss combining
+standard cross-entropy with a KL divergence term between teacher and
+student logits, following the classic KD formulation:</p>
+<div class="math notranslate nohighlight">
+\[L = \alpha \cdot \mathrm{CE}(y, s)
+    + (1 - \alpha) T^2
+      \cdot \mathrm{KL}
+      ( \mathrm{softmax}(t/T) \;\Vert\; \mathrm{softmax}(s/T) ),\]</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">s</span></code> and <code class="docutils literal notranslate"><span class="pre">t</span></code> denote student and teacher logits respectively,
+and the loss is averaged over all non-ignored pixels.</p>
+</li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.distillation.SegmentationKDLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.distillation.</span></span><span class="sig-name descname"><span class="pre">SegmentationKDLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ignore_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.distillation.SegmentationKDLoss" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<p>Pixel-wise knowledge distillation loss for semantic segmentation.</p>
+<p>This loss combines a standard supervised cross-entropy term with a
+KL-divergence term that encourages the student to match the
+teacher’s softened class probabilities (as in Hinton et al., 2015).</p>
+<p>The loss is defined as:</p>
+<div class="math notranslate nohighlight">
+\[L = \alpha \cdot \mathcal{L}_{\text{CE}}(y, s)
+  + (1 - \alpha) T^2
+    \cdot \mathcal{L}_{\text{KD}}(t, s),\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathcal{L}_{\text{CE}}\)</span> is pixel-wise cross-entropy w.r.t.
+the ground truth labels <span class="math notranslate nohighlight">\(y\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{L}_{\text{KD}}\)</span> is the pixel-wise KL divergence
+between teacher and student predictive distributions with
+temperature <span class="math notranslate nohighlight">\(T\)</span>.</p></li>
+</ul>
+<p>The KL term is computed per pixel, masked by <code class="docutils literal notranslate"><span class="pre">ignore_index</span></code>, and
+averaged over all valid pixels.</p>
+<dl class="simple">
+<dt>ignore_index<span class="classifier">int</span></dt><dd><p>Label value in the target mask that should be ignored when
+computing both the CE and KD terms (e.g. unlabeled/void pixels).</p>
+</dd>
+<dt>alpha<span class="classifier">float, default=0.5</span></dt><dd><p>Trade-off parameter between the supervised CE loss and the
+distillation (KL) loss. <code class="docutils literal notranslate"><span class="pre">alpha=1.0</span></code> means pure CE,
+<code class="docutils literal notranslate"><span class="pre">alpha=0.0</span></code> means pure distillation.</p>
+</dd>
+<dt>T<span class="classifier">float, default=2.0</span></dt><dd><p>Temperature used to soften the teacher and student logits in
+the KD term. Larger values produce softer probability
+distributions and typically richer distillation signals.</p>
+</dd>
+</dl>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kd_loss_fn</span> <span class="o">=</span> <span class="n">SegmentationKDLoss</span><span class="p">(</span><span class="n">ignore_index</span><span class="o">=</span><span class="mi">255</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">T</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+<span class="c1"># student_logits, teacher_logits: [B, C, H, W]</span>
+<span class="c1"># targets: [B, H, W] with values in {0..C-1} or ignore_index</span>
+<span class="n">loss</span> <span class="o">=</span> <span class="n">kd_loss_fn</span><span class="p">(</span><span class="n">student_logits</span><span class="p">,</span> <span class="n">teacher_logits</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.distillation.SegmentationKDLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">student_logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">targets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.distillation.SegmentationKDLoss.forward" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute the combined CE + KD loss for segmentation.</p>
+<dl class="simple">
+<dt>student_logits<span class="classifier">torch.Tensor</span></dt><dd><p>Logits from the student network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+</dd>
+<dt>teacher_logits<span class="classifier">torch.Tensor</span></dt><dd><p>Logits from the teacher network of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.
+These are treated as fixed targets (no gradient should flow
+into the teacher).</p>
+</dd>
+<dt>targets<span class="classifier">torch.Tensor</span></dt><dd><p>Ground-truth segmentation mask of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code> with
+integer class indices in <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">C-1]</span></code> or <code class="docutils literal notranslate"><span class="pre">ignore_index</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Scalar tensor containing the total distillation loss.</p>
+</dd>
+</dl>
+<p>The returned loss is:</p>
+<div class="math notranslate nohighlight">
+\[L = \alpha \cdot \mathrm{CE}(y, s)
+  + (1 - \alpha) T^2
+    \cdot \mathrm{KL}
+    ( \mathrm{softmax}(t/T) \;\Vert\; \mathrm{softmax}(s/T) ),\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p>The cross-entropy term is averaged over all pixels with
+<code class="docutils literal notranslate"><span class="pre">targets</span> <span class="pre">!=</span> <span class="pre">ignore_index</span></code>.</p></li>
+<li><p>The KL term is also averaged over valid pixels and scaled by
+<span class="math notranslate nohighlight">\(T^2\)</span> following the original KD formulation.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.explainability"></span><p>Explainability utilities for Martian terrain segmentation models.</p>
+<p>This module provides unified interfaces for:
+- <strong>Grad-CAM</strong> heatmaps over decoder features
+- <strong>Integrated Gradients</strong> saliency maps
+- <strong>Neural PCA</strong>: class-wise PCA in feature space, following the lecture slides</p>
+<p>The tools are written to work with the U-Net architecture defined in
+<code class="docutils literal notranslate"><span class="pre">models.py</span></code> but are generic enough to be used with any segmentation
+model that exposes a CAM target layer and a final 1×1 classifier.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.compute_class_neural_pca_features">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">compute_class_neural_pca_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#martian_terrain_segmentation.explainability.compute_class_neural_pca_features" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute <strong>Neural PCA</strong> for each class, following the lecture slides.</p>
+<p>We compute:</p>
+<ul>
+<li><p>Feature vectors <span class="math notranslate nohighlight">\(\phi(x)\)</span></p></li>
+<li><p>Classifier weights <span class="math notranslate nohighlight">\(w_k\)</span></p></li>
+<li><p>Class-specific embedding:</p>
+<div class="math notranslate nohighlight">
+\[\psi_k(x) = w_k \odot \phi(x)\]</div>
+</li>
+</ul>
+<p>Then perform PCA over the set <span class="math notranslate nohighlight">\(\{\psi_k(x_i)\}\)</span> for each class.</p>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Trained segmentation network.</p>
+</dd>
+<dt>dataset :</dt><dd><p>Dataset providing <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code> samples.</p>
+</dd>
+<dt>device<span class="classifier">torch.device</span></dt><dd><p>Device for model inference.</p>
+</dd>
+<dt>class_ids<span class="classifier">sequence of int</span></dt><dd><p>Class indices to process.</p>
+</dd>
+<dt>max_samples_per_class<span class="classifier">int</span></dt><dd><p>Maximum number of samples to use per class.</p>
+</dd>
+<dt>n_components<span class="classifier">int</span></dt><dd><p>Number of PCA components to retain.</p>
+</dd>
+<dt>min_per_class<span class="classifier">int</span></dt><dd><p>Minimum samples required to run PCA.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>dict</dt><dd><p>Mapping <code class="docutils literal notranslate"><span class="pre">class_id</span> <span class="pre">-&gt;</span> <span class="pre">PCA</span> <span class="pre">results</span></code> with keys:
+- <code class="docutils literal notranslate"><span class="pre">mean_psi</span></code> : <code class="docutils literal notranslate"><span class="pre">[D]</span></code>
+- <code class="docutils literal notranslate"><span class="pre">eigvecs</span></code> : <code class="docutils literal notranslate"><span class="pre">[L,D]</span></code>
+- <code class="docutils literal notranslate"><span class="pre">eigvals</span></code> : <code class="docutils literal notranslate"><span class="pre">[L]</span></code>
+- <code class="docutils literal notranslate"><span class="pre">alphas</span></code>  : <code class="docutils literal notranslate"><span class="pre">[N,L]</span></code> projection scores
+- <code class="docutils literal notranslate"><span class="pre">indices</span></code> : dataset indices used
+- <code class="docutils literal notranslate"><span class="pre">psi</span></code>     : raw psi vectors <code class="docutils literal notranslate"><span class="pre">[N,D]</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.explain_per_class_examples">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">explain_per_class_examples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_examples_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ig_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.explainability.explain_per_class_examples" title="Permalink to this definition">#</a></dt>
+<dd><p>Generate combined explainability visualizations for each class:</p>
+<ul class="simple">
+<li><p>Input image</p></li>
+<li><p>Grad-CAM</p></li>
+<li><p>Integrated Gradients</p></li>
+</ul>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Trained segmentation model.</p>
+</dd>
+<dt>dataset :</dt><dd><p>Dataset providing <code class="docutils literal notranslate"><span class="pre">(img,</span> <span class="pre">mask)</span></code>.</p>
+</dd>
+<dt>device<span class="classifier">torch.device</span></dt><dd><p>Compute device.</p>
+</dd>
+<dt>num_examples_per_class<span class="classifier">int</span></dt><dd><p>Number of examples per class.</p>
+</dd>
+<dt>ig_steps<span class="classifier">int</span></dt><dd><p>IG integration steps.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.grad_cam">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">grad_cam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.explainability.grad_cam" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute a <strong>Grad-CAM</strong> heatmap for semantic segmentation.</p>
+<p>Grad-CAM produces a spatial importance map based on gradients flowing
+into a target convolutional layer:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{CAM}(x) =
+    \mathrm{ReLU}
+    \Big(
+        \sum_f \alpha_f \cdot A_f(x)
+    \Big),\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(A_f\)</span> are the feature maps</p></li>
+<li><p><span class="math notranslate nohighlight">\(\alpha_f = \frac{1}{HW} \sum_{i,j}
+\frac{\partial y_k}{\partial A_f(i,j)}\)</span> are channel-wise weights</p></li>
+<li><p><span class="math notranslate nohighlight">\(y_k\)</span> is the class score (here averaged over spatial pixels)</p></li>
+</ul>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model outputting logits of shape <code class="docutils literal notranslate"><span class="pre">[B,C,H,W]</span></code>.</p>
+</dd>
+<dt>input_tensor<span class="classifier">torch.Tensor</span></dt><dd><p>Single input image of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Gradients must be enabled.</p>
+</dd>
+<dt>target_class<span class="classifier">int</span></dt><dd><p>Class index <code class="docutils literal notranslate"><span class="pre">0..num_classes-1</span></code> for which to compute Grad-CAM.</p>
+</dd>
+<dt>target_layer<span class="classifier">nn.Module</span></dt><dd><p>Layer to hook for feature maps and gradients (e.g. <code class="docutils literal notranslate"><span class="pre">model.get_cam_layer()</span></code>).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Heatmap of shape <code class="docutils literal notranslate"><span class="pre">[1,1,H,W]</span></code> normalized to <code class="docutils literal notranslate"><span class="pre">[0,1]</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.integrated_gradients">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">integrated_gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_tensor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">torch.Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.explainability.integrated_gradients" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute <strong>Integrated Gradients</strong> (IG) for segmentation.</p>
+<p>Integrated Gradients approximates the path integral:</p>
+<div class="math notranslate nohighlight">
+\[\mathrm{IG}(x)
+= (x - x_0)
+  \times
+  \int_{0}^{1}
+    \frac{\partial f(x_0 + \alpha (x - x_0))}
+    {\partial x}
+  \, d\alpha,\]</div>
+<p>where <span class="math notranslate nohighlight">\(x_0\)</span> is a baseline (typically zeros).</p>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model.</p>
+</dd>
+<dt>input_tensor<span class="classifier">torch.Tensor</span></dt><dd><p>Input image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p>
+</dd>
+<dt>target_class<span class="classifier">int</span></dt><dd><p>Class index whose score to differentiate.</p>
+</dd>
+<dt>baseline<span class="classifier">torch.Tensor, optional</span></dt><dd><p>Baseline image <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>. Default: zeros.</p>
+</dd>
+<dt>steps<span class="classifier">int</span></dt><dd><p>Number of steps for Riemann sum approximation.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Attribution map of shape <code class="docutils literal notranslate"><span class="pre">[1,C,H,W]</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.normalize_map">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">normalize_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.explainability.normalize_map" title="Permalink to this definition">#</a></dt>
+<dd><p>Normalize tensor linearly to the <code class="docutils literal notranslate"><span class="pre">[0,1]</span></code> range.</p>
+<dl class="simple">
+<dt>t<span class="classifier">torch.Tensor</span></dt><dd><p>Input tensor.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Normalized tensor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.explainability.show_top_neural_pca_images_for_class">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.explainability.</span></span><span class="sig-name descname"><span class="pre">show_top_neural_pca_images_for_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neural_pca_results</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_idx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#martian_terrain_segmentation.explainability.show_top_neural_pca_images_for_class" title="Permalink to this definition">#</a></dt>
+<dd><p>Visualize the <strong>top-k images</strong> that maximally activate a neural PCA
+component for a given class.</p>
+<p>For PCA component <span class="math notranslate nohighlight">\(v_\ell\)</span>, the ranking uses:</p>
+<div class="math notranslate nohighlight">
+\[\alpha_\ell^{(k)}(x_i)\]</div>
+<dl class="simple">
+<dt>neural_pca_results<span class="classifier">dict</span></dt><dd><p>Output of <a class="reference internal" href="#martian_terrain_segmentation.explainability.compute_class_neural_pca_features" title="martian_terrain_segmentation.explainability.compute_class_neural_pca_features"><code class="xref py py-func docutils literal notranslate"><span class="pre">compute_class_neural_pca_features()</span></code></a>.</p>
+</dd>
+<dt>dataset :</dt><dd><p>Dataset that returns <code class="docutils literal notranslate"><span class="pre">(image,</span> <span class="pre">mask)</span></code>.</p>
+</dd>
+<dt>class_id<span class="classifier">int</span></dt><dd><p>Class index to visualize.</p>
+</dd>
+<dt>component_idx<span class="classifier">int</span></dt><dd><p>PCA component index (0-based).</p>
+</dd>
+<dt>top_k<span class="classifier">int</span></dt><dd><p>Number of top activating images to display.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.optimizers"></span><p>Optimizer helpers for model training.</p>
+<p>This module provides:</p>
+<ol class="arabic simple">
+<li><p><strong>create_optimizer</strong>  
+Smart optimizer selection with priority:
+- Muon (if installed and explicitly enabled),
+- NAdam (PyTorch’s NAdamW-like implementation),
+- AdamW as a safe fallback.</p></li>
+<li><p><strong>create_cosine_scheduler_with_warmup</strong>  
+A cosine–annealing learning rate schedule with linear warmup,
+mathematically equivalent to the Hugging Face transformers scheduler.</p></li>
+</ol>
+<p>Both utilities are framework-agnostic and work with any PyTorch model.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.optimizers.create_cosine_scheduler_with_warmup">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.optimizers.</span></span><span class="sig-name descname"><span class="pre">create_cosine_scheduler_with_warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_warmup_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_training_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_cycles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">LambdaLR</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.optimizers.create_cosine_scheduler_with_warmup" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a cosine-annealing LR scheduler with linear warmup.</p>
+<p>Given current step <span class="math notranslate nohighlight">\(t\)</span>, warmup <span class="math notranslate nohighlight">\(W\)</span>, and total steps <span class="math notranslate nohighlight">\(T\)</span>,
+the schedule is:</p>
+<p><strong>Warmup (linear):</strong></p>
+<div class="math notranslate nohighlight">
+\[\text{lr}(t) = \frac{t}{W}, \quad 0 \le t &lt; W\]</div>
+<p><strong>Cosine decay:</strong></p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\text{progress} = \frac{t - W}{T - W}\\\text{lr}(t) =
+\tfrac{1}{2}\left(1 + \cos\big( 2\pi \cdot C \cdot \text{progress} \big)\right)\end{aligned}\end{align} \]</div>
+<p>Where:
+- <span class="math notranslate nohighlight">\(C\)</span> = <code class="docutils literal notranslate"><span class="pre">num_cycles</span></code> controls the number of cosine waves</p>
+<blockquote>
+<div><p>(<code class="docutils literal notranslate"><span class="pre">0.5</span></code> = standard: decay → 0 once)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Optimizer whose learning rate will be scheduled.</p>
+</dd>
+<dt>num_warmup_steps<span class="classifier">int</span></dt><dd><p>Number of linear warmup steps, typically 5–10% of total training steps.</p>
+</dd>
+<dt>num_training_steps<span class="classifier">int</span></dt><dd><p>Total number of steps (<code class="docutils literal notranslate"><span class="pre">epochs</span> <span class="pre">*</span> <span class="pre">steps_per_epoch</span></code>).</p>
+</dd>
+<dt>num_cycles<span class="classifier">float, optional</span></dt><dd><p>Number of cosine cycles.  
+Default <code class="docutils literal notranslate"><span class="pre">0.5</span></code> = half-cycle (decay to 0 exactly once).</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.optim.lr_scheduler.LambdaLR</dt><dd><p>Scheduler that updates the LR dynamically during training.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>This implementation is mathematically equivalent to
+<code class="docutils literal notranslate"><span class="pre">transformers.get_cosine_schedule_with_warmup</span></code>.</p></li>
+<li><p>LR returned by the lambda is multiplied with the optimizer’s base LR.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.optimizers.create_optimizer">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.optimizers.</span></span><span class="sig-name descname"><span class="pre">create_optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_muon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optimizer</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.optimizers.create_optimizer" title="Permalink to this definition">#</a></dt>
+<dd><p>Create an optimizer for a given model with prioritized fallback logic.</p>
+<ol class="arabic simple">
+<li><p><strong>Muon</strong> (if installed and <code class="docutils literal notranslate"><span class="pre">use_muon=True</span></code>)  
+Muon is a second-order optimizer approximating natural gradient steps.</p></li>
+<li><p><strong>NAdam</strong>  
+PyTorch’s NAdam implementation (NadamW-style), supporting weight decay.</p></li>
+<li><p><strong>AdamW</strong>  
+Stable, widely used, standard fallback.</p></li>
+</ol>
+<dl class="simple">
+<dt>model<span class="classifier">torch.nn.Module</span></dt><dd><p>Model whose trainable parameters will be optimized.</p>
+</dd>
+<dt>lr<span class="classifier">float, optional</span></dt><dd><p>Learning rate (default: <code class="docutils literal notranslate"><span class="pre">3e-4</span></code>).</p>
+</dd>
+<dt>weight_decay<span class="classifier">float, optional</span></dt><dd><p>Weight decay coefficient (default: <code class="docutils literal notranslate"><span class="pre">1e-2</span></code>).</p>
+</dd>
+<dt>use_muon<span class="classifier">bool, optional</span></dt><dd><p>Whether the user prefers to use Muon if available.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.optim.Optimizer</dt><dd><p>Constructed optimizer instance.</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Only parameters with <code class="docutils literal notranslate"><span class="pre">requires_grad=True</span></code> are passed to the optimizer.</p></li>
+<li><p>If Muon is requested but not installed, AdamW is used and a warning printed.</p></li>
+</ul>
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.train_utils"></span><p>Training and evaluation utilities for semantic segmentation on AI4Mars.</p>
+<p>This module provides:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>_compute_batch_metrics</cite>:</dt><dd><p>Per-batch pixel accuracy and mean IoU computation.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>train_one_epoch</cite>:</dt><dd><p>Single-epoch training loop with optional AMP, tqdm, and LR scheduler.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>evaluate</cite>:</dt><dd><p>Validation/test loop mirroring the training metrics.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>save_checkpoint</cite> &amp; <cite>load_checkpoint</cite>:</dt><dd><p>Lightweight checkpoint helpers for model + optimizer + scheduler state.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>All helpers assume a standard semantic segmentation setup with logits of shape
+<code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code> and integer masks of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.train_utils.evaluate">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.train_utils.</span></span><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tqdm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#martian_terrain_segmentation.train_utils.evaluate" title="Permalink to this definition">#</a></dt>
+<dd><p>Evaluate a segmentation model on a validation or test split.</p>
+<p>This mirrors <a class="reference internal" href="#martian_terrain_segmentation.train_utils.train_one_epoch" title="martian_terrain_segmentation.train_utils.train_one_epoch"><code class="xref py py-func docutils literal notranslate"><span class="pre">train_one_epoch()</span></code></a> but:</p>
+<ul class="simple">
+<li><p>Disables gradient computation.</p></li>
+<li><p>Does <strong>not</strong> update model, optimizer, or scheduler.</p></li>
+<li><p>Still reports mean loss, pixel accuracy, and mIoU.</p></li>
+</ul>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model to evaluate.</p>
+</dd>
+<dt>dataloader<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Validation or test data loader.</p>
+</dd>
+<dt>device<span class="classifier">torch.device</span></dt><dd><p>Evaluation device.</p>
+</dd>
+<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of semantic classes.</p>
+</dd>
+<dt>use_tqdm<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, show a tqdm progress bar over batches.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Dict[str, float]</dt><dd><p>Dictionary with keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;loss&quot;</span></code> : mean loss,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;pixel_acc&quot;</span></code> : mean pixel accuracy,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;miou&quot;</span></code> : mean IoU.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.train_utils.load_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.train_utils.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Optimizer</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">_LRScheduler</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">map_location</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">torch.device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#martian_terrain_segmentation.train_utils.load_checkpoint" title="Permalink to this definition">#</a></dt>
+<dd><p>Load a training checkpoint from disk and restore model/optimizer/scheduler.</p>
+<dl class="simple">
+<dt>path<span class="classifier">str</span></dt><dd><p>Path to the checkpoint file (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p>
+</dd>
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Model into which <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code> will be loaded.</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer, optional</span></dt><dd><p>Optimizer to restore from <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code> (if present).</p>
+</dd>
+<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Scheduler to restore from <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code> (if present).</p>
+</dd>
+<dt>map_location<span class="classifier">str or torch.device, optional</span></dt><dd><p>Device mapping for loaded tensors, passed directly to <code class="docutils literal notranslate"><span class="pre">torch.load</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Dict[str, Any]</dt><dd><p>Dictionary with any extra information stored in the checkpoint, with keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;epoch&quot;</span></code> : int or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;metrics&quot;</span></code> : dict or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;extra&quot;</span></code> : dict or <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+</ul>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Missing optimizer or scheduler states are silently ignored.</p></li>
+<li><p>This function does <strong>not</strong> perform any strict version checking.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.train_utils.save_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.train_utils.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Optimizer</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">_LRScheduler</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.train_utils.save_checkpoint" title="Permalink to this definition">#</a></dt>
+<dd><p>Save a training checkpoint to disk.</p>
+<p>The checkpoint is a <code class="docutils literal notranslate"><span class="pre">dict</span></code> that can contain:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code> (always present)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code> (if <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> is provided)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code> (if <code class="docutils literal notranslate"><span class="pre">scheduler</span></code> is provided)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;epoch&quot;</span></code> (if provided)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;metrics&quot;</span></code> (if provided)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;extra&quot;</span></code> (any additional user metadata)</p></li>
+</ul>
+<dl class="simple">
+<dt>path<span class="classifier">str</span></dt><dd><p>File path to save to (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;checkpoints/best_model.pt&quot;</span></code>).</p>
+</dd>
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Model whose <code class="docutils literal notranslate"><span class="pre">state_dict</span></code> will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;model_state&quot;</span></code>.</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer, optional</span></dt><dd><p>Optimizer whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;optimizer_state&quot;</span></code>.</p>
+</dd>
+<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Scheduler whose state will be stored as <code class="docutils literal notranslate"><span class="pre">&quot;scheduler_state&quot;</span></code>.</p>
+</dd>
+<dt>epoch<span class="classifier">int, optional</span></dt><dd><p>Epoch index at the time of saving.</p>
+</dd>
+<dt>metrics<span class="classifier">Dict[str, float], optional</span></dt><dd><p>Dictionary of scalar metrics (e.g. best validation mIoU).</p>
+</dd>
+<dt>extra<span class="classifier">Dict[str, Any], optional</span></dt><dd><p>Arbitrary additional metadata to store.</p>
+</dd>
+</dl>
+<p>None</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.train_utils.train_one_epoch">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.train_utils.</span></span><span class="sig-name descname"><span class="pre">train_one_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataLoader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Module</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_amp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_tqdm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">_LRScheduler</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#martian_terrain_segmentation.train_utils.train_one_epoch" title="Permalink to this definition">#</a></dt>
+<dd><p>Train a segmentation model for a single epoch.</p>
+<p>The loop supports:</p>
+<ul class="simple">
+<li><p>Mixed precision via <code class="docutils literal notranslate"><span class="pre">torch.cuda.amp</span></code> (<code class="docutils literal notranslate"><span class="pre">use_amp=True</span></code>).</p></li>
+<li><p>A per-step LR scheduler (e.g. cosine with warmup).</p></li>
+<li><p>Optional tqdm progress bars.</p></li>
+</ul>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Segmentation model producing logits of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+</dd>
+<dt>dataloader<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Training data loader yielding <code class="docutils literal notranslate"><span class="pre">(images,</span> <span class="pre">masks)</span></code> batches.</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Optimizer instance (e.g. Muon, NAdam, AdamW).</p>
+</dd>
+<dt>device<span class="classifier">torch.device</span></dt><dd><p>Target device (e.g. <code class="docutils literal notranslate"><span class="pre">torch.device(&quot;cuda&quot;)</span></code>).</p>
+</dd>
+<dt>num_classes<span class="classifier">int</span></dt><dd><p>Number of semantic classes (for mIoU computation).</p>
+</dd>
+<dt>loss_fn<span class="classifier">nn.Module, optional</span></dt><dd><p>Loss function. Defaults to <code class="docutils literal notranslate"><span class="pre">nn.CrossEntropyLoss</span></code> with
+<code class="docutils literal notranslate"><span class="pre">ignore_index=AI4MARS_IGNORE_INDEX</span></code>.</p>
+</dd>
+<dt>use_amp<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, run the forward/backward pass in mixed precision.</p>
+</dd>
+<dt>use_tqdm<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, wrap the dataloader with a tqdm progress bar.</p>
+</dd>
+<dt>epoch<span class="classifier">int, optional</span></dt><dd><p>Current epoch index (1-based), used only for labeling tqdm.</p>
+</dd>
+<dt>num_epochs<span class="classifier">int, optional</span></dt><dd><p>Total number of epochs, used only for labeling tqdm.</p>
+</dd>
+<dt>scheduler<span class="classifier">torch.optim.lr_scheduler._LRScheduler, optional</span></dt><dd><p>Optional per-step LR scheduler; <code class="docutils literal notranslate"><span class="pre">scheduler.step()</span></code> is called once
+per batch.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Dict[str, float]</dt><dd><p>Dictionary with average metrics over the epoch:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;loss&quot;</span></code> : mean training loss</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;pixel_acc&quot;</span></code> : mean pixel accuracy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;miou&quot;</span></code> : mean IoU</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-martian_terrain_segmentation.uncertainty"></span><p>Uncertainty quantification helpers for semantic segmentation.</p>
+<p>This module provides simple, post-hoc <strong>epistemic-style</strong> uncertainty
+proxies based purely on the softmax output of a model:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><a class="reference internal" href="#martian_terrain_segmentation.uncertainty.predictive_entropy" title="martian_terrain_segmentation.uncertainty.predictive_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">predictive_entropy()</span></code></a>:</dt><dd><p>Per-pixel predictive entropy <span class="math notranslate nohighlight">\(H(p(y \mid x))\)</span>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="#martian_terrain_segmentation.uncertainty.max_prob_uncertainty" title="martian_terrain_segmentation.uncertainty.max_prob_uncertainty"><code class="xref py py-func docutils literal notranslate"><span class="pre">max_prob_uncertainty()</span></code></a>:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">max_softmax_prob</span></code> per pixel.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Both functions take pre-softmax logits of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code> and
+return per-pixel uncertainty maps of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.uncertainty.max_prob_uncertainty">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.uncertainty.</span></span><span class="sig-name descname"><span class="pre">max_prob_uncertainty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.uncertainty.max_prob_uncertainty" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute a simple <strong>max-softmax-based</strong> uncertainty proxy.</p>
+<p>For each pixel, let:</p>
+<div class="math notranslate nohighlight">
+\[p_{\max} = \max_c p_c,\]</div>
+<p>where <span class="math notranslate nohighlight">\(p_c\)</span> is the softmax probability of class <span class="math notranslate nohighlight">\(c\)</span>.</p>
+<p>We define the uncertainty score as:</p>
+<div class="math notranslate nohighlight">
+\[u = 1 - p_{\max}.\]</div>
+<p>If the model is very confident (e.g. <span class="math notranslate nohighlight">\(p_{\max} \approx 1\)</span>),
+then <span class="math notranslate nohighlight">\(u \approx 0\)</span>. If the model is unsure (probabilities are
+more uniform), <span class="math notranslate nohighlight">\(p_{\max}\)</span> is lower and <span class="math notranslate nohighlight">\(u\)</span> increases.</p>
+<dl class="simple">
+<dt>logits<span class="classifier">torch.Tensor</span></dt><dd><p>Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Uncertainty scores of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, typically in the
+range <span class="math notranslate nohighlight">\([0, 1]\)</span>, where larger values indicate higher
+uncertainty.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="martian_terrain_segmentation.uncertainty.predictive_entropy">
+<span class="sig-prename descclassname"><span class="pre">martian_terrain_segmentation.uncertainty.</span></span><span class="sig-name descname"><span class="pre">predictive_entropy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#martian_terrain_segmentation.uncertainty.predictive_entropy" title="Permalink to this definition">#</a></dt>
+<dd><p>Compute <strong>per-pixel predictive entropy</strong> from logits.</p>
+<p>For each pixel, if <span class="math notranslate nohighlight">\(p_c\)</span> is the softmax probability of class
+<span class="math notranslate nohighlight">\(c \in \{1, \dots, C\}\)</span>, the entropy is:</p>
+<div class="math notranslate nohighlight">
+\[H(p) = -\sum_{c=1}^C p_c \log p_c\]</div>
+<p>Higher values indicate more uncertainty (more “spread out” distribution).</p>
+<dl class="simple">
+<dt>logits<span class="classifier">torch.Tensor</span></dt><dd><p>Raw model outputs of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Entropy map of shape <code class="docutils literal notranslate"><span class="pre">[B,</span> <span class="pre">H,</span> <span class="pre">W]</span></code>, where larger values
+correspond to more uncertain predictions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "executablebooks/jupyter-book",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="martian_segmentation_explainability.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-martian_terrain_segmentation.dataloader">Core Modules</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Georg Tirp
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

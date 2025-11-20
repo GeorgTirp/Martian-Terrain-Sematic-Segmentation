@@ -1,0 +1,1730 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation &#8212; Martian Terrain Semantic Segmentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'martian_segmentation_explainability';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api.html" />
+    <link rel="prev" title="Martian Terrain Semantic Segmentation" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Martian Terrain Semantic Segmentation</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Martian Terrain Semantic Segmentation
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</a></li>
+
+
+
+
+
+
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-launch-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Launch interactive content">
+    <i class="fas fa-rocket"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://mybinder.org/v2/gh/executablebooks/jupyter-book/master?urlpath=tree/martian_segmentation_explainability.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onBinder"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="_static/images/logo_binder.svg">
+  </span>
+<span class="btn__text-container">Binder</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://colab.research.google.com/github/executablebooks/jupyter-book/blob/master/martian_segmentation_explainability.ipynb" target="_blank"
+   class="btn btn-sm dropdown-item"
+   title="Launch onColab"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  
+    <img src="_static/images/logo_colab.png">
+  </span>
+<span class="btn__text-container">Colab</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="initThebeSBT()"
+  class="btn btn-sm btn-launch-thebe dropdown-item"
+  title="Launch Thebe"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-play"></i>
+  </span>
+<span class="btn__text-container">Live Code</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/martian_segmentation_explainability.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-few-things-to-say">A few things to say</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-attention-u-net-teacher-model">1. The Attention U-Net (Teacher Model)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-gate-mathematical-overview">🔍 1.1 Attention Gate (Mathematical Overview)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-attention-helps">Why Attention Helps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation-teacher-student">2. Knowledge Distillation (Teacher → Student)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-distillation-works-better-than-raw-labels">2.1 Why Distillation Works Better Than Raw Labels</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#soft-targets-contain-class-similarities">Soft Targets Contain Class Similarities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits">Benefits:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distillation-loss-for-segmentation">2.2 Distillation Loss for Segmentation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#explainability-methods">3. Explainability Methods</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam-for-segmentation">3.1 Grad-CAM for Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients-ig">3.2 Integrated Gradients (IG)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cam-integrated-gradient-conclusion">Cam &amp; Integrated Gradient Conclusion:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-pca-n-pca">3.3 Neural PCA (N-PCA)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-pca-conclusion">Neural PCA Conclusion:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-estimation">4. Uncertainty Estimation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty-heteroscedastic">4.1 Aleatoric Uncertainty (Heteroscedastic)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty-conclusion">Aleatoric Uncertainty Conclusion:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#epistemic-uncertainty-laplace-approximation-future-work">4.2 Epistemic Uncertainty — Laplace Approximation (Future Work)</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">6. References</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-u-net">Attention U-Net</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation">Knowledge Distillation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam">Grad-CAM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients">Integrated Gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty">Aleatoric Uncertainty</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laplace-approximation-being-a-bit-gaussian">Laplace Approximation / “Being a Bit Gaussian”</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="martian-terrain-segmentation-technical-blog-style-documentation">
+<h1>🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation<a class="headerlink" href="#martian-terrain-segmentation-technical-blog-style-documentation" title="Permalink to this heading">#</a></h1>
+<p>Quick Content Summary:</p>
+<ul class="simple">
+<li><p>Loading the AI4Mars NASA dataset (Hugging Face: <code class="docutils literal notranslate"><span class="pre">hassanjbara/AI4MARS</span></code>).</p>
+<ul>
+<li><p>Classes: soil, bedrock, sand, big rock (null pixels ignored).</p></li>
+</ul>
+</li>
+<li><p>Training a heavier weight Attention U-Net on Martian terrain labels</p></li>
+<li><p>Distilling process to get a lightweight model with comparable performance</p></li>
+<li><p>Evaluating pixel accuracy and mean IoU.</p></li>
+<li><p>Visualizing predictions vs. ground truth.</p></li>
+<li><p>Explainability:</p>
+<ul>
+<li><p>Grad-CAM heatmaps.</p></li>
+<li><p>Integrated Gradients saliency.</p></li>
+<li><p>“Neural PCA” of intermediate feature activations.</p></li>
+</ul>
+</li>
+<li><p>Uncertainty:</p>
+<ul>
+<li><p>showing th uncertainty of pictures as heatmap to check calibration</p></li>
+</ul>
+</li>
+</ul>
+<section id="a-few-things-to-say">
+<h2>A few things to say<a class="headerlink" href="#a-few-things-to-say" title="Permalink to this heading">#</a></h2>
+<p>In the context of an ESA application I made this fun little semactic segmentation project. The goal is to get a good performing lightweight model to do semantic segmentation on a martian terrain dataset. Because the context here is to make a model that is aiding human interpretation of the data I added some of my facorite methods from the realm of trustworthy machine learning. This offers explainability and interpretability of the model to be able to detect shortcuts or biases of the model in the attempt of opening the black box. I think these are essential in every case where we want to really trust the model and understand how and what it is actually learning. Keep in mind, none of these methods, especially when only using each of them alone, this does never assure right behaviour of the model but taken together they enable a good understanding and robustness.</p>
+<p>The Notebook will display only the higher level concepts of the things that are implemented here. For the detailed code descriptions look in the docs that can also be found here on the website.</p>
+<p>What will follow is a very typical pytorch CNN pipeline, no magic there. I will at short explanations for the more non-standard interesting parts. The references can be found at the end along with an outlook on whats still missing in my opinion (I will publish the incomplete version as I had only a few to do this for the application).</p>
+<p><strong>This is just imports and training settings:</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">martian_terrain_segmentation.models</span> <span class="kn">import</span> <span class="n">create_unet</span>
+<span class="kn">from</span> <span class="nn">martian_terrain_segmentation.dataloader</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">create_ai4mars_dataloaders</span><span class="p">,</span>
+    <span class="n">AI4MARS_CLASS_NAMES</span><span class="p">,</span>
+    <span class="n">AI4MARS_IGNORE_INDEX</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">martian_terrain_segmentation.optimizers</span> <span class="kn">import</span> <span class="n">create_optimizer</span><span class="p">,</span> <span class="n">create_cosine_scheduler_with_warmup</span>
+<span class="kn">from</span> <span class="nn">martian_terrain_segmentation.train_utils</span> <span class="kn">import</span> <span class="n">train_one_epoch</span><span class="p">,</span> <span class="n">evaluate</span><span class="p">,</span> <span class="n">save_checkpoint</span><span class="p">,</span> <span class="n">load_checkpoint</span>
+
+<span class="n">device</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using device:&quot;</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+<span class="n">image_size</span> <span class="o">=</span> <span class="mi">256</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">num_workers</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">AI4MARS_CLASS_NAMES</span><span class="p">)</span>
+<span class="n">num_epochs</span> <span class="o">=</span> <span class="mi">40</span>
+
+<span class="n">use_muon</span> <span class="o">=</span> <span class="kc">False</span>       
+<span class="n">use_amp</span> <span class="o">=</span> <span class="kc">True</span> 
+
+<span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./outputs&quot;</span><span class="p">)</span>
+<span class="n">out_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">seed</span> <span class="o">=</span> <span class="mi">42</span>
+<span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">manual_seed_all</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using device: cuda
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Here we load the data. You will have the options to load only small parts of the data with ‘max_train_sample, max_test_samples. Also there where a  few images with differeing type that led to errors. When you are loading the data the first time from put scan_sporious=True to threw out these few images.</strong></p>
+<div class="cell tag_no-exec docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Data: AI4Mars dataloaders (train/val/test)</span>
+<span class="n">loaders</span> <span class="o">=</span> <span class="n">create_ai4mars_dataloaders</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="o">=</span><span class="n">image_size</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+    <span class="n">val_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">to_rgb</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
+    <span class="n">cache_dir</span><span class="o">=</span><span class="s2">&quot;./data/hf_cache&quot;</span><span class="p">,</span>  
+    <span class="c1">#max_train_samples=100,         </span>
+    <span class="c1">#max_test_samples=50,</span>
+    <span class="n">use_local_disk_copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">local_disk_path</span><span class="o">=</span><span class="s2">&quot;./data/ai4mars_hf_on_disk&quot;</span><span class="p">,</span>
+    <span class="n">scan_spurious</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">valid_indices_cache_dir</span><span class="o">=</span><span class="s2">&quot;./data/ai4mars_valid_indices&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">train_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">train</span>
+<span class="n">val_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">val</span>
+<span class="n">test_loader</span> <span class="o">=</span> <span class="n">loaders</span><span class="o">.</span><span class="n">test</span>
+
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Train batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Val batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">val_loader</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Test batches: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">test_loader</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[AI4MarsHFDataset] Loaded 13018 valid indices from cache: ./data/ai4mars_valid_indices/valid_indices_train.npy
+[AI4MarsHFDataset] Loaded 1449 valid indices from cache: ./data/ai4mars_valid_indices/valid_indices_val.npy
+[AI4MarsHFDataset] Loaded 1597 valid indices from cache: ./data/ai4mars_valid_indices/valid_indices_test.npy
+Train batches: 1302, Val batches: 145, Test batches: 160
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="the-attention-u-net-teacher-model">
+<h1>1. The Attention U-Net (Teacher Model)<a class="headerlink" href="#the-attention-u-net-teacher-model" title="Permalink to this heading">#</a></h1>
+<p>The <strong>Attention U-Net</strong> extends the classical U-Net by modulating skip connections using <strong>attention gates (AG)</strong>.<br />
+This helps suppress irrelevant features and highlight important spatial structures.</p>
+<section id="attention-gate-mathematical-overview">
+<h2>🔍 1.1 Attention Gate (Mathematical Overview)<a class="headerlink" href="#attention-gate-mathematical-overview" title="Permalink to this heading">#</a></h2>
+<p>Given encoder feature map <span class="math notranslate nohighlight">\(x \in \mathbb{R}^{F_l \times H \times W}\)</span><br />
+and decoder gating signal <span class="math notranslate nohighlight">\(g \in \mathbb{R}^{F_g \times H' \times W'}\)</span>:</p>
+<ol class="arabic simple">
+<li><p>Linear transforms:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+x' = W_x x,\qquad g' = W_g g
+\]</div>
+<ol class="arabic simple" start="2">
+<li><p>Align feature map sizes (interpolation)</p></li>
+<li><p>Combine:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+q = \mathrm{ReLU}(x' + g')
+\]</div>
+<ol class="arabic simple" start="4">
+<li><p>Produce attention mask:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+\alpha = \sigma(W_\psi q)
+\]</div>
+<ol class="arabic simple" start="5">
+<li><p>Apply gating:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[
+\tilde{x} = \alpha \odot x
+\]</div>
+<p>This mask blocks irrelevant encoder features and emphasizes important ones (e.g., rock boundaries).</p>
+<section id="why-attention-helps">
+<h3>Why Attention Helps<a class="headerlink" href="#why-attention-helps" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Selects semantically relevant spatial details</p></li>
+<li><p>Avoids passing noise (e.g., rover artifacts)</p></li>
+<li><p>Improves fine structure segmentation</p></li>
+<li><p>Stronger gradients passed through skip connections</p></li>
+</ul>
+<p><strong>Reference:</strong><br />
+<strong>Attention U-Net: Learning Where to Look for the Pancreas</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/1804.03999">https://arxiv.org/abs/1804.03999</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.models</span> <span class="kn">import</span> <span class="n">create_teacher_unet</span>
+<span class="n">teacher_learning_rate</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="n">teacher_weight_decay</span> <span class="o">=</span> <span class="mf">1e-2</span>
+ 
+<span class="c1"># Initializing the teacher model</span>
+<span class="n">teacher</span> <span class="o">=</span> <span class="n">create_teacher_unet</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+    <span class="n">base_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">bilinear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">teacher_optimizer</span> <span class="o">=</span> <span class="n">create_optimizer</span><span class="p">(</span>
+    <span class="n">teacher</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="n">teacher_learning_rate</span><span class="p">,</span>
+    <span class="n">weight_decay</span><span class="o">=</span><span class="n">teacher_weight_decay</span><span class="p">,</span>
+    <span class="n">use_muon</span><span class="o">=</span><span class="n">use_muon</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">teacher_scheduler</span> <span class="o">=</span> <span class="n">create_cosine_scheduler_with_warmup</span><span class="p">(</span>
+    <span class="n">teacher_optimizer</span><span class="p">,</span>
+    <span class="n">num_warmup_steps</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">num_epochs</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)),</span>
+    <span class="n">num_training_steps</span><span class="o">=</span><span class="n">num_epochs</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ModuleNotFoundError</span><span class="g g-Whitespace">                       </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">martian_terrain_segmentation.models</span> <span class="kn">import</span> <span class="n">create_teacher_unet</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">teacher_learning_rate</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">teacher_weight_decay</span> <span class="o">=</span> <span class="mf">1e-2</span>
+
+<span class="ne">ModuleNotFoundError</span>: No module named &#39;martian_terrain_segmentation&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_no-exec docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;history_teacher = {</span>
+<span class="sd">    &quot;train_loss&quot;: [],</span>
+<span class="sd">    &quot;train_miou&quot;: [],</span>
+<span class="sd">    &quot;val_loss&quot;: [],</span>
+<span class="sd">    &quot;val_miou&quot;: [],</span>
+<span class="sd">}</span>
+<span class="sd"># Training loop for the teacher model</span>
+<span class="sd">best_teacher_miou = -1.0</span>
+
+<span class="sd">for epoch in range(1, num_epochs + 1):</span>
+<span class="sd">    train_metrics = train_one_epoch(</span>
+<span class="sd">        model=teacher,</span>
+<span class="sd">        dataloader=train_loader,</span>
+<span class="sd">        optimizer=teacher_optimizer,</span>
+<span class="sd">        device=device,</span>
+<span class="sd">        num_classes=num_classes,</span>
+<span class="sd">        use_amp=use_amp,</span>
+<span class="sd">        use_tqdm=True,</span>
+<span class="sd">        epoch=epoch,</span>
+<span class="sd">        num_epochs=num_epochs,</span>
+<span class="sd">        scheduler=teacher_scheduler,</span>
+<span class="sd">    )</span>
+
+<span class="sd">    val_metrics = evaluate(</span>
+<span class="sd">        model=teacher,</span>
+<span class="sd">        dataloader=val_loader,</span>
+<span class="sd">        device=device,</span>
+<span class="sd">        num_classes=num_classes,</span>
+<span class="sd">        use_tqdm=True,</span>
+<span class="sd">    )</span>
+
+<span class="sd">    if val_metrics[&quot;miou&quot;] &gt; best_teacher_miou:</span>
+<span class="sd">        best_teacher_miou = val_metrics[&quot;miou&quot;]</span>
+<span class="sd">        save_checkpoint(</span>
+<span class="sd">            path=&quot;checkpoints/best_teacher.pt&quot;,</span>
+<span class="sd">            model=teacher,</span>
+<span class="sd">            optimizer=teacher_optimizer,</span>
+<span class="sd">            scheduler=teacher_scheduler,</span>
+<span class="sd">            epoch=epoch,</span>
+<span class="sd">            metrics={&quot;val_miou&quot;: best_teacher_miou},</span>
+<span class="sd">        )</span>
+<span class="sd">    history_teacher[&quot;train_loss&quot;].append(train_metrics[&quot;loss&quot;])</span>
+<span class="sd">    history_teacher[&quot;train_miou&quot;].append(train_metrics[&quot;miou&quot;])</span>
+<span class="sd">    history_teacher[&quot;val_loss&quot;].append(val_metrics[&quot;loss&quot;])</span>
+<span class="sd">    history_teacher[&quot;val_miou&quot;].append(val_metrics[&quot;miou&quot;])</span>
+
+<span class="sd">    print(</span>
+<span class="sd">        f&quot;  Train - loss: {train_metrics[&#39;loss&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;mIoU: {train_metrics[&#39;miou&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;pix acc: {train_metrics[&#39;pixel_acc&#39;]:.4f}&quot;</span>
+<span class="sd">    )</span>
+<span class="sd">    print(</span>
+<span class="sd">        f&quot;  Val   - loss: {val_metrics[&#39;loss&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;mIoU: {val_metrics[&#39;miou&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;pix acc: {val_metrics[&#39;pixel_acc&#39;]:.4f}&quot;</span>
+<span class="sd">    )&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;history_teacher = {\n    &quot;train_loss&quot;: [],\n    &quot;train_miou&quot;: [],\n    &quot;val_loss&quot;: [],\n    &quot;val_miou&quot;: [],\n}\n# Training loop for the teacher model\nbest_teacher_miou = -1.0\n\nfor epoch in range(1, num_epochs + 1):\n    train_metrics = train_one_epoch(\n        model=teacher,\n        dataloader=train_loader,\n        optimizer=teacher_optimizer,\n        device=device,\n        num_classes=num_classes,\n        use_amp=use_amp,\n        use_tqdm=True,\n        epoch=epoch,\n        num_epochs=num_epochs,\n        scheduler=teacher_scheduler,\n    )\n\n    val_metrics = evaluate(\n        model=teacher,\n        dataloader=val_loader,\n        device=device,\n        num_classes=num_classes,\n        use_tqdm=True,\n    )\n\n    if val_metrics[&quot;miou&quot;] &gt; best_teacher_miou:\n        best_teacher_miou = val_metrics[&quot;miou&quot;]\n        save_checkpoint(\n            path=&quot;checkpoints/best_teacher.pt&quot;,\n            model=teacher,\n            optimizer=teacher_optimizer,\n            scheduler=teacher_scheduler,\n            epoch=epoch,\n            metrics={&quot;val_miou&quot;: best_teacher_miou},\n        )\n    history_teacher[&quot;train_loss&quot;].append(train_metrics[&quot;loss&quot;])\n    history_teacher[&quot;train_miou&quot;].append(train_metrics[&quot;miou&quot;])\n    history_teacher[&quot;val_loss&quot;].append(val_metrics[&quot;loss&quot;])\n    history_teacher[&quot;val_miou&quot;].append(val_metrics[&quot;miou&quot;])\n\n    print(\n        f&quot;  Train - loss: {train_metrics[\&#39;loss\&#39;]:.4f}, &quot;\n        f&quot;mIoU: {train_metrics[\&#39;miou\&#39;]:.4f}, &quot;\n        f&quot;pix acc: {train_metrics[\&#39;pixel_acc\&#39;]:.4f}&quot;\n    )\n    print(\n        f&quot;  Val   - loss: {val_metrics[\&#39;loss\&#39;]:.4f}, &quot;\n        f&quot;mIoU: {val_metrics[\&#39;miou\&#39;]:.4f}, &quot;\n        f&quot;pix acc: {val_metrics[\&#39;pixel_acc\&#39;]:.4f}&quot;\n    )&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot training curves</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">history_teacher</span> <span class="o">=</span>  <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;outputs/teacher_training_history.csv&quot;</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history_teacher</span><span class="p">[</span><span class="s2">&quot;train_loss&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history_teacher</span><span class="p">[</span><span class="s2">&quot;val_loss&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;val loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Training vs Validation Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history_teacher</span><span class="p">[</span><span class="s2">&quot;train_miou&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history_teacher</span><span class="p">[</span><span class="s2">&quot;val_miou&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;val mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Mean IoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Training vs Validation mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/a6151fdab4e4223eb2e36cd8e0a9ddbabd250581ba133385a5bd1c6a8269e423.png" src="_images/a6151fdab4e4223eb2e36cd8e0a9ddbabd250581ba133385a5bd1c6a8269e423.png" />
+<img alt="_images/5942c2c9439b1458d44a0a58f4eabdf9c39aba5a5fedbfce21a57863a0b52fd4.png" src="_images/5942c2c9439b1458d44a0a58f4eabdf9c39aba5a5fedbfce21a57863a0b52fd4.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">teacher</span> <span class="o">=</span> <span class="n">create_teacher_unet</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+    <span class="n">base_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">bilinear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">load_checkpoint</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;checkpoints/best_teacher.pt&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">teacher</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">map_location</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">teacher</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">teacher</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/georg/Documents/ESA/Maritan-Terrain-Sematic-Segmentation/train_utils.py:267: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(path, map_location=map_location)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[checkpoint] Loaded model weights from checkpoints/best_teacher.pt
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="knowledge-distillation-teacher-student">
+<h1>2. Knowledge Distillation (Teacher → Student)<a class="headerlink" href="#knowledge-distillation-teacher-student" title="Permalink to this heading">#</a></h1>
+<p>We train:</p>
+<ul class="simple">
+<li><p>A <strong>large Attention U-Net</strong> → high accuracy</p></li>
+<li><p>A <strong>small U-Net</strong> → efficient, lightweight</p></li>
+</ul>
+<p>But instead of training the small model directly on labels, we <strong>distill</strong> the knowledge from the teacher.</p>
+<section id="why-distillation-works-better-than-raw-labels">
+<h2>2.1 Why Distillation Works Better Than Raw Labels<a class="headerlink" href="#why-distillation-works-better-than-raw-labels" title="Permalink to this heading">#</a></h2>
+<p>The teacher provides <em>rich, structured information</em> that one-hot labels do not.</p>
+<section id="soft-targets-contain-class-similarities">
+<h3>Soft Targets Contain Class Similarities<a class="headerlink" href="#soft-targets-contain-class-similarities" title="Permalink to this heading">#</a></h3>
+<p>Define soft teacher probabilities:</p>
+<div class="math notranslate nohighlight">
+\[
+p_t^{(T)} = \mathrm{softmax}\left(\frac{z_t}{T}\right)
+\]</div>
+<p>This reveals:</p>
+<ul class="simple">
+<li><p>Soil pixels that are slightly “sand-like”</p></li>
+<li><p>Bedrock with high uncertainty boundaries</p></li>
+<li><p>Ambiguous transitions between materials</p></li>
+</ul>
+</section>
+<section id="benefits">
+<h3>Benefits:<a class="headerlink" href="#benefits" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Avoids overconfidence</p></li>
+<li><p>Improves generalization</p></li>
+<li><p>Provides smoother decision boundaries</p></li>
+<li><p>Encodes class relationships</p></li>
+<li><p>Student mimics teacher’s <em>entire function</em>, not just datasets</p></li>
+</ul>
+</section>
+</section>
+<section id="distillation-loss-for-segmentation">
+<h2>2.2 Distillation Loss for Segmentation<a class="headerlink" href="#distillation-loss-for-segmentation" title="Permalink to this heading">#</a></h2>
+<p>We combine supervised CE + KL divergence:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}_{CE} = \mathrm{CE}(y, p_s)
+\]</div>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L}_{KD} = T^2 \cdot \mathrm{KL}\left(p^{(T)}_t \;\|\; p^{(T)}_s\right)
+\]</div>
+<p>Final:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L} = (1 - \lambda)\mathcal{L}_{CE} + \lambda\mathcal{L}_{KD}
+\]</div>
+<p><strong>Reference:</strong><br />
+<strong>Distilling the Knowledge in a Neural Network</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/1503.02531">https://arxiv.org/abs/1503.02531</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.distillation</span> <span class="kn">import</span> <span class="n">SegmentationKDLoss</span>
+<span class="n">epoch_student</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">teacher_learning_rate</span> <span class="o">=</span> <span class="mf">1e-4</span>
+<span class="n">teacher_weight_decay</span> <span class="o">=</span> <span class="mf">1e-2</span>
+<span class="n">student_learning_rate</span> <span class="o">=</span> <span class="mf">5e-4</span>
+<span class="n">student_weight_decay</span> <span class="o">=</span> <span class="mf">5e-2</span>
+<span class="c1"># Initializing student model and knowledge distillation setup</span>
+<span class="c1"># load pretrained teacher (frozen)</span>
+<span class="n">teacher</span> <span class="o">=</span> <span class="n">create_teacher_unet</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+    <span class="n">base_channels</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+    <span class="n">bilinear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">load_checkpoint</span><span class="p">(</span><span class="s2">&quot;checkpoints/best_teacher.pt&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">teacher</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scheduler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">map_location</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+<span class="n">teacher</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">teacher</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># fresh student</span>
+<span class="n">student</span> <span class="o">=</span> <span class="n">create_unet</span><span class="p">(</span>
+    <span class="n">in_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+    <span class="n">base_channels</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
+    <span class="n">bilinear</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">create_optimizer</span><span class="p">(</span>
+    <span class="n">student</span><span class="p">,</span>
+    <span class="n">lr</span><span class="o">=</span><span class="n">student_learning_rate</span><span class="p">,</span>         
+    <span class="n">weight_decay</span><span class="o">=</span><span class="n">student_weight_decay</span><span class="p">,</span>
+    <span class="n">use_muon</span><span class="o">=</span><span class="n">use_muon</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">scheduler</span> <span class="o">=</span> <span class="n">create_cosine_scheduler_with_warmup</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">num_warmup_steps</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">num_epochs</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">)),</span>
+    <span class="n">num_training_steps</span><span class="o">=</span><span class="n">num_epochs</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_loader</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">kd_loss_fn</span> <span class="o">=</span> <span class="n">SegmentationKDLoss</span><span class="p">(</span>
+    <span class="n">ignore_index</span><span class="o">=</span><span class="n">AI4MARS_IGNORE_INDEX</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">T</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[checkpoint] Loaded model weights from checkpoints/best_teacher.pt
+[optimizers] Using NAdam (NadamW-style) optimizer.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_no-exec docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;from tqdm import tqdm</span>
+<span class="sd">best_student_miou = -1.0</span>
+<span class="sd">history = {</span>
+<span class="sd">    &quot;train_loss&quot;: [],</span>
+<span class="sd">    &quot;train_miou&quot;: [],</span>
+<span class="sd">    &quot;val_loss&quot;: [],</span>
+<span class="sd">    &quot;val_miou&quot;: [],</span>
+<span class="sd">}</span>
+
+<span class="sd">for epoch_student in range(1, num_epochs + 1):</span>
+<span class="sd">    print(f&quot;\n[Distillation] Epoch {epoch}/{num_epochs}&quot;)</span>
+<span class="sd">    student.train()</span>
+
+<span class="sd">    if use_amp:</span>
+<span class="sd">        scaler = torch.cuda.amp.GradScaler(enabled=True)</span>
+<span class="sd">    else:</span>
+<span class="sd">        scaler = None</span>
+
+<span class="sd">    running_loss = 0.0</span>
+<span class="sd">    total_samples = 0</span>
+
+<span class="sd">    pbar = tqdm(train_loader, desc=f&quot;KD Train {epoch}/{num_epochs}&quot;, unit=&quot;batch&quot;, leave=False)</span>
+
+<span class="sd">    for imgs, masks in pbar:</span>
+<span class="sd">        imgs = imgs.to(device, non_blocking=True).float()</span>
+<span class="sd">        masks = masks.to(device, non_blocking=True).long()</span>
+<span class="sd">        batch_size = imgs.size(0)</span>
+<span class="sd">        total_samples += batch_size</span>
+
+<span class="sd">        optimizer.zero_grad(set_to_none=True)</span>
+
+<span class="sd">        with torch.no_grad():</span>
+<span class="sd">            teacher_logits = teacher(imgs)</span>
+
+<span class="sd">        if use_amp:</span>
+<span class="sd">            with torch.cuda.amp.autocast():</span>
+<span class="sd">                student_logits = student(imgs)</span>
+<span class="sd">                loss = kd_loss_fn(student_logits, teacher_logits, masks)</span>
+<span class="sd">            scaler.scale(loss).backward()</span>
+<span class="sd">            scaler.step(optimizer)</span>
+<span class="sd">            scaler.update()</span>
+<span class="sd">        else:</span>
+<span class="sd">            student_logits = student(imgs)</span>
+<span class="sd">            loss = kd_loss_fn(student_logits, teacher_logits, masks)</span>
+<span class="sd">            loss.backward()</span>
+<span class="sd">            optimizer.step()</span>
+
+<span class="sd">        if scheduler is not None:</span>
+<span class="sd">            scheduler.step()</span>
+
+<span class="sd">        running_loss += loss.item() * batch_size</span>
+<span class="sd">        avg_loss = running_loss / max(total_samples, 1)</span>
+<span class="sd">        pbar.set_postfix(loss=f&quot;{avg_loss:.3f}&quot;)</span>
+
+<span class="sd">    # eval student</span>
+<span class="sd">    val_metrics = evaluate(</span>
+<span class="sd">        model=student,</span>
+<span class="sd">        dataloader=val_loader,</span>
+<span class="sd">        device=device,</span>
+<span class="sd">        num_classes=num_classes,</span>
+<span class="sd">        use_tqdm=True,</span>
+<span class="sd">    )</span>
+
+<span class="sd">    if val_metrics[&quot;miou&quot;] &gt; best_student_miou:</span>
+<span class="sd">        best_student_miou = val_metrics[&quot;miou&quot;]</span>
+<span class="sd">        save_checkpoint(</span>
+<span class="sd">            path=&quot;checkpoints/best_student_kd.pt&quot;,</span>
+<span class="sd">            model=student,</span>
+<span class="sd">            optimizer=optimizer,</span>
+<span class="sd">            scheduler=scheduler,</span>
+<span class="sd">            epoch=epoch,</span>
+<span class="sd">            metrics={&quot;val_miou&quot;: best_student_miou},</span>
+<span class="sd">        )</span>
+
+<span class="sd">    history[&quot;train_loss&quot;].append(train_metrics[&quot;loss&quot;])</span>
+<span class="sd">    history[&quot;train_miou&quot;].append(train_metrics[&quot;miou&quot;])</span>
+<span class="sd">    history[&quot;val_loss&quot;].append(val_metrics[&quot;loss&quot;])</span>
+<span class="sd">    history[&quot;val_miou&quot;].append(val_metrics[&quot;miou&quot;])</span>
+
+<span class="sd">    print(</span>
+<span class="sd">        f&quot;  Train - loss: {train_metrics[&#39;loss&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;mIoU: {train_metrics[&#39;miou&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;pix acc: {train_metrics[&#39;pixel_acc&#39;]:.4f}&quot;</span>
+<span class="sd">    )</span>
+<span class="sd">    print(</span>
+<span class="sd">        f&quot;  Val   - loss: {val_metrics[&#39;loss&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;mIoU: {val_metrics[&#39;miou&#39;]:.4f}, &quot;</span>
+<span class="sd">        f&quot;pix acc: {val_metrics[&#39;pixel_acc&#39;]:.4f}&quot;</span>
+<span class="sd">    )</span>
+<span class="sd">    print(</span>
+<span class="sd">        f&quot;  KD Val - loss: N/A, mIoU: {val_metrics[&#39;miou&#39;]:.4f}, pix acc: {val_metrics[&#39;pixel_acc&#39;]:.4f}&quot;</span>
+<span class="sd">    )</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;from tqdm import tqdm\nbest_student_miou = -1.0\nhistory = {\n    &quot;train_loss&quot;: [],\n    &quot;train_miou&quot;: [],\n    &quot;val_loss&quot;: [],\n    &quot;val_miou&quot;: [],\n}\n\nfor epoch_student in range(1, num_epochs + 1):\n    print(f&quot;\n[Distillation] Epoch {epoch}/{num_epochs}&quot;)\n    student.train()\n\n    if use_amp:\n        scaler = torch.cuda.amp.GradScaler(enabled=True)\n    else:\n        scaler = None\n\n    running_loss = 0.0\n    total_samples = 0\n\n    pbar = tqdm(train_loader, desc=f&quot;KD Train {epoch}/{num_epochs}&quot;, unit=&quot;batch&quot;, leave=False)\n\n    for imgs, masks in pbar:\n        imgs = imgs.to(device, non_blocking=True).float()\n        masks = masks.to(device, non_blocking=True).long()\n        batch_size = imgs.size(0)\n        total_samples += batch_size\n\n        optimizer.zero_grad(set_to_none=True)\n\n        with torch.no_grad():\n            teacher_logits = teacher(imgs)\n\n        if use_amp:\n            with torch.cuda.amp.autocast():\n                student_logits = student(imgs)\n                loss = kd_loss_fn(student_logits, teacher_logits, masks)\n            scaler.scale(loss).backward()\n            scaler.step(optimizer)\n            scaler.update()\n        else:\n            student_logits = student(imgs)\n            loss = kd_loss_fn(student_logits, teacher_logits, masks)\n            loss.backward()\n            optimizer.step()\n\n        if scheduler is not None:\n            scheduler.step()\n\n        running_loss += loss.item() * batch_size\n        avg_loss = running_loss / max(total_samples, 1)\n        pbar.set_postfix(loss=f&quot;{avg_loss:.3f}&quot;)\n\n    # eval student\n    val_metrics = evaluate(\n        model=student,\n        dataloader=val_loader,\n        device=device,\n        num_classes=num_classes,\n        use_tqdm=True,\n    )\n\n    if val_metrics[&quot;miou&quot;] &gt; best_student_miou:\n        best_student_miou = val_metrics[&quot;miou&quot;]\n        save_checkpoint(\n            path=&quot;checkpoints/best_student_kd.pt&quot;,\n            model=student,\n            optimizer=optimizer,\n            scheduler=scheduler,\n            epoch=epoch,\n            metrics={&quot;val_miou&quot;: best_student_miou},\n        )\n\n    history[&quot;train_loss&quot;].append(train_metrics[&quot;loss&quot;])\n    history[&quot;train_miou&quot;].append(train_metrics[&quot;miou&quot;])\n    history[&quot;val_loss&quot;].append(val_metrics[&quot;loss&quot;])\n    history[&quot;val_miou&quot;].append(val_metrics[&quot;miou&quot;])\n\n    print(\n        f&quot;  Train - loss: {train_metrics[\&#39;loss\&#39;]:.4f}, &quot;\n        f&quot;mIoU: {train_metrics[\&#39;miou\&#39;]:.4f}, &quot;\n        f&quot;pix acc: {train_metrics[\&#39;pixel_acc\&#39;]:.4f}&quot;\n    )\n    print(\n        f&quot;  Val   - loss: {val_metrics[\&#39;loss\&#39;]:.4f}, &quot;\n        f&quot;mIoU: {val_metrics[\&#39;miou\&#39;]:.4f}, &quot;\n        f&quot;pix acc: {val_metrics[\&#39;pixel_acc\&#39;]:.4f}&quot;\n    )\n    print(\n        f&quot;  KD Val - loss: N/A, mIoU: {val_metrics[\&#39;miou\&#39;]:.4f}, pix acc: {val_metrics[\&#39;pixel_acc\&#39;]:.4f}&quot;\n    )\n&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plot training curves</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;outputs/student_kd_training_history.csv&quot;</span><span class="p">)</span>
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_epochs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;train_loss&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;val_loss&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;val loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Training vs Validation Loss&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;train_miou&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;train mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">epochs</span><span class="p">,</span> <span class="n">history</span><span class="p">[</span><span class="s2">&quot;val_miou&quot;</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;val mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Epoch&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Mean IoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Training vs Validation mIoU&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/38b80e945ae8aa7b659fc915ea1facf3dfa7f784f2fe2568342d1ddf3fd3b91c.png" src="_images/38b80e945ae8aa7b659fc915ea1facf3dfa7f784f2fe2568342d1ddf3fd3b91c.png" />
+<img alt="_images/b2aa777953522165b1f36d675b04a14dd283f4bd2163b3f98c259b5a773d3971.png" src="_images/b2aa777953522165b1f36d675b04a14dd283f4bd2163b3f98c259b5a773d3971.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">info</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span>
+    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;checkpoints/best_student_kd.pt&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">student</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span>
+    <span class="n">scheduler</span><span class="o">=</span><span class="n">scheduler</span><span class="p">,</span>
+    <span class="n">map_location</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Restored from epoch:&quot;</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stored metrics:&quot;</span><span class="p">,</span> <span class="n">info</span><span class="p">[</span><span class="s2">&quot;metrics&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[checkpoint] Loaded model weights from checkpoints/best_student_kd.pt
+[checkpoint] Restored optimizer state.
+[checkpoint] Restored scheduler state.
+Restored from epoch: 35
+Stored metrics: {&#39;val_miou&#39;: 0.685755849025393}
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/georg/Documents/ESA/Maritan-Terrain-Sematic-Segmentation/train_utils.py:267: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don&#39;t have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  checkpoint = torch.load(path, map_location=map_location)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Evaluate on test set</span>
+<span class="n">test_metrics</span> <span class="o">=</span> <span class="n">evaluate</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">student</span><span class="p">,</span>
+    <span class="n">dataloader</span><span class="o">=</span><span class="n">test_loader</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="n">num_classes</span><span class="o">=</span><span class="n">num_classes</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Test metrics:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;  loss: </span><span class="si">{</span><span class="n">test_metrics</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;mIoU: </span><span class="si">{</span><span class="n">test_metrics</span><span class="p">[</span><span class="s1">&#39;miou&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;pix acc: </span><span class="si">{</span><span class="n">test_metrics</span><span class="p">[</span><span class="s1">&#39;pixel_acc&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Test metrics:
+  loss: 0.2051, mIoU: 0.6811, pix acc: 0.9398
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">ListedColormap</span><span class="p">,</span> <span class="n">BoundaryNorm</span>
+
+<span class="n">AI4MARS_CLASS_VALUES</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
+<span class="n">AI4MARS_CLASS_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;soil&quot;</span><span class="p">,</span> <span class="s2">&quot;bedrock&quot;</span><span class="p">,</span> <span class="s2">&quot;sand&quot;</span><span class="p">,</span> <span class="s2">&quot;big_rock&quot;</span><span class="p">,</span> <span class="s2">&quot;null&quot;</span><span class="p">]</span>
+
+<span class="n">AI4MARS_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>   <span class="c1"># soil</span>
+    <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span>   <span class="c1"># bedrock</span>
+    <span class="p">(</span><span class="mf">0.9</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">),</span>   <span class="c1"># sand</span>
+    <span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">),</span>   <span class="c1"># big_rock</span>
+    <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>   <span class="c1"># null (black)</span>
+<span class="p">]</span>
+
+<span class="n">cmap</span> <span class="o">=</span> <span class="n">ListedColormap</span><span class="p">(</span><span class="n">AI4MARS_COLORS</span><span class="p">)</span>
+
+<span class="c1"># boundaries define the bin edges for class mapping</span>
+<span class="n">boundaries</span> <span class="o">=</span> <span class="p">[</span> <span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mi">255</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="p">]</span>
+<span class="n">norm</span> <span class="o">=</span> <span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">boundaries</span><span class="p">,</span> <span class="n">cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">decode_mask</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">show_predictions</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">num_examples</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">imgs</span><span class="p">,</span> <span class="n">masks</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">dataloader</span><span class="p">))</span>
+
+    <span class="n">imgs</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+    <span class="n">masks</span> <span class="o">=</span> <span class="n">masks</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>
+        <span class="n">preds</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">num_examples</span><span class="p">,</span> <span class="n">imgs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">))):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">imgs</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">gt</span> <span class="o">=</span> <span class="n">masks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">[</span><span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">])</span>
+
+        <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax2</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+        <span class="n">cax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+
+        <span class="n">ax0</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Input&quot;</span><span class="p">)</span>
+        <span class="n">ax0</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+        <span class="n">im1</span> <span class="o">=</span> <span class="n">ax1</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">gt</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ground Truth&quot;</span><span class="p">)</span>
+        <span class="n">ax1</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+        <span class="n">im2</span> <span class="o">=</span> <span class="n">ax2</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Prediction&quot;</span><span class="p">)</span>
+        <span class="n">ax2</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+        <span class="n">cb</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im2</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cax</span><span class="p">,</span> <span class="n">ticks</span><span class="o">=</span><span class="n">AI4MARS_CLASS_VALUES</span><span class="p">)</span>
+        <span class="n">cb</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">AI4MARS_CLASS_NAMES</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="n">show_predictions</span><span class="p">(</span><span class="n">student</span><span class="p">,</span> <span class="n">test_loader</span><span class="p">,</span> <span class="n">num_examples</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/acadf7aeb8c4436874cc769b6f64295830c66b9f72954227aaa813a711cc7cb2.png" src="_images/acadf7aeb8c4436874cc769b6f64295830c66b9f72954227aaa813a711cc7cb2.png" />
+<img alt="_images/408244fafd06d297a088a05d42dcd6d84946b6f39433d79a59fcbcb79f4eedbd.png" src="_images/408244fafd06d297a088a05d42dcd6d84946b6f39433d79a59fcbcb79f4eedbd.png" />
+<img alt="_images/1adb580252acc657c5b2d39fb9470b35f21f399663186de370fd6256a2bbd655.png" src="_images/1adb580252acc657c5b2d39fb9470b35f21f399663186de370fd6256a2bbd655.png" />
+</div>
+</div>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="explainability-methods">
+<h1>3. Explainability Methods<a class="headerlink" href="#explainability-methods" title="Permalink to this heading">#</a></h1>
+<p>We use three orthogonal explanation tools.</p>
+<section id="grad-cam-for-segmentation">
+<h2>3.1 Grad-CAM for Segmentation<a class="headerlink" href="#grad-cam-for-segmentation" title="Permalink to this heading">#</a></h2>
+<p>Grad-CAM highlights spatial regions responsible for class activation.</p>
+<p>For class <span class="math notranslate nohighlight">\(c\)</span>, compute gradients:</p>
+<div class="math notranslate nohighlight">
+\[
+\alpha_k = \frac{1}{HW} \sum_{i,j}
+\frac{\partial y_c}{\partial A_{k,ij}}
+\]</div>
+<p>Then:</p>
+<div class="math notranslate nohighlight">
+\[
+L^{c}_{CAM} = \mathrm{ReLU}\left(\sum_k \alpha_k A_k\right)
+\]</div>
+<p>This produces a heatmap overlay revealing where the model “looked”.</p>
+<p><strong>Reference:</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/1610.02391">https://arxiv.org/abs/1610.02391</a></p>
+</section>
+<hr class="docutils" />
+<section id="integrated-gradients-ig">
+<h2>3.2 Integrated Gradients (IG)<a class="headerlink" href="#integrated-gradients-ig" title="Permalink to this heading">#</a></h2>
+<p>IG attributes importance via a path integral from a baseline to the input:</p>
+<div class="math notranslate nohighlight">
+\[
+\text{IG}_i(x) = (x_i - x'_i)
+\int_0^1 \frac{\partial F(x' + \alpha(x-x'))}{\partial x_i}\, d\alpha
+\]</div>
+<p>Strengths:</p>
+<ul class="simple">
+<li><p>Avoids gradient saturation</p></li>
+<li><p>Provides fine-grained pixel-level attribution</p></li>
+</ul>
+<p><strong>Reference:</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/1703.01365">https://arxiv.org/abs/1703.01365</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Explainability demo:</span>
+<span class="c1"># Grad-CAM, Integrated Gradients, Neural PCA for a single test image.</span>
+<span class="kn">from</span> <span class="nn">martian_terrain_segmentation.explainability</span> <span class="kn">import</span> <span class="n">explain_per_class_examples</span>
+
+<span class="n">num_examples_per_class</span> <span class="o">=</span> <span class="mi">1</span>   
+<span class="n">ig_steps</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="n">explain_per_class_examples</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">student</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">test_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="n">num_examples_per_class</span><span class="o">=</span><span class="n">num_examples_per_class</span><span class="p">,</span>
+    <span class="n">ig_steps</span><span class="o">=</span><span class="n">ig_steps</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Scanning dataset once to find examples per class...
+
+=== Class &#39;soil&#39; (id=0) | 3 total examples, showing 1 ===
+- Example 1/1 (dataset idx: 3)
+</pre></div>
+</div>
+<img alt="_images/4e93844075de13e6d6d6008ed7305868fe553146b68d8141713d2cbfe563b965.png" src="_images/4e93844075de13e6d6d6008ed7305868fe553146b68d8141713d2cbfe563b965.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== Class &#39;bedrock&#39; (id=1) | 1 total examples, showing 1 ===
+- Example 1/1 (dataset idx: 1)
+</pre></div>
+</div>
+<img alt="_images/94aefa805513e788d0a6b6134531f9d5032fd89d58db058df88b4af3c185dc12.png" src="_images/94aefa805513e788d0a6b6134531f9d5032fd89d58db058df88b4af3c185dc12.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== Class &#39;sand&#39; (id=2) | 1 total examples, showing 1 ===
+- Example 1/1 (dataset idx: 3)
+</pre></div>
+</div>
+<img alt="_images/33db9d6026f97ed25911c2916b3ba7516b704f219ba6dc8b4e8cb35c9586495b.png" src="_images/33db9d6026f97ed25911c2916b3ba7516b704f219ba6dc8b4e8cb35c9586495b.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>=== Class &#39;big_rock&#39; (id=3) | 1 total examples, showing 1 ===
+- Example 1/1 (dataset idx: 3)
+</pre></div>
+</div>
+<img alt="_images/eaa0595611d2aaf04e9f3d6386292607384cdcac2df772fdf0df104db2eb7b05.png" src="_images/eaa0595611d2aaf04e9f3d6386292607384cdcac2df772fdf0df104db2eb7b05.png" />
+</div>
+</div>
+<section id="cam-integrated-gradient-conclusion">
+<h3>Cam &amp; Integrated Gradient Conclusion:<a class="headerlink" href="#cam-integrated-gradient-conclusion" title="Permalink to this heading">#</a></h3>
+<p>You see very nice behaviour for the classes soil and bedrock. Here the correct regions seem to be activated and there are now obvious biases. Especially the fact that the model tends to ignore the mars rover in the bedrock one is a good sign for the models understanding of this class.
+For the sand we might see small potential problems. There seems to be a tendency for the model to may confuse the sky for being sand.</p>
+<p>The integrated gradients are not very informative in this setting. This could be due to the not very slient nature of these pictures and their classes. If anything you could see small input gradient activations in the sky again for the sand class.</p>
+</section>
+</section>
+<section id="neural-pca-n-pca">
+<h2>3.3 Neural PCA (N-PCA)<a class="headerlink" href="#neural-pca-n-pca" title="Permalink to this heading">#</a></h2>
+<p>N-PCA reveals <strong>the principal axes of variation</strong> in the feature space of each terrain class.</p>
+<p>We compute:</p>
+<ul class="simple">
+<li><p>Penultimate features:<br />
+$<span class="math notranslate nohighlight">\(
+\phi(x)
+\)</span>$</p></li>
+<li><p>Class weight vector:<br />
+$<span class="math notranslate nohighlight">\(
+w_c
+\)</span>$</p></li>
+<li><p>Class embedding:<br />
+$<span class="math notranslate nohighlight">\(
+\psi_c(x) = w_c \odot \phi(x)
+\)</span>$</p></li>
+</ul>
+<p>Then perform PCA on all <span class="math notranslate nohighlight">\(\psi_c(x)\)</span> for samples containing class <span class="math notranslate nohighlight">\(c\)</span>.</p>
+<p>Outputs:</p>
+<ul class="simple">
+<li><p>Principal directions</p></li>
+<li><p>Eigenvalues</p></li>
+<li><p>Top-activating real images (“eigenpictures”)</p></li>
+</ul>
+<p>This shows what the model thinks <em>defines</em> each terrain class.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.explainability</span> <span class="kn">import</span> <span class="n">compute_class_neural_pca_features</span><span class="p">,</span> <span class="n">show_top_neural_pca_images_for_class</span>
+
+<span class="n">class_ids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AI4MARS_CLASS_NAMES</span><span class="p">)))</span>  <span class="c1"># [0,1,2,3]</span>
+<span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="mi">200</span>
+<span class="n">n_pca_components</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">neural_pca_results</span> <span class="o">=</span> <span class="n">compute_class_neural_pca_features</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">student</span><span class="p">,</span>
+    <span class="n">dataset</span><span class="o">=</span><span class="n">train_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>   <span class="c1"># usually use TRAIN set like in the paper</span>
+    <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="n">class_ids</span><span class="o">=</span><span class="n">class_ids</span><span class="p">,</span>
+    <span class="n">max_samples_per_class</span><span class="o">=</span><span class="n">max_samples_per_class</span><span class="p">,</span>
+    <span class="n">n_components</span><span class="o">=</span><span class="n">n_pca_components</span><span class="p">,</span>
+    <span class="n">min_per_class</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AI4MARS_CLASS_NAMES</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>  <span class="c1"># top 3 NPCA components</span>
+        <span class="n">show_top_neural_pca_images_for_class</span><span class="p">(</span>
+            <span class="n">neural_pca_results</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="o">=</span><span class="n">train_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+            <span class="n">class_id</span><span class="o">=</span><span class="n">c</span><span class="p">,</span>
+            <span class="n">component_idx</span><span class="o">=</span><span class="n">comp</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="n">show_top_neural_pca_images_for_class</span><span class="p">(</span>
+        <span class="n">neural_pca_results</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="o">=</span><span class="n">train_loader</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+        <span class="n">class_id</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">component_idx</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>   
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[neural PCA] Scanning dataset for class presence...
+[neural PCA] Class 0: using 200 samples for PCA out of 6402 candidates.
+[neural PCA] Class 1: using 200 samples for PCA out of 8351 candidates.
+[neural PCA] Class 2: using 200 samples for PCA out of 4330 candidates.
+[neural PCA] Class 3: using 200 samples for PCA out of 1756 candidates.
+
+Class &#39;soil&#39; (id=0), NPCA component 1, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/718d6c48583d2159c9462caa78ed823b22aef391bcb896f46b79047a241a7262.png" src="_images/718d6c48583d2159c9462caa78ed823b22aef391bcb896f46b79047a241a7262.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;soil&#39; (id=0), NPCA component 2, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/f302706713d20ce00a30bfa28d3af6920b8024df0d0c8185fe65117b102e6ea6.png" src="_images/f302706713d20ce00a30bfa28d3af6920b8024df0d0c8185fe65117b102e6ea6.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;soil&#39; (id=0), NPCA component 3, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/b76759ea5244d02432719701e24ae6fbb04276ae797ec6599d8819bdee62c316.png" src="_images/b76759ea5244d02432719701e24ae6fbb04276ae797ec6599d8819bdee62c316.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;bedrock&#39; (id=1), NPCA component 1, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/7055ec7234cb6527821ad8fb10074d0d8ca68b596c0cc4fa7ec50b60076e941b.png" src="_images/7055ec7234cb6527821ad8fb10074d0d8ca68b596c0cc4fa7ec50b60076e941b.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;bedrock&#39; (id=1), NPCA component 2, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/2286268dd2b3951e8121b42f5e9750c22993f3cf3c0d2e6f33c4cc7b8229bc00.png" src="_images/2286268dd2b3951e8121b42f5e9750c22993f3cf3c0d2e6f33c4cc7b8229bc00.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;bedrock&#39; (id=1), NPCA component 3, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/7ab846f681d6ec17c9b31055f9b305dd3487eeb1060b20d05b5a1dc35d853032.png" src="_images/7ab846f681d6ec17c9b31055f9b305dd3487eeb1060b20d05b5a1dc35d853032.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;sand&#39; (id=2), NPCA component 1, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/6c672197d71ee27a5ea48bb4296f4cb85bfdbb235dc17aa4cec586f3bdac4a95.png" src="_images/6c672197d71ee27a5ea48bb4296f4cb85bfdbb235dc17aa4cec586f3bdac4a95.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;sand&#39; (id=2), NPCA component 2, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/80e9c28411a6e33cb19a2c9b8d2ec0a051d896a2fde1914e231fb901f2085237.png" src="_images/80e9c28411a6e33cb19a2c9b8d2ec0a051d896a2fde1914e231fb901f2085237.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;sand&#39; (id=2), NPCA component 3, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/6d798239f7e2c851b42f230d3a00e4e231bae1bd199d1bda53f5fcf1b6c1eaa9.png" src="_images/6d798239f7e2c851b42f230d3a00e4e231bae1bd199d1bda53f5fcf1b6c1eaa9.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;big_rock&#39; (id=3), NPCA component 1, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/160046cf1fb73382034d1341bffa890e1f53c9962fd3695c46006bf271b164c5.png" src="_images/160046cf1fb73382034d1341bffa890e1f53c9962fd3695c46006bf271b164c5.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;big_rock&#39; (id=3), NPCA component 2, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/4f9cd44c5152b1902c6bc128e2becc7da6184e5fdd1bb83c743aa28620238494.png" src="_images/4f9cd44c5152b1902c6bc128e2becc7da6184e5fdd1bb83c743aa28620238494.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;big_rock&#39; (id=3), NPCA component 3, showing top 5 / 200 images.
+</pre></div>
+</div>
+<img alt="_images/1fe460fee39a17b3f8bd989e8f834c335ef52bdfb569b48f6b792e132e8e5e39.png" src="_images/1fe460fee39a17b3f8bd989e8f834c335ef52bdfb569b48f6b792e132e8e5e39.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class &#39;astronaut&#39; (id=4), NPCA component 1, showing 1 / 1 images.
+</pre></div>
+</div>
+<img alt="_images/ed3821cc6b127df1ad59fb3187db5eb346a5d609960f9833bcb0dfb0dfb7b5da.png" src="_images/ed3821cc6b127df1ad59fb3187db5eb346a5d609960f9833bcb0dfb0dfb7b5da.png" />
+</div>
+</div>
+<section id="neural-pca-conclusion">
+<h3>Neural PCA Conclusion:<a class="headerlink" href="#neural-pca-conclusion" title="Permalink to this heading">#</a></h3>
+<p>Overall we see a very nice behaviour of the model for each class for the first two components repectively.
+In all the classes we see that for the third compenent we have large parts of the ground being covered by the rover. This means that the rover is part of the representation of the images. This is an issue. Because it is not the first component it is not that bad and this is then probably not a simplicity bias. If we could fix this with a bias model and HSIC regularization term on the target model. There are ways to potentially fix this, but these would require chages to losses and or architectures and remain as future work for now.</p>
+<p>In the last component you see another weird behaviour of the model. It is an OOD class. Might be an potential candidate for an internship though.</p>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="uncertainty-estimation">
+<h1>4. Uncertainty Estimation<a class="headerlink" href="#uncertainty-estimation" title="Permalink to this heading">#</a></h1>
+<p>We consider both:</p>
+<ul class="simple">
+<li><p><strong>Aleatoric uncertainty</strong> → noise in data</p></li>
+<li><p><strong>Epistemic uncertainty</strong> → lack of knowledge (model uncertainty)</p></li>
+</ul>
+<section id="aleatoric-uncertainty-heteroscedastic">
+<h2>4.1 Aleatoric Uncertainty (Heteroscedastic)<a class="headerlink" href="#aleatoric-uncertainty-heteroscedastic" title="Permalink to this heading">#</a></h2>
+<p>Modify model to output logits <span class="math notranslate nohighlight">\(z\)</span> and per-pixel variance <span class="math notranslate nohighlight">\(\sigma^2\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+(z, \sigma^2) = f_\theta(x)
+\]</div>
+<p>Loss:</p>
+<div class="math notranslate nohighlight">
+\[
+\mathcal{L} = \frac{1}{\sigma^2}\mathrm{CE}(y,z) + \log\sigma^2
+\]</div>
+<p>Large <span class="math notranslate nohighlight">\(\sigma \Rightarrow\)</span> pixel is inherently noisy.</p>
+<hr class="docutils" />
+<p><strong>Disclaimer:</strong><br />
+Uncertainty disentanglement (splitting into aleatoric and epistemic) is a relatively new and actively debated topic.<br />
+Definitions of the subtypes vary across the literature, so do not treat the definitions here too strictly—they are meant for surface-level illustration in this showcase.</p>
+<p><strong>Reference:</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/1703.04977">https://arxiv.org/abs/1703.04977</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.uncertainty</span> <span class="kn">import</span> <span class="n">predictive_entropy</span><span class="p">,</span> <span class="n">max_prob_uncertainty</span>
+
+<span class="n">student</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="n">imgs</span><span class="p">,</span> <span class="n">masks</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">test_loader</span><span class="p">))</span>
+<span class="n">imgs</span> <span class="o">=</span> <span class="n">imgs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+<span class="n">masks</span> <span class="o">=</span> <span class="n">masks</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">logits</span> <span class="o">=</span> <span class="n">student</span><span class="p">(</span><span class="n">imgs</span><span class="p">)</span>                     
+    <span class="n">preds</span> <span class="o">=</span> <span class="n">logits</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>            
+
+<span class="c1"># choose one example</span>
+<span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">img_np</span> <span class="o">=</span> <span class="n">imgs</span><span class="p">[</span><span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">gt_np</span> <span class="o">=</span> <span class="n">masks</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">pred_np</span> <span class="o">=</span> <span class="n">preds</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># uncertainty maps</span>
+<span class="n">entropy_map</span> <span class="o">=</span> <span class="n">predictive_entropy</span><span class="p">(</span><span class="n">logits</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<span class="n">maxprob_unc</span> <span class="o">=</span> <span class="n">max_prob_uncertainty</span><span class="p">(</span><span class="n">logits</span><span class="p">)[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="c1"># normalize for display (optional)</span>
+<span class="k">def</span> <span class="nf">norm01</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+    <span class="n">x_min</span><span class="p">,</span> <span class="n">x_max</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">x_max</span> <span class="o">&gt;</span> <span class="n">x_min</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x_max</span> <span class="o">-</span> <span class="n">x_min</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="mf">0.0</span>
+
+<span class="n">entropy_disp</span> <span class="o">=</span> <span class="n">norm01</span><span class="p">(</span><span class="n">entropy_map</span><span class="p">)</span>
+<span class="n">maxprob_unc_disp</span> <span class="o">=</span> <span class="n">norm01</span><span class="p">(</span><span class="n">maxprob_unc</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_np</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;gray&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Input Image&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">gt_np</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Ground Truth&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">pred_np</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;tab20&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Segmentation&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">entropy_disp</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;turbo&quot;</span><span class="p">)</span>  <span class="c1"># or &quot;inferno&quot;</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Predictive Uncertainty&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/83067e5dd06e927b2641ce9e10385be8ee18e5315b4cdc58eb4b4672094a70aa.png" src="_images/83067e5dd06e927b2641ce9e10385be8ee18e5315b4cdc58eb4b4672094a70aa.png" />
+</div>
+</div>
+</section>
+<section id="aleatoric-uncertainty-conclusion">
+<h2>Aleatoric Uncertainty Conclusion:<a class="headerlink" href="#aleatoric-uncertainty-conclusion" title="Permalink to this heading">#</a></h2>
+<p>Here we see that the the uncerainty matches the regions at the predictions roughly. The edges could be a bit more aligned but we do not expect perfect behaviour when having a rather small dataset and a distilled model. One Problem that will arise here for pictures that might be OOD or soft-OOD (weird uncertainty people name for a covariate shift), basically meaning data more or less distict we will suffer from overconfidence. As we have ReLU activations there is the problematic tendency of the model to more confident in one class the more test picture will be away from the training data space. This is obviously wrong behaviour and can be fixed “being a bit Gaussian” (next part).</p>
+</section>
+<section id="epistemic-uncertainty-laplace-approximation-future-work">
+<h2>4.2 Epistemic Uncertainty — Laplace Approximation (Future Work)<a class="headerlink" href="#epistemic-uncertainty-laplace-approximation-future-work" title="Permalink to this heading">#</a></h2>
+<p>ReLU networks behave pathologically far from data<br />
+(Hennig &amp; Hauberg: “being a bit Gaussian” helps).</p>
+<p>Approximate posterior as Gaussian:</p>
+<div class="math notranslate nohighlight">
+\[
+p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
+\]</div>
+<p>where <span class="math notranslate nohighlight">\(H\)</span> is the Hessian of the log-posterior.</p>
+<p>Provides model uncertainty via parameter variance.</p>
+<p><strong>Reference:</strong><br />
+<a class="reference external" href="https://arxiv.org/abs/2106.15249">https://arxiv.org/abs/2106.15249</a></p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="summary">
+<h1>5. Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h1>
+<p>This project integrates:</p>
+<ul class="simple">
+<li><p>A powerful <strong>Attention U-Net teacher</strong></p></li>
+<li><p>A fast, efficient <strong>student U-Net</strong></p></li>
+<li><p><strong>Distillation</strong> for performance with small models</p></li>
+<li><p><strong>Multiple explainability tools</strong></p></li>
+<li><p><strong>Uncertainty estimates</strong> (data &amp; model)</p></li>
+</ul>
+<p>This builds a deployment-ready perception pipeline for autonomous planetary exploration.</p>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="references">
+<h1>6. References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
+<section id="attention-u-net">
+<h2>Attention U-Net<a class="headerlink" href="#attention-u-net" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1804.03999">https://arxiv.org/abs/1804.03999</a></p>
+</section>
+<section id="knowledge-distillation">
+<h2>Knowledge Distillation<a class="headerlink" href="#knowledge-distillation" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1503.02531">https://arxiv.org/abs/1503.02531</a></p>
+</section>
+<section id="grad-cam">
+<h2>Grad-CAM<a class="headerlink" href="#grad-cam" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1610.02391">https://arxiv.org/abs/1610.02391</a></p>
+</section>
+<section id="integrated-gradients">
+<h2>Integrated Gradients<a class="headerlink" href="#integrated-gradients" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1703.01365">https://arxiv.org/abs/1703.01365</a></p>
+</section>
+<section id="aleatoric-uncertainty">
+<h2>Aleatoric Uncertainty<a class="headerlink" href="#aleatoric-uncertainty" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/1703.04977">https://arxiv.org/abs/1703.04977</a></p>
+</section>
+<section id="laplace-approximation-being-a-bit-gaussian">
+<h2>Laplace Approximation / “Being a Bit Gaussian”<a class="headerlink" href="#laplace-approximation-being-a-bit-gaussian" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/2106.15249">https://arxiv.org/abs/2106.15249</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "executablebooks/jupyter-book",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Martian Terrain Semantic Segmentation</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">API Reference</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🪐 Martian Terrain Segmentation — Technical Blog-Style Documentation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-few-things-to-say">A few things to say</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-attention-u-net-teacher-model">1. The Attention U-Net (Teacher Model)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-gate-mathematical-overview">🔍 1.1 Attention Gate (Mathematical Overview)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-attention-helps">Why Attention Helps</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation-teacher-student">2. Knowledge Distillation (Teacher → Student)</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-distillation-works-better-than-raw-labels">2.1 Why Distillation Works Better Than Raw Labels</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#soft-targets-contain-class-similarities">Soft Targets Contain Class Similarities</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#benefits">Benefits:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#distillation-loss-for-segmentation">2.2 Distillation Loss for Segmentation</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#explainability-methods">3. Explainability Methods</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam-for-segmentation">3.1 Grad-CAM for Segmentation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients-ig">3.2 Integrated Gradients (IG)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cam-integrated-gradient-conclusion">Cam &amp; Integrated Gradient Conclusion:</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-pca-n-pca">3.3 Neural PCA (N-PCA)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#neural-pca-conclusion">Neural PCA Conclusion:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-estimation">4. Uncertainty Estimation</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty-heteroscedastic">4.1 Aleatoric Uncertainty (Heteroscedastic)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty-conclusion">Aleatoric Uncertainty Conclusion:</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#epistemic-uncertainty-laplace-approximation-future-work">4.2 Epistemic Uncertainty — Laplace Approximation (Future Work)</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">6. References</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-u-net">Attention U-Net</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation">Knowledge Distillation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam">Grad-CAM</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients">Integrated Gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty">Aleatoric Uncertainty</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laplace-approximation-being-a-bit-gaussian">Laplace Approximation / “Being a Bit Gaussian”</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Georg Tirp
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
