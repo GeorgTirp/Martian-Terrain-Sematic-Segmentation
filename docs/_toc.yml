@@ -1,0 +1,6 @@
+format: jb-book
+root: index
+
+chapters:
+  - file: martian_segmentation_explainability
+  - file: api

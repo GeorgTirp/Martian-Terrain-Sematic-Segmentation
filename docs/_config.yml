@@ -1,0 +1,23 @@
+# docs/_config.yml
+title: "Martian Terrain Semantic Segmentation"
+author: "Georg Tirp"
+root: .
+
+only_build_toc_files: true
+
+# Let Jupyter Book use Sphinx extensions (for autodoc)
+sphinx:
+  extra_extensions:
+    - sphinx.ext.autodoc
+
+# Optional but nice: interactive launch buttons
+launch_buttons:
+  binderhub_url: "https://mybinder.org"        # Binder
+  colab_url: "https://colab.research.google.com"  # Colab
+  thebe: true                                  # in-page runnable cells
+
+execute:
+  execute_notebooks: auto
+  exclude_tags:
+    - no-exec
+  timeout: 600
