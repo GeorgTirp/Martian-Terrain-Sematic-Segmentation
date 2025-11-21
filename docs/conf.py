@@ -18,4 +18,8 @@ autodoc_mock_imports = [
     "matplotlib",
     "PIL",
     "sklearn",
+    "cv2",
+    "albumentations",
+    "torchmetrics",
+    # add any other heavy deps used only in your code
 ]
