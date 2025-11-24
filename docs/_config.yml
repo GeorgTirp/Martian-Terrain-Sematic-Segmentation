@@ -1,4 +1,3 @@
-# docs/_config.yml
 title: "Martian Terrain Semantic Segmentation"
 author: "Georg Tirp"
 root: .
@@ -9,6 +8,15 @@ sphinx:
   extra_extensions:
     - sphinx.ext.autodoc
     - sphinx.ext.napoleon
+  config:
+    autodoc_mock_imports:
+      - torch
+      - torchvision
+      - pytorch_lightning
+      - numpy
+      - matplotlib
+      - PIL
+      - sklearn
 
 launch_buttons:
   binderhub_url: "https://mybinder.org"
