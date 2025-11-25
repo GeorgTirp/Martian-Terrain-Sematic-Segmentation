@@ -4,11 +4,11 @@ root: .
 
 only_build_toc_files: true
 
-sphinx:
-  extra_extensions:
-    - sphinx.ext.autodoc
-    - sphinx.ext.napoleon
-  config:
+#sphinx:
+#  extra_extensions:
+#    - sphinx.ext.autodoc
+#    - sphinx.ext.napoleon
+#  config:
     #autodoc_mock_imports:
     #  - torch
     #  - torchvision
