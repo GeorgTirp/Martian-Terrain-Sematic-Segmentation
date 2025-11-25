@@ -401,6 +401,9 @@ document.write(`
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-attention-u-net-teacher-model">1. The Attention U-Net (Teacher Model)</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-gate-mathematical-overview">🔍 1.1 Attention Gate (Mathematical Overview)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-attention-helps">Why Attention Helps</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-even-more-powerful-model-future-work-in-internship-maybe">Creating a even more powerful model (future work in internship maybe)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-a-backbone-and-then-fine-tuning">1. Training a Backbone and Then Fine-Tuning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-augmentation">2. Data Augmentation</a></li>
 </ul>
 </li>
 </ul>
@@ -435,11 +438,12 @@ document.write(`
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">6. References</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-u-net">Attention U-Net</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imagenot-a-contrast-with-imagenet-preserves-model-rankings">ImageNot: A contrast with ImageNet preserves model rankings</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation">Knowledge Distillation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam">Grad-CAM</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients">Integrated Gradients</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty">Aleatoric Uncertainty</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laplace-approximation-being-a-bit-gaussian">Laplace Approximation / “Being a Bit Gaussian”</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#being-bayesian-even-just-a-bit-fixes-overconfidence-in-relu-networks">Being Bayesian, Even Just a Bit, Fixes Overconfidence in ReLU Networks</a></li>
 </ul>
 </li>
 </ul>
@@ -480,11 +484,13 @@ document.write(`
 </ul>
 </li>
 </ul>
+<p>Here is a first glance on what you can expect:</p>
+<p><img alt="Content figure on what you can expect in this notebook" src="_images/summary.png" /></p>
 <section id="a-few-things-to-say">
 <h2>A few things to say<a class="headerlink" href="#a-few-things-to-say" title="Permalink to this heading">#</a></h2>
-<p>In the context of an ESA application I made this fun little semactic segmentation project. The goal is to get a good performing lightweight model to do semantic segmentation on a martian terrain dataset. Because the context here is to make a model that is aiding human interpretation of the data I added some of my facorite methods from the realm of trustworthy machine learning. This offers explainability and interpretability of the model to be able to detect shortcuts or biases of the model in the attempt of opening the black box. I think these are essential in every case where we want to really trust the model and understand how and what it is actually learning. Keep in mind, none of these methods, especially when only using each of them alone, this does never assure right behaviour of the model but taken together they enable a good understanding and robustness.</p>
-<p>Tis Notebook will display only the higher level concepts of the things that are implemented here. For the detailed code descriptions look in the docs that can also be found here on the website. Also the small discussions under the methods are kept short and surface level and have this little anthropomohizing style. This repo is for showing concepts in a comprehensive fun way. Of course interpretability and the discussion of these methods goes much deeper and is a bit mor ecomplex but this will suffice for now.</p>
-<p>What will follow is a very typical pytorch CNN pipeline, no magic there. I will at short explanations for the more non-standard interesting parts. The references can be found at the end along with an outlook on whats still missing in my opinion (I will publish the incomplete version as I had only a few to do this for the application).</p>
+<p>In the context of an ESA application I made this fun little semantic segmentation project. The goal is to get a good-performing lightweight model to do semantic segmentation on a Martian terrain dataset. Because the context here is to make a model that is aiding human interpretation of the data, I added some of my favorite methods from the realm of trustworthy machine learning. This offers explainability and interpretability of the model to be able to detect shortcuts or biases of the model in the attempt of opening the black box. I think these are essential in every case where we want to really trust the model and understand how and what it is actually learning. Keep in mind, none of these methods—especially when only using each of them alone—ever assures the right behavior of the model, but taken together they enable a good understanding and robustness.</p>
+<p>This notebook will display only the higher-level concepts of the things that are implemented here. For the detailed code descriptions, look in the docs that can also be found here on the website. Also, the small discussions under the methods are kept short and surface-level and have this little anthropomorphizing style. This repo is for showing concepts in a comprehensive fun way. Of course, interpretability and the discussion of these methods goes much deeper and is a bit more complex, but this will suffice for now.</p>
+<p>What will follow is a very typical PyTorch CNN pipeline, no magic there. I will add short explanations for the more non-standard interesting parts. The references can be found at the end along with an outlook on what’s still missing in my opinion (I will publish the incomplete version as I had only a few days to do this for the application).</p>
 <p><strong>This is just imports and training settings:</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -529,6 +535,10 @@ document.write(`
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using device: cuda
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>/home/georg/miniconda3/envs/deep_learning_ex_1/lib/python3.12/site-packages/muon/_core/preproc.py:31: FutureWarning: `__version__` is deprecated, use `importlib.metadata.version(&#39;scanpy&#39;)` instead
+  if Version(scanpy.__version__) &lt; Version(&quot;1.10&quot;):
 </pre></div>
 </div>
 </div>
@@ -625,6 +635,20 @@ q = \mathrm{ReLU}(x' + g')
 <p><strong>Reference:</strong><br />
 <strong>Attention U-Net: Learning Where to Look for the Pancreas</strong><br />
 <a class="reference external" href="https://arxiv.org/abs/1804.03999">https://arxiv.org/abs/1804.03999</a></p>
+</section>
+<section id="creating-a-even-more-powerful-model-future-work-in-internship-maybe">
+<h3>Creating a even more powerful model (future work in internship maybe)<a class="headerlink" href="#creating-a-even-more-powerful-model-future-work-in-internship-maybe" title="Permalink to this heading">#</a></h3>
+<p>There is still a few tricks available how to get much mor eout of the msotly sparse data resources that I can not try out until the deadline due to a combination limited time and compute resources:</p>
+</section>
+<section id="training-a-backbone-and-then-fine-tuning">
+<h3>1. Training a Backbone and Then Fine-Tuning<a class="headerlink" href="#training-a-backbone-and-then-fine-tuning" title="Permalink to this heading">#</a></h3>
+<p>Research suggests that much of the workload of models in computer vision lies in learning feature maps of images and modelling the manifold on which those feature maps live. In practice this means that we can pre-train on a much broader dataset that is similar, and then fine-tune on our real data. In our case, this would mean taking a large image-segmentation dataset, converting it to greyscale and segmentation format (if it is not already), and then pre-training. Afterwards we use our real data to fine-tune the model that has already learned the feature maps for our segmentation task.</p>
+<p>For example, the paper A Contrast with ImageNet Preserves Model Rankings (2024) introduces the dataset named ImageNot. The authors show that even in the worst-case scenario—where we pre-train on classes with no overlap and on non-curated images—the pre-training dataset still yields useful feature representations for downstream tasks.
+arXiv</p>
+</section>
+<section id="data-augmentation">
+<h3>2. Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permalink to this heading">#</a></h3>
+<p>We can easily multiply the amount of high-quality data via augmentation. Techniques like vertical/horizontal flips, noise insertion, or small affine transformations preserve the label and most of the image quality, thereby generating significantly more high-quality datapoints. This will likely improve performance—but we must double-check whether we inadvertently introduce biases by doing so. Luckily we have our explainability methods below at hand.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.models</span> <span class="kn">import</span> <span class="n">create_teacher_unet</span>
@@ -735,7 +759,7 @@ q = \mathrm{ReLU}(x' + g')
 
 <span class="c1"># Find repo root (directory of this notebook file)</span>
 <span class="n">repo_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>  <span class="c1"># if running notebook from repo root</span>
-
+<span class="c1"># read in the history in the showcase scenario because it takes an hour of time to train with my resources</span>
 <span class="n">csv_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">repo_root</span><span class="p">,</span> <span class="s2">&quot;../outputs&quot;</span><span class="p">,</span> <span class="s2">&quot;teacher_training_history.csv&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Loading:&quot;</span><span class="p">,</span> <span class="n">csv_path</span><span class="p">)</span>
 
@@ -1294,19 +1318,26 @@ For the sand we might see small potential problems. There seems to be a tendency
 <p>N-PCA reveals <strong>the principal axes of variation</strong> in the feature space of each terrain class.</p>
 <p>We compute:</p>
 <ul class="simple">
-<li><p>Penultimate features:<br />
-$<span class="math notranslate nohighlight">\(
-\phi(x)
-\)</span>$</p></li>
-<li><p>Class weight vector:<br />
-$<span class="math notranslate nohighlight">\(
-w_c
-\)</span>$</p></li>
-<li><p>Class embedding:<br />
-$<span class="math notranslate nohighlight">\(
-\psi_c(x) = w_c \odot \phi(x)
-\)</span>$</p></li>
+<li><p>Penultimate features:</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[
+\phi(x)
+\]</div>
+<ul class="simple">
+<li><p>Class weight vector:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+w_c
+\]</div>
+<ul class="simple">
+<li><p>Class embedding:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[
+\psi_c(x) = w_c \odot \phi(x)
+\]</div>
 <p>Then perform PCA on all <span class="math notranslate nohighlight">\(\psi_c(x)\)</span> for samples containing class <span class="math notranslate nohighlight">\(c\)</span>.</p>
 <p>Outputs:</p>
 <ul class="simple">
@@ -1530,7 +1561,7 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
 <p>where <span class="math notranslate nohighlight">\(H\)</span> is the Hessian of the log-posterior.</p>
 <p>Provides model uncertainty via parameter variance.</p>
 <p><strong>Reference:</strong><br />
-<a class="reference external" href="https://arxiv.org/abs/2106.15249">https://arxiv.org/abs/2106.15249</a></p>
+<a class="reference external" href="https://arxiv.org/abs/2002.10118">https://arxiv.org/abs/2002.10118</a></p>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="summary">
@@ -1551,6 +1582,10 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
 <h2>Attention U-Net<a class="headerlink" href="#attention-u-net" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://arxiv.org/abs/1804.03999">https://arxiv.org/abs/1804.03999</a></p>
 </section>
+<section id="imagenot-a-contrast-with-imagenet-preserves-model-rankings">
+<h2>ImageNot: A contrast with ImageNet preserves model rankings<a class="headerlink" href="#imagenot-a-contrast-with-imagenet-preserves-model-rankings" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/html/2404.02112v1">https://arxiv.org/html/2404.02112v1</a></p>
+</section>
 <section id="knowledge-distillation">
 <h2>Knowledge Distillation<a class="headerlink" href="#knowledge-distillation" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://arxiv.org/abs/1503.02531">https://arxiv.org/abs/1503.02531</a></p>
@@ -1567,9 +1602,9 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
 <h2>Aleatoric Uncertainty<a class="headerlink" href="#aleatoric-uncertainty" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://arxiv.org/abs/1703.04977">https://arxiv.org/abs/1703.04977</a></p>
 </section>
-<section id="laplace-approximation-being-a-bit-gaussian">
-<h2>Laplace Approximation / “Being a Bit Gaussian”<a class="headerlink" href="#laplace-approximation-being-a-bit-gaussian" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://arxiv.org/abs/2106.15249">https://arxiv.org/abs/2106.15249</a></p>
+<section id="being-bayesian-even-just-a-bit-fixes-overconfidence-in-relu-networks">
+<h2>Being Bayesian, Even Just a Bit, Fixes Overconfidence in ReLU Networks<a class="headerlink" href="#being-bayesian-even-just-a-bit-fixes-overconfidence-in-relu-networks" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://arxiv.org/abs/2002.10118">https://arxiv.org/abs/2002.10118</a></p>
 </section>
 </section>
 
@@ -1644,6 +1679,9 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#the-attention-u-net-teacher-model">1. The Attention U-Net (Teacher Model)</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-gate-mathematical-overview">🔍 1.1 Attention Gate (Mathematical Overview)</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-attention-helps">Why Attention Helps</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-even-more-powerful-model-future-work-in-internship-maybe">Creating a even more powerful model (future work in internship maybe)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training-a-backbone-and-then-fine-tuning">1. Training a Backbone and Then Fine-Tuning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-augmentation">2. Data Augmentation</a></li>
 </ul>
 </li>
 </ul>
@@ -1678,11 +1716,12 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">5. Summary</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#references">6. References</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attention-u-net">Attention U-Net</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#imagenot-a-contrast-with-imagenet-preserves-model-rankings">ImageNot: A contrast with ImageNet preserves model rankings</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#knowledge-distillation">Knowledge Distillation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grad-cam">Grad-CAM</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integrated-gradients">Integrated Gradients</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#aleatoric-uncertainty">Aleatoric Uncertainty</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#laplace-approximation-being-a-bit-gaussian">Laplace Approximation / “Being a Bit Gaussian”</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#being-bayesian-even-just-a-bit-fixes-overconfidence-in-relu-networks">Being Bayesian, Even Just a Bit, Fixes Overconfidence in ReLU Networks</a></li>
 </ul>
 </li>
 </ul>
