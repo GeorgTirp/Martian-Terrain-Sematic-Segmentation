@@ -2,15 +2,15 @@
 """
 AI4Mars dataloading utilities.
 
-We use the Hugging Face dataset `hassanjbara/AI4MARS`, which provides:
+I used the Hugging Face dataset `hassanjbara/AI4MARS`, which provides:
 
 - `image`: original rover image (Navcam, PIL-like).
 - `label_mask`: semantic segmentation mask with terrain classes encoded as:
 
-    * 0 -> soil  
-    * 1 -> bedrock  
-    * 2 -> sand  
-    * 3 -> big rock  
+    * 0 -> soil
+    * 1 -> bedrock
+    * 2 -> sand
+    * 3 -> big rock
     * 255 -> null / no label
 
 This module wraps the dataset into PyTorch `Dataset` and `DataLoader` objects,
@@ -237,13 +237,11 @@ class DataLoaders:
 
     Attributes
     ----------
-    train : torch.utils.data.DataLoader
-        Dataloader for the training split.
-    val : torch.utils.data.DataLoader
-        Dataloader for the validation split.
-    test : torch.utils.data.DataLoader
-        Dataloader for the test split.
+    - **train**: PyTorch ``DataLoader`` for the training split.
+    - **val**: PyTorch ``DataLoader`` for the validation split.
+    - **test**: PyTorch ``DataLoader`` for the test split.
     """
+
     train: DataLoader
     val: DataLoader
     test: DataLoader
@@ -256,7 +254,7 @@ def create_ai4mars_dataloaders(
     val_fraction: float = 0.1,
     to_rgb: bool = False,
     seed: int = 42,
-    cache_dir: str | None = None,            
+    cache_dir: str | None = None,
     max_train_samples: int | None = None,
     max_val_samples: int | None = None,
     max_test_samples: int | None = None,
