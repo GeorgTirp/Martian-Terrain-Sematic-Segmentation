@@ -45,8 +45,8 @@ def create_optimizer(
     r"""
     Create an optimizer for a given model with prioritized fallback logic.
 
-    Priority
-    --------
+    The optimizers are tried in the following priority:
+
     1. **Muon** (if installed and ``use_muon=True``)  
        Muon is a second-order optimizer approximating natural gradient steps.
 
@@ -118,18 +118,20 @@ def create_cosine_scheduler_with_warmup(
     r"""
     Create a cosine-annealing LR scheduler with linear warmup.
 
-    Learning Rate Schedule
-    -----------------------
+    This scheduler combines a linear warmup phase with a cosine decay phase.
+
+    **Learning rate schedule**
+
     Given current step :math:`t`, warmup :math:`W`, and total steps :math:`T`,
     the schedule is:
 
-    **Warmup (linear):**
+    **Warmup (linear)**
 
     .. math::
 
         \text{lr}(t) = \frac{t}{W}, \quad 0 \le t < W
 
-    **Cosine decay:**
+    **Cosine decay**
 
     .. math::
 
@@ -138,8 +140,9 @@ def create_cosine_scheduler_with_warmup(
         \text{lr}(t) =
         \tfrac{1}{2}\left(1 + \cos\big( 2\pi \cdot C \cdot \text{progress} \big)\right)
 
-    Where:
-    - :math:`C` = ``num_cycles`` controls the number of cosine waves  
+    where:
+
+    - :math:`C` = ``num_cycles`` controls the number of cosine waves
       (``0.5`` = standard: decay → 0 once)
 
     Parameters
@@ -151,7 +154,7 @@ def create_cosine_scheduler_with_warmup(
     num_training_steps : int
         Total number of steps (``epochs * steps_per_epoch``).
     num_cycles : float, optional
-        Number of cosine cycles.  
+        Number of cosine cycles.
         Default ``0.5`` = half-cycle (decay to 0 exactly once).
 
     Returns
@@ -161,9 +164,9 @@ def create_cosine_scheduler_with_warmup(
 
     Notes
     -----
-    - This implementation is mathematically equivalent to
+    - This implementation is mathematically similar to
       ``transformers.get_cosine_schedule_with_warmup``.
-    - LR returned by the lambda is multiplied with the optimizer's base LR.
+    - The value returned by the lambda is multiplied with the optimizer's base LR.
     """
 
     def lr_lambda(current_step: int) -> float:
