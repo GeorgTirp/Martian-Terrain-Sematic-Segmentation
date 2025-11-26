@@ -29,15 +29,13 @@ jobs:
       # keep this minimal – only what you need to import your package + build docs pip install "jupyter-book==0.15.1"
         run: |
           python -m pip install --upgrade pip
-          pip install jupyter-book
+          pip install "jupyter-book==0.15.1"
           pip install sphinx myst-parser
-          pip install -r docs/requirements-docs.txt
           python -m pip install -e .
 
       - name: Build Jupyter Book
         run: |
-          jb build docs --keep-going 2>&1 | tee build-docs.log
-
+          jupyter-book build docs --all
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
