@@ -36,7 +36,8 @@ jobs:
 
       - name: Build Jupyter Book
         run: |
-          jupyter-book build docs --all
+          jb build docs --keep-going 2>&1 | tee build-docs.log
+
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
