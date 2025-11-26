@@ -30,12 +30,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install "jupyter-book==0.15.1"
+          pip install sphinx myst-parser
           pip install -r docs/requirements-docs.txt
           python -m pip install -e .
 
       - name: Build Jupyter Book
         run: |
-          jupyter-book build docs --all
+          jupyter-book build docs --keep-going 2>&1 | tee build-docs.log
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

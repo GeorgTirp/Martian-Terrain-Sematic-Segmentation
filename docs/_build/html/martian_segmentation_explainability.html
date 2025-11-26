@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>🪐 Martian Terrain Segmentation - Notebook &#8212; Martian Terrain Semantic Segmentation</title>
+    <title>🚀 Martian Terrain Segmentation - Notebook &#8212; Martian Terrain Semantic Segmentation</title>
   
   
   
@@ -171,7 +171,7 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">🪐 Martian Terrain Segmentation - Notebook</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">🚀 Martian Terrain Segmentation - Notebook</a></li>
 
 
 
@@ -384,7 +384,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>🪐 Martian Terrain Segmentation - Notebook</h1>
+    <h1>🚀 Martian Terrain Segmentation - Notebook</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -394,7 +394,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🪐 Martian Terrain Segmentation - Notebook</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🚀 Martian Terrain Segmentation - Notebook</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-few-things-to-say">A few things to say</a></li>
 </ul>
 </li>
@@ -459,7 +459,7 @@ document.write(`
                 <article class="bd-article">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="martian-terrain-segmentation-notebook">
-<h1>🪐 Martian Terrain Segmentation - Notebook<a class="headerlink" href="#martian-terrain-segmentation-notebook" title="Permalink to this heading">#</a></h1>
+<h1>🚀 Martian Terrain Segmentation - Notebook<a class="headerlink" href="#martian-terrain-segmentation-notebook" title="Permalink to this heading">#</a></h1>
 <p>Quick Content Summary:</p>
 <ul class="simple">
 <li><p>Loading the AI4Mars NASA dataset (Hugging Face: <code class="docutils literal notranslate"><span class="pre">hassanjbara/AI4MARS</span></code>).</p>
@@ -1315,37 +1315,72 @@ For the sand we might see small potential problems. There seems to be a tendency
 </section>
 <section id="neural-pca-n-pca">
 <h2>3.3 Neural PCA (N-PCA)<a class="headerlink" href="#neural-pca-n-pca" title="Permalink to this heading">#</a></h2>
-<p>N-PCA reveals <strong>the principal axes of variation</strong> in the feature space of each terrain class.</p>
-<p>We compute:</p>
+<p>Neural PCA (N-PCA) reveals <strong>the principal axes of variation</strong> in the feature space of each terrain class and how they contribute to the class logit.<br />
+It follows the class-wise neural PCA formulation from the Statistical Machine Learning lecture.</p>
+<p>We define:</p>
 <ul class="simple">
-<li><p>Penultimate features:</p></li>
+<li><p><strong>Penultimate feature vector</strong><br />
+$<span class="math notranslate nohighlight">\(
+\phi(x) \in \mathbb{R}^D
+\)</span>$</p></li>
+<li><p><strong>Classifier weight vector for class (c)</strong><br />
+$<span class="math notranslate nohighlight">\(
+w_c \in \mathbb{R}^D
+\)</span>$</p></li>
+<li><p><strong>Class-specific embedding</strong><br />
+$<span class="math notranslate nohighlight">\(
+\psi_c(x) = w_c \odot \phi(x) \in \mathbb{R}^D
+\)</span>$</p></li>
 </ul>
-<div class="math notranslate nohighlight">
-\[
-\phi(x)
-\]</div>
+<p>For each class <span class="math notranslate nohighlight">\(c\)</span>, we:</p>
+<ol class="arabic simple">
+<li><p>Collect all samples <span class="math notranslate nohighlight">\(x_i\)</span> whose segmentation mask contains class <span class="math notranslate nohighlight">\(c\)</span>.</p></li>
+<li><p>Compute the class-specific embeddings <span class="math notranslate nohighlight">\(\psi_c(x_i)\)</span>.</p></li>
+<li><p>Compute their mean<br />
+$<span class="math notranslate nohighlight">\(
+\bar{\psi}_c = \frac{1}{N} \sum_{i=1}^N \psi_c(x_i)
+\)</span><span class="math notranslate nohighlight">\(
+and the covariance matrix of \)</span>{\psi_c(x_i)}_{i=1}^N$.</p></li>
+<li><p>Perform PCA on this covariance matrix to obtain eigenvectors<br />
+$<span class="math notranslate nohighlight">\(
+v_\ell \in \mathbb{R}^D, \quad \ell = 1,\dots,L
+\)</span><span class="math notranslate nohighlight">\(
+and eigenvalues \)</span>\lambda_\ell$.</p></li>
+</ol>
+<p>Each centered embedding expands in the PCA basis:
+$<span class="math notranslate nohighlight">\(
+\psi_c(x) - \bar{\psi}_c
+= \sum_{\ell=1}^L
+    \big\langle \psi_c(x) - \bar{\psi}_c,\; v_\ell \big\rangle \, v_\ell.
+\)</span>$</p>
+<p>The <strong>logit</strong> of class (c) is
+$<span class="math notranslate nohighlight">\(
+f_c(x) = \langle \mathbf{1}, \psi_c(x) \rangle + b_c ,
+\)</span><span class="math notranslate nohighlight">\(
+where \)</span>\mathbf{1} = (1,\dots,1)^\top<span class="math notranslate nohighlight">\(.  
+Using the PCA decomposition:
+\)</span>$
+f_c(x)
+= \sum_{\ell=1}^L \alpha_\ell^{(c)}(x)</p>
 <ul class="simple">
-<li><p>Class weight vector:</p></li>
+<li><p>\big\langle \mathbf{1}, \bar{\psi}_c \big\rangle</p></li>
+<li><p>b_c .
+$$</p></li>
 </ul>
-<div class="math notranslate nohighlight">
-\[
-w_c
-\]</div>
+<p>The <strong>contribution of PCA component <span class="math notranslate nohighlight">\(\ell\)</span></strong> to the class-<span class="math notranslate nohighlight">\(c\)</span> logit is
+$<span class="math notranslate nohighlight">\(
+\alpha_\ell^{(c)}(x)
+= \big\langle \mathbf{1}, v_\ell \big\rangle
+  \big\langle \psi_c(x) - \bar{\psi}_c,\; v_\ell \big\rangle .
+\)</span>$</p>
+<p><strong>Outputs per class (c):</strong></p>
 <ul class="simple">
-<li><p>Class embedding:</p></li>
-</ul>
-<div class="math notranslate nohighlight">
-\[
-\psi_c(x) = w_c \odot \phi(x)
-\]</div>
-<p>Then perform PCA on all <span class="math notranslate nohighlight">\(\psi_c(x)\)</span> for samples containing class <span class="math notranslate nohighlight">\(c\)</span>.</p>
-<p>Outputs:</p>
-<ul class="simple">
-<li><p>Principal directions</p></li>
-<li><p>Eigenvalues</p></li>
+<li><p>Principal directions <span class="math notranslate nohighlight">\(v_\ell\)</span> in feature space</p></li>
+<li><p>Eigenvalues <span class="math notranslate nohighlight">\(\lambda_\ell\)</span></p></li>
+<li><p>Component scores <span class="math notranslate nohighlight">\(\alpha_\ell^{(c)}(x)\)</span></p></li>
 <li><p>Top-activating real images (“eigenpictures”)</p></li>
 </ul>
-<p>This shows what the model thinks <em>defines</em> each terrain class.</p>
+<p>These eigenpictures show what the model “thinks” defines each terrain class, revealing shortcut or spurious features driving the class logit.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">martian_terrain_segmentation.explainability</span> <span class="kn">import</span> <span class="n">compute_class_neural_pca_features</span><span class="p">,</span> <span class="n">show_top_neural_pca_images_for_class</span>
@@ -1672,7 +1707,7 @@ p(\theta \mid D) \approx \mathcal{N}(\hat{\theta}, H^{-1})
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🪐 Martian Terrain Segmentation - Notebook</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">🚀 Martian Terrain Segmentation - Notebook</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-few-things-to-say">A few things to say</a></li>
 </ul>
 </li>

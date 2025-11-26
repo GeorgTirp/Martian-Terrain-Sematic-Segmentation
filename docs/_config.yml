@@ -8,7 +8,7 @@ sphinx:
   extra_extensions:
     - sphinx.ext.autodoc
     - sphinx.ext.napoleon
-  config:
+  #config:
     #autodoc_mock_imports:
     #  - torch
     #  - torchvision
@@ -17,7 +17,7 @@ sphinx:
     #  - matplotlib
     #  - PIL
     #  - sklearn
-#
+
 launch_buttons:
   binderhub_url: "https://mybinder.org"
   colab_url: "https://colab.research.google.com"
