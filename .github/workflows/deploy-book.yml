@@ -35,7 +35,7 @@ jobs:
 
       - name: Build Jupyter Book
         run: |
-          jupyter-book build docs --all -W
+          jupyter-book build docs --all -W --keep-going
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
