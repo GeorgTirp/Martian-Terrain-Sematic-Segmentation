@@ -23,6 +23,7 @@ sphinx:
       - shap
       - captum
       - albumentations
+      - datasets
 
 launch_buttons:
   binderhub_url: "https://mybinder.org"
