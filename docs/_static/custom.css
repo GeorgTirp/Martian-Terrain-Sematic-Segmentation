@@ -1,7 +1,7 @@
 /* ===== Mars Background ===== */
 
 /* Apply Mars background in both light and dark modes.
-   Assumes mars.jpg is in the same folder as this file: docs/_static/mars.jpg */
+   Assumes mars2.jpg is in the same folder as this file: docs/_static/mars2.jpg */
 html[data-theme="light"],
 html[data-theme="dark"] {
   background: url("mars2.jpg") center/cover fixed no-repeat !important;
@@ -63,13 +63,24 @@ pre {
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Inline code */
+/* Inline code (base style) */
 code {
   background-color: rgba(57, 51, 99, 0.9);
   color: #f8f5ff;
   border-radius: 4px;
   padding: 0.15rem 0.35rem;
   font-size: 0.9em;
+}
+
+/* Make sure "pills" / module names look the same in LIGHT mode */
+html[data-theme="light"] code,
+html[data-theme="light"] a code,
+html[data-theme="light"] code.literal,
+html[data-theme="light"] .docutils.literal {
+  background-color: rgba(57, 51, 99, 0.9) !important;
+  color: #f8f5ff !important;
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
 }
 
 /* Keywords (def, class, import, etc.) */
