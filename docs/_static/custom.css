@@ -157,3 +157,39 @@ table.docutils td,
 table.docutils th {
   border-color: rgba(255, 255, 255, 0.15);
 }
+
+/* ===== Force readable text in both themes ===== */
+
+/* Base text color (white-ish in both light & dark) */
+html[data-theme="light"] body,
+html[data-theme="dark"] body {
+  color: #f5f3ff;
+}
+
+/* Headings */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] h5,
+html[data-theme="light"] h6,
+html[data-theme="dark"] h1,
+html[data-theme="dark"] h2,
+html[data-theme="dark"] h3,
+html[data-theme="dark"] h4,
+html[data-theme="dark"] h5,
+html[data-theme="dark"] h6 {
+  color: #ffffff;
+}
+
+/* Sidebar & header text + links */
+html[data-theme="light"] .bd-sidebar-primary,
+html[data-theme="dark"] .bd-sidebar-primary,
+html[data-theme="light"] .bd-sidebar-primary a,
+html[data-theme="dark"] .bd-sidebar-primary a,
+html[data-theme="light"] .bd-header,
+html[data-theme="dark"] .bd-header,
+html[data-theme="light"] .bd-header a,
+html[data-theme="dark"] .bd-header a {
+  color: #f5f3ff;
+}
