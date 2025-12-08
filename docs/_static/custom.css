@@ -72,7 +72,7 @@ code {
   font-size: 0.9em;
 }
 
-/* Make sure "pills" / module names look the same in LIGHT mode */
+/* Make sure "pills" / inline literals look the same in LIGHT mode */
 html[data-theme="light"] code,
 html[data-theme="light"] a code,
 html[data-theme="light"] code.literal,
@@ -203,4 +203,19 @@ html[data-theme="dark"] .bd-header,
 html[data-theme="light"] .bd-header a,
 html[data-theme="dark"] .bd-header a {
   color: #f5f3ff;
+}
+
+/* ===== API "Parameters" / "Returns" bars in light mode ===== */
+
+/* Sphinx field-list headers */
+html[data-theme="light"] dl.field-list > dt,
+html[data-theme="light"] dl.field-list > dt .sig-name,
+html[data-theme="light"] .field-name {
+  background-color: #28334a !important;  /* dark bluish bar */
+  color: #f5f3ff !important;             /* light text */
+}
+
+/* Ensure the dd below stays transparent */
+html[data-theme="light"] dl.field-list > dd {
+  background: transparent !important;
 }
