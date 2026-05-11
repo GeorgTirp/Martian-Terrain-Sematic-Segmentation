@@ -132,19 +132,45 @@ class AI4MarsHFDataset(Dataset):
         # --- caching for valid indices ---
         os.makedirs(cache_dir, exist_ok=True)
         self.cache_path = os.path.join(
+            cache_dir, f"valid_indices_{split_name}_n{len(self.ds)}.npy"
+        )
+        legacy_cache_path = os.path.join(
             cache_dir, f"valid_indices_{split_name}.npy"
         )
 
         self.valid_indices: List[int] = []
 
-        if (not scan_spurious) and os.path.exists(self.cache_path):
-            # Fast path: load precomputed valid indices
-            self.valid_indices = np.load(self.cache_path).astype(int).tolist()
-            print(
-                f"[AI4MarsHFDataset] Loaded {len(self.valid_indices)} valid indices "
-                f"from cache: {self.cache_path}"
-            )
-        else:
+        cache_loaded = False
+        if not scan_spurious:
+            for candidate_cache_path in (self.cache_path, legacy_cache_path):
+                if not os.path.exists(candidate_cache_path):
+                    continue
+
+                candidate_indices = np.load(candidate_cache_path).astype(int).tolist()
+                if not all(0 <= idx < len(self.ds) for idx in candidate_indices):
+                    print(
+                        "[AI4MarsHFDataset] Ignoring cached valid indices from "
+                        f"{candidate_cache_path} because they do not match the current "
+                        f"{split_name} split size ({len(self.ds)} samples)."
+                    )
+                    continue
+
+                self.valid_indices = candidate_indices
+                cache_loaded = True
+
+                if candidate_cache_path != self.cache_path:
+                    np.save(
+                        self.cache_path,
+                        np.array(self.valid_indices, dtype=np.int64),
+                    )
+
+                print(
+                    f"[AI4MarsHFDataset] Loaded {len(self.valid_indices)} valid indices "
+                    f"from cache: {candidate_cache_path}"
+                )
+                break
+
+        if not cache_loaded:
             # Slow path: scan HF split and build valid_indices
             print("[AI4MarsHFDataset] Scanning for corrupted samples...")
             for i in range(len(self.ds)):
@@ -425,21 +451,21 @@ def create_ai4mars_dataloaders(
         batch_size=batch_size,
         shuffle=True,
         num_workers=num_workers,
-        pin_memory=True,
+        pin_memory=torch.cuda.is_available(),
     )
     val_loader = DataLoader(
         val_ds,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True,
+        pin_memory=torch.cuda.is_available(),
     )
     test_loader = DataLoader(
         test_ds,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        pin_memory=True,
+        pin_memory=torch.cuda.is_available(),
     )
 
     return DataLoaders(train=train_loader, val=val_loader, test=test_loader)

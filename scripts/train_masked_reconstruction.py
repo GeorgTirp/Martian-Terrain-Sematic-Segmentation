@@ -8,6 +8,7 @@ This script trains the encoder with the reconstruction wrapper defined in
 - a CSV training history
 - a best-model checkpoint
 - a small tensor bundle with a few original / masked / reconstructed examples
+- a PNG grid of those reconstruction examples
 """
 
 from __future__ import annotations
@@ -124,6 +125,11 @@ def parse_args() -> argparse.Namespace:
         help="Saved reconstruction examples output path.",
     )
     parser.add_argument(
+        "--examples-png-path",
+        default="outputs/masked_reconstruction_examples.png",
+        help="PNG grid for quick visual inspection of reconstruction examples.",
+    )
+    parser.add_argument(
         "--num-examples",
         type=int,
         default=3,
@@ -147,7 +153,7 @@ def run_epoch(model, dataloader, device, optimizer=None, scheduler=None, use_amp
     training = optimizer is not None
     model.train(training)
 
-    scaler = torch.cuda.amp.GradScaler(enabled=use_amp)
+    scaler = torch.amp.GradScaler("cuda", enabled=use_amp)
     total_loss = 0.0
     total_samples = 0
 
@@ -160,7 +166,7 @@ def run_epoch(model, dataloader, device, optimizer=None, scheduler=None, use_amp
             if training:
                 optimizer.zero_grad(set_to_none=True)
 
-            with torch.cuda.amp.autocast(enabled=use_amp):
+            with torch.amp.autocast(device_type="cuda", enabled=use_amp):
                 outputs = model(imgs)
                 loss = outputs["loss"]
 
@@ -204,6 +210,52 @@ def collect_examples(model, dataloader, device, num_examples: int) -> dict:
     raise RuntimeError("Unable to collect reconstruction examples from an empty dataloader.")
 
 
+def save_examples_png(examples: dict, path: Path) -> None:
+    import matplotlib.pyplot as plt
+
+    original = examples["original"]
+    masked_input = examples["masked_input"]
+    reconstruction = examples["reconstruction"].clamp(0.0, 1.0)
+    mask = examples["mask"]
+    num_examples = original.shape[0]
+
+    fig, axes = plt.subplots(
+        num_examples,
+        4,
+        figsize=(12, 3 * num_examples),
+        squeeze=False,
+    )
+
+    for idx in range(num_examples):
+        axes[idx, 0].imshow(original[idx, 0].numpy(), cmap="gray")
+        axes[idx, 0].set_title(f"Original {idx + 1}")
+        axes[idx, 0].axis("off")
+
+        axes[idx, 1].imshow(masked_input[idx, 0].numpy(), cmap="gray")
+        axes[idx, 1].set_title("Masked Input")
+        axes[idx, 1].axis("off")
+
+        axes[idx, 2].imshow(reconstruction[idx, 0].numpy(), cmap="gray")
+        axes[idx, 2].set_title("Reconstruction")
+        axes[idx, 2].axis("off")
+
+        axes[idx, 3].imshow(mask[idx, 0].numpy(), cmap="magma")
+        axes[idx, 3].set_title("Mask")
+        axes[idx, 3].axis("off")
+
+    best_val_loss = examples.get("best_val_loss")
+    if best_val_loss is not None:
+        fig.suptitle(
+            f"Masked Reconstruction Examples | best val loss = {best_val_loss:.6f}",
+            y=1.01,
+        )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.tight_layout()
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
 def main() -> int:
     args = parse_args()
 
@@ -240,6 +292,7 @@ def main() -> int:
     checkpoint_path = _resolve_path(args.checkpoint_path)
     history_path = _resolve_path(args.history_path)
     examples_path = _resolve_path(args.examples_path)
+    examples_png_path = _resolve_path(args.examples_png_path)
     local_disk_path = _resolve_path(args.local_disk_path)
     valid_indices_cache_dir = _resolve_path(args.valid_indices_cache_dir)
     cache_dir = _resolve_path(args.cache_dir) if args.cache_dir else None
@@ -381,6 +434,8 @@ def main() -> int:
     examples_path.parent.mkdir(parents=True, exist_ok=True)
     torch.save(examples, examples_path)
     print(f"Saved reconstruction examples to {examples_path}")
+    save_examples_png(examples, examples_png_path)
+    print(f"Saved reconstruction example grid to {examples_png_path}")
     return 0
 
 
