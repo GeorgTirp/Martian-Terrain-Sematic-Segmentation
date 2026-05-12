@@ -344,6 +344,20 @@ class WindowAttention(nn.Module):
 
         nn.init.trunc_normal_(self.relative_position_bias_table, std=0.02)
 
+    def _relative_position_bias(self, dtype: torch.dtype) -> torch.Tensor:
+        relative_position_bias = self.relative_position_bias_table[
+            self.relative_position_index.reshape(-1)
+        ]
+        relative_position_bias = relative_position_bias.view(
+            self.window_size * self.window_size,
+            self.window_size * self.window_size,
+            -1,
+        )
+        relative_position_bias = relative_position_bias.permute(
+            2, 0, 1
+        ).contiguous()
+        return relative_position_bias.to(dtype=dtype)
+
     def forward(
         self,
         x: torch.Tensor,
@@ -360,59 +374,32 @@ class WindowAttention(nn.Module):
         """
         b_windows, n, c = x.shape
 
-        qkv = self.qkv(x)
-        qkv = qkv.reshape(
+        head_dim = c // self.num_heads
+        qkv = self.qkv(x).reshape(
             b_windows,
             n,
             3,
             self.num_heads,
-            c // self.num_heads,
+            head_dim,
         )
         qkv = qkv.permute(2, 0, 3, 1, 4)
+        q, k, v = qkv.unbind(0)
 
-        q, k, v = qkv[0], qkv[1], qkv[2]
-
-        q = q * self.scale
-        attn = q @ k.transpose(-2, -1)  # [B_windows, heads, N, N]
-
-        relative_position_bias = self.relative_position_bias_table[
-            self.relative_position_index.reshape(-1)
-        ]
-        relative_position_bias = relative_position_bias.view(
-            self.window_size * self.window_size,
-            self.window_size * self.window_size,
-            -1,
-        )
-        relative_position_bias = relative_position_bias.permute(
-            2, 0, 1
-        ).contiguous()  # [heads, N, N]
-
-        attn = attn + relative_position_bias.unsqueeze(0)
+        attn_mask = self._relative_position_bias(dtype=q.dtype).unsqueeze(0)
 
         if mask is not None:
             num_windows = mask.shape[0]
+            batch_size = b_windows // num_windows
+            window_mask = mask.to(device=x.device, dtype=q.dtype).unsqueeze(1)
+            attn_mask = (window_mask + attn_mask).repeat(batch_size, 1, 1, 1)
 
-            attn = attn.view(
-                b_windows // num_windows,
-                num_windows,
-                self.num_heads,
-                n,
-                n,
-            )
-
-            attn = attn + mask.unsqueeze(0).unsqueeze(2)
-
-            attn = attn.view(
-                -1,
-                self.num_heads,
-                n,
-                n,
-            )
-
-        attn = F.softmax(attn, dim=-1)
-        attn = self.attn_drop(attn)
-
-        x = attn @ v
+        x = F.scaled_dot_product_attention(
+            q,
+            k,
+            v,
+            attn_mask=attn_mask,
+            dropout_p=self.attn_drop.p if self.training else 0.0,
+        )
         x = x.transpose(1, 2).reshape(b_windows, n, c)
 
         x = self.proj(x)
@@ -497,8 +484,9 @@ class SwinTransformerBlock(nn.Module):
             hidden_dim=int(dim * mlp_ratio),
             drop=drop,
         )
+        self._attn_mask_cache: Dict[Tuple[int, int, str, str], torch.Tensor] = {}
 
-    def _make_attention_mask(
+    def _get_attention_mask(
         self,
         hp: int,
         wp: int,
@@ -509,6 +497,10 @@ class SwinTransformerBlock(nn.Module):
         Create attention mask for shifted-window attention.
         Shape: [num_windows, M*M, M*M]
         """
+        cache_key = (hp, wp, str(device), str(dtype))
+        if cache_key in self._attn_mask_cache:
+            return self._attn_mask_cache[cache_key]
+
         img_mask = torch.zeros(
             (1, hp, wp, 1),
             device=device,
@@ -549,6 +541,7 @@ class SwinTransformerBlock(nn.Module):
             float(0.0),
         )
 
+        self._attn_mask_cache[cache_key] = attn_mask
         return attn_mask
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -562,11 +555,9 @@ class SwinTransformerBlock(nn.Module):
                 f"Expected channel dim {self.dim}, got {c}."
             )
 
-        shortcut = x
-
-        # NCHW -> NHWC for LayerNorm and attention.
-        x = x.permute(0, 2, 3, 1).contiguous()
-        x = self.norm1(x)
+        # Keep the whole block in NHWC and convert back only once at the end.
+        shortcut = x.permute(0, 2, 3, 1).contiguous()
+        x = self.norm1(shortcut)
 
         # Pad so H and W are divisible by window_size.
         pad_b = (self.window_size - h % self.window_size) % self.window_size
@@ -587,7 +578,7 @@ class SwinTransformerBlock(nn.Module):
                 dims=(1, 2),
             )
 
-            attn_mask = self._make_attention_mask(
+            attn_mask = self._get_attention_mask(
                 hp=hp,
                 wp=wp,
                 device=x.device,
@@ -643,24 +634,10 @@ class SwinTransformerBlock(nn.Module):
         if pad_b > 0 or pad_r > 0:
             x = x[:, :h, :w, :].contiguous()
 
-        # NHWC -> NCHW.
-        x = x.permute(0, 3, 1, 2).contiguous()
-
-        # Residual 1.
         x = shortcut + self.drop_path(x)
+        x = x + self.drop_path(self.mlp(self.norm2(x)))
 
-        # MLP block.
-        shortcut = x
-
-        x = x.permute(0, 2, 3, 1).contiguous()
-        x = self.norm2(x)
-        x = self.mlp(x)
-        x = x.permute(0, 3, 1, 2).contiguous()
-
-        # Residual 2.
-        x = shortcut + self.drop_path(x)
-
-        return x
+        return x.permute(0, 3, 1, 2).contiguous()
     
     
 class SwinStage(nn.Module):
@@ -822,6 +799,258 @@ class ConvNeXtSwinEncoder(nn.Module):
 
         return x1, x2, x3, x4, x5
 
+class LightweightContextEncoder(nn.Module):
+    """
+    Lightweight context branch.
+
+    Input:
+        context_x: [B, C, H, W]
+
+    Intended use:
+        context_x is a large surrounding crop, e.g. 2048×2048,
+        already downsampled to the same tensor size as the local crop,
+        e.g. 512×512.
+
+    Output:
+        context_vector: [B, context_dim]
+
+    This branch is intentionally small. It should provide scene-level context,
+    not do full segmentation.
+    """
+
+    def __init__(
+        self,
+        in_channels: int,
+        base_channels: int = 24,
+        depth_per_stage: int = 1,
+        context_dim: int = 256,
+    ):
+        super().__init__()
+
+        c1 = base_channels
+        c2 = base_channels * 2
+        c3 = base_channels * 4
+        c4 = base_channels * 8
+        c5 = base_channels * 16
+
+        self.stem = nn.Sequential(
+            nn.Conv2d(
+                in_channels,
+                c1,
+                kernel_size=3,
+                stride=2,
+                padding=1,
+                bias=False,
+            ),
+            LayerNorm2d(c1),
+            ConvNeXtBlock(c1),
+        )  # 1/2
+
+        self.stage4 = ConvNeXtStage(
+            in_channels=c1,
+            out_channels=c2,
+            depth=depth_per_stage,
+            downsample=True,
+        )  # 1/4
+
+        self.stage8 = ConvNeXtStage(
+            in_channels=c2,
+            out_channels=c3,
+            depth=depth_per_stage,
+            downsample=True,
+        )  # 1/8
+
+        self.stage16 = ConvNeXtStage(
+            in_channels=c3,
+            out_channels=c4,
+            depth=depth_per_stage,
+            downsample=True,
+        )  # 1/16
+
+        self.stage32 = ConvNeXtStage(
+            in_channels=c4,
+            out_channels=c5,
+            depth=depth_per_stage,
+            downsample=True,
+        )  # 1/32
+
+        self.pool = nn.AdaptiveAvgPool2d(1)
+
+        self.proj = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(c5, context_dim),
+            nn.GELU(),
+            nn.LayerNorm(context_dim),
+        )
+
+    def forward(self, context_x: torch.Tensor) -> torch.Tensor:
+        x = self.stem(context_x)
+        x = self.stage4(x)
+        x = self.stage8(x)
+        x = self.stage16(x)
+        x = self.stage32(x)
+
+        context_vector = self.proj(self.pool(x))
+
+        return context_vector
+    
+class ContextFiLM2d(nn.Module):
+    """
+    FiLM-style context conditioning for NCHW feature maps.
+
+    Given:
+        feature:        [B, C, H, W]
+        context_vector: [B, D]
+
+    Applies:
+        feature * (1 + gamma) + beta
+
+    The final linear layer is initialized to zero so the module starts
+    as an identity transform.
+    """
+
+    def __init__(
+        self,
+        feature_channels: int,
+        context_dim: int,
+        hidden_dim: int = 256,
+    ):
+        super().__init__()
+
+        self.feature_channels = feature_channels
+
+        self.to_scale_shift = nn.Sequential(
+            nn.Linear(context_dim, hidden_dim),
+            nn.GELU(),
+            nn.Linear(hidden_dim, 2 * feature_channels),
+        )
+
+        # Start as identity: scale = 0, shift = 0.
+        nn.init.zeros_(self.to_scale_shift[-1].weight)
+        nn.init.zeros_(self.to_scale_shift[-1].bias)
+
+    def forward(
+        self,
+        feature: torch.Tensor,
+        context_vector: torch.Tensor,
+    ) -> torch.Tensor:
+        scale_shift = self.to_scale_shift(context_vector)
+
+        scale, shift = scale_shift.chunk(2, dim=1)
+
+        scale = scale[:, :, None, None]
+        shift = shift[:, :, None, None]
+
+        return feature * (1.0 + scale) + shift
+    
+
+class ContextAwareConvNeXtSwinEncoder(nn.Module):
+    """
+    Two-branch encoder:
+
+    Local branch:
+        native-resolution crop, e.g. 512×512
+
+    Context branch:
+        larger surrounding crop downsampled to 512×512
+
+    The context branch does not segment. It produces a global context vector
+    that modulates selected local feature maps.
+    """
+
+    def __init__(
+        self,
+        in_channels: int,
+        local_base_channels: int = 48,
+        context_base_channels: int = 24,
+        context_dim: int = 256,
+        use_stage32: bool = True,
+        swin_depths: Sequence[int] = (2, 2, 2),
+        swin_num_heads: Sequence[int] = (4, 8, 16),
+        window_size: int = 8,
+        drop_path: float = 0.0,
+    ):
+        super().__init__()
+
+        self.use_stage32 = use_stage32
+
+        self.local_encoder = ConvNeXtSwinEncoder(
+            in_channels=in_channels,
+            base_channels=local_base_channels,
+            use_stage32=use_stage32,
+            swin_depths=swin_depths,
+            swin_num_heads=swin_num_heads,
+            window_size=window_size,
+            drop_path=drop_path,
+        )
+
+        self.context_encoder = LightweightContextEncoder(
+            in_channels=in_channels,
+            base_channels=context_base_channels,
+            depth_per_stage=1,
+            context_dim=context_dim,
+        )
+
+        c1 = local_base_channels          # 1/2
+        c2 = local_base_channels * 2      # 1/4
+        c3 = local_base_channels * 4      # 1/8
+        c4 = local_base_channels * 8      # 1/16
+        c5 = local_base_channels * 16     # 1/32
+
+        # I would not condition the very earliest x1 feature at first.
+        # It may inject context into very local texture too aggressively.
+        self.film_x2 = ContextFiLM2d(c2, context_dim)
+        self.film_x3 = ContextFiLM2d(c3, context_dim)
+        self.film_x4 = ContextFiLM2d(c4, context_dim)
+        self.film_x5 = ContextFiLM2d(c5, context_dim)
+
+        if use_stage32:
+            self.film_x6 = ContextFiLM2d(c5, context_dim)
+
+    def forward(
+        self,
+        local_x: torch.Tensor,
+        context_x: torch.Tensor,
+    ):
+        """
+        Parameters
+        ----------
+        local_x:
+            Native-resolution local crop.
+            Example: [B, C, 512, 512]
+
+        context_x:
+            Larger surrounding crop already downsampled.
+            Example: original 2048×2048 context crop resized to [B, C, 512, 512]
+
+        Returns
+        -------
+        Feature pyramid for the decoder.
+        """
+
+        context_vector = self.context_encoder(context_x)
+
+        features = self.local_encoder(local_x)
+
+        if self.use_stage32:
+            x1, x2, x3, x4, x5, x6 = features
+
+            x2 = self.film_x2(x2, context_vector)
+            x3 = self.film_x3(x3, context_vector)
+            x4 = self.film_x4(x4, context_vector)
+            x5 = self.film_x5(x5, context_vector)
+            x6 = self.film_x6(x6, context_vector)
+
+            return x1, x2, x3, x4, x5, x6
+
+        x1, x2, x3, x4, x5 = features
+
+        x2 = self.film_x2(x2, context_vector)
+        x3 = self.film_x3(x3, context_vector)
+        x4 = self.film_x4(x4, context_vector)
+        x5 = self.film_x5(x5, context_vector)
+
+        return x1, x2, x3, x4, x5
 
 class PatchMasker(nn.Module):
     """
